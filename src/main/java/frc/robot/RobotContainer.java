@@ -12,6 +12,7 @@ import frc.robot.Constants.ElevatorStates;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.RobotPositions;
 import frc.robot.Constants.USB;
+import frc.robot.commands.AlignWithTagCommand;
 
 import java.util.List;
 
@@ -83,5 +84,6 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    RobotContainer.driverController.a().whileTrue(new AlignWithTagCommand(RobotContainer.swerveSubsystem));
   }
 }

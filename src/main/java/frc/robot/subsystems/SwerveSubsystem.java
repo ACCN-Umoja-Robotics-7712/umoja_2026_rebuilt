@@ -382,16 +382,18 @@ public class SwerveSubsystem extends SubsystemBase {
         return pose.transformBy(transform);
     }
 
-    public void alignWithTag(Double targetYaw){
-        double currentYaw = getHeading();
-        double yawError = targetYaw - currentYaw;
+    public void alignWithTag(Double targetX){
+        double currentX = 0;
+        double xError = targetX - currentX;
 
         Pose2d pose = getPose();
 
+        // ChassisSpeeds robotLOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
+
         ChassisSpeeds speeds = new ChassisSpeeds(
-            xController.calculate(pose.getX(), pose.getX()),
-            yController.calculate(pose.getY(), pose.getY()),
-            thetaController.calculate(yawError, 0)
+            xController.calculate(xError, 0),
+            0,
+            0
         );
 
         setModuleStatesFromSpeeds(speeds);
