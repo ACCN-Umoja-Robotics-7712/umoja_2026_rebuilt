@@ -173,7 +173,7 @@ public class Robot extends TimedRobot {
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,
             () -> flip*RobotContainer.driverController.getLeftY(),
-            () -> flip*-RobotContainer.driverController.getLeftX(),
+            () -> flip*RobotContainer.driverController.getLeftX(),
             () -> -RobotContainer.driverController.getRightX()
         )
     );

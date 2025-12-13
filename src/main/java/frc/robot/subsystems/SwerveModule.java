@@ -83,9 +83,9 @@ public class SwerveModule {
         // subtract offset to zero wheels
         double correctZeroEncoder = absoluteEncoder.getPosition().getValueAsDouble()*360 - absoluteEncoderDegreeOffset;
         // reverse direction so counter clockwise positive
-        double correctDirectionEncoder = correctZeroEncoder * -1;
+        // double correctDirectionEncoder = correctZeroEncoder * -1;
         // add and mod to switch from negative to positive
-        return ((correctDirectionEncoder + 360) % 360);   
+        return ((correctZeroEncoder + 360) % 360);   
     }
 
     public void resetEncoders() {
