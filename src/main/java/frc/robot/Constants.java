@@ -358,7 +358,7 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-        public static final String tagName = "limelight-tags";
+        public static final String tagName = "limelight";
         public static final String gamePieceName = "limelight-gp";
         public static final String driverName = "driver";
         public static final int Estimate_Distance = 20;

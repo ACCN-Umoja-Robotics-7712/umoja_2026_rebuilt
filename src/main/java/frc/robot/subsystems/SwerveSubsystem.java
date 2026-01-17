@@ -98,6 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private AHRS gyro = new AHRS(NavXComType.kMXP_SPI, 66);
     private TrajectoryConfig trajectoryConfig;
+    public PIDController shootController;
     public PIDController xController;
     public PIDController yController;
     public ProfiledPIDController thetaController;
@@ -173,6 +174,8 @@ public class SwerveSubsystem extends SubsystemBase {
                         .setKinematics(DriveConstants.kDriveKinematics);
 
         // 3. Define PID controllers for tracking trajectory
+        shootController = new PIDController(0.1, 0, 0);
+        
         xController = new PIDController(DriveConstants.kPDrive, DriveConstants.kIDrive, 0);
         yController = new PIDController(DriveConstants.kPDrive, DriveConstants.kIDrive, 0);
         thetaController = new ProfiledPIDController(
@@ -391,10 +394,12 @@ public class SwerveSubsystem extends SubsystemBase {
         // ChassisSpeeds robotLOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
 
         ChassisSpeeds speeds = new ChassisSpeeds(
-            xController.calculate(xError, 0),
+            shootController.calculate(xError, 0),
             0,
+            // yController.calculate(xError, 0),
             0
         );
+        SmartDashboard.putNumber("TARGET X ERROR", xError);
 
         setModuleStatesFromSpeeds(speeds);
     }
