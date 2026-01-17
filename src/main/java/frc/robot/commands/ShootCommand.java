@@ -21,6 +21,8 @@ public class ShootCommand extends Command{
         shooterSubsystem.runShooter(0.5);
     }
 
+    // TODO: Turret turning and hood control
+
     @Override
     public void end(boolean isInterrupted) {
         System.out.println("Align with tag end is interrupted" + isInterrupted);
