@@ -385,7 +385,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return pose.transformBy(transform);
     }
 
-    public void alignWithTag(Double targetX){
+    public void alignWithTag(Double targetX, Double ySpeed, Double turningSpeed) {
         double currentX = 0;
         double xError = targetX - currentX;
 
@@ -395,9 +395,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         ChassisSpeeds speeds = new ChassisSpeeds(
             shootController.calculate(xError, 0),
-            0,
-            // yController.calculate(xError, 0),
-            0
+            ySpeed,
+            turningSpeed
         );
         SmartDashboard.putNumber("TARGET X ERROR", xError);
 

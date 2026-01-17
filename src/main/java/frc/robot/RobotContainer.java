@@ -84,6 +84,15 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    RobotContainer.driverController.a().whileTrue(new AlignWithTagCommand(RobotContainer.swerveSubsystem));
+    
+    boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+    int flip = isBlue ? -1 : 1;
+    RobotContainer.driverController.a().whileTrue(
+      new AlignWithTagCommand(
+        RobotContainer.swerveSubsystem,
+        () -> flip*RobotContainer.driverController.getLeftX(),
+        () -> flip*RobotContainer.driverController.getLeftY()
+      )
+    );
   }
 }

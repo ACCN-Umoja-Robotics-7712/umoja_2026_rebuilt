@@ -174,7 +174,7 @@ public class Robot extends TimedRobot {
             RobotContainer.swerveSubsystem,
             () -> flip*RobotContainer.driverController.getLeftY(),
             () -> flip*RobotContainer.driverController.getLeftX(),
-            () -> -RobotContainer.driverController.getRightX()
+            () -> RobotContainer.driverController.getRightX()
         )
     );
 

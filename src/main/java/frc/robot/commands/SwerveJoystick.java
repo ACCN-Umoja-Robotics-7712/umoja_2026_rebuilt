@@ -53,12 +53,13 @@ public class SwerveJoystick extends Command {
 
   private double autoTimer = 0; 
 
+  // TO-DO: Remove joystick rumble to outside this command
   Joystick j = new Joystick(USB.DRIVER_CONTROLLER);
 
   private final PIDController driftController = new PIDController(DriveConstants.kPDrift, DriveConstants.kIDrift, 0);
   
   
-  /** Creates a new SwerveJoystick. */
+  /** Creates a new SwerveJoystick with x and y being field oriented. */
   public SwerveJoystick(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, 
     Supplier<Double> turningSpdFuntion) {
 
