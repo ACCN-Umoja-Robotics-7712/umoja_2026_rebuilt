@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterFlywheelSubsystem;
 
 public class ShootCommand extends Command{
-    ShooterSubsystem shooterSubsystem;
+    ShooterFlywheelSubsystem flywheel;
 
-    public ShootCommand(ShooterSubsystem shooterSubsystem) {
-        this.shooterSubsystem = shooterSubsystem;
-        addRequirements(shooterSubsystem);
+    public ShootCommand(ShooterFlywheelSubsystem flywheel) {
+        this.flywheel = flywheel;
+        addRequirements(flywheel);
     }
 
     @Override
@@ -18,7 +18,7 @@ public class ShootCommand extends Command{
 
     @Override
     public void execute () {
-        shooterSubsystem.runShooter(0.5);
+        flywheel.runShooter(0.5);
     }
 
     // TODO: Turret turning and hood control
@@ -26,6 +26,6 @@ public class ShootCommand extends Command{
     @Override
     public void end(boolean isInterrupted) {
         System.out.println("Align with tag end is interrupted" + isInterrupted);
-        shooterSubsystem.runShooter(0);
+        flywheel.runShooter(0);
     }
 }
