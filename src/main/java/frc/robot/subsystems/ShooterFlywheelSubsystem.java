@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -20,6 +21,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
     private final TalonFX flywheelMotor;
 
     private final PIDController flywheelPidController;
+    private final SimpleMotorFeedforward FFController;
 
     private final VoltageOut voltageReg;
 
@@ -29,7 +31,8 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         CANBus CANivore = new CANBus("CANivore");
         flywheelMotor = new TalonFX(0, CANivore);
 
-        flywheelPidController = new PIDController(0.01, 0, 0);
+        flywheelPidController = new PIDController(0, 0, 0);
+        FFController = new SimpleMotorFeedforward(0, 0,0);
         
         voltageReg = new VoltageOut(0.0);
         sysIdRoutine = new SysIdRoutine(
@@ -52,8 +55,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotor.set(speed);
     }
 
-    public void setShooterSpeed(double wantedSpeed) {
-        flywheelMotor.set(flywheelPidController.calculate(flywheelMotor.getVelocity().getValueAsDouble(), wantedSpeed));
+    public void setShooterVelocity(double wantedVelocity) {
+        double feedforward = FFController.calculate(wantedVelocity);
+        double pid = flywheelPidController.calculate(flywheelMotor.getVelocity().getValueAsDouble(), wantedVelocity);
+        flywheelMotor.setVoltage(feedforward + pid);
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
