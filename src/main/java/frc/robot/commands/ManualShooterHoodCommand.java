@@ -1,15 +1,15 @@
 package frc.robot.commands;
 
 import java.util.function.Supplier;
-?
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterTurretSubsystem;
+import frc.robot.subsystems.ShooterHoodSubsystem;
 
 public class ManualShooterHoodCommand extends Command{
-    ManualShooterHoodSubsystem ManualShooterHood;
+    ShooterHoodSubsystem ManualShooterHood;
     Supplier<Double> ManualShooterHoodSpeed;
 
-    public ManualShooterHoodCommand(ManualShooterHoodSubsystem ManualShooterHood, Supplier<Double> ManualShooterHoodSpeed){
+    public ManualShooterHoodCommand(ShooterHoodSubsystem ManualShooterHood, Supplier<Double> ManualShooterHoodSpeed){
         this.ManualShooterHood = ManualShooterHood;
         this.ManualShooterHoodSpeed = ManualShooterHoodSpeed;
 
@@ -23,7 +23,7 @@ public class ManualShooterHoodCommand extends Command{
 
     @Override
     public void execute(){
-        ManualShooterHood.runManualShooterHood(ManualShooterHoodSpeed.get());
+        ManualShooterHood.runHood(ManualShooterHoodSpeed.get());
     }
 
     @Override
@@ -35,4 +35,5 @@ public class ManualShooterHoodCommand extends Command{
     public boolean isFinished() {
         return false;
     }
+}
     

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -20,8 +21,6 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private final TalonFX IntakeArmMotor;
     private final DigitalInput IntakeArmZeroLimitSwitch;
     private final PIDController IntakeArmPidController;
-
-    private final VoltageOut voltageReg;
 
     public IntakeArmSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
@@ -34,7 +33,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
     public void runIntakeArm(double speed) {
         
         // if limit switch is pressed, and going same direction as limit switch, STOP
-        if (hoodZeroLimitSwitch.get() && speed < 0) {
+        if (IntakeArmZeroLimitSwitch.get() && speed < 0) {
             speed = 0;
         }
         IntakeArmMotor.set(speed);
