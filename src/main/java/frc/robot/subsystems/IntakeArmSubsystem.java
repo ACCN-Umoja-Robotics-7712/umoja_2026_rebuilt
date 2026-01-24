@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class IntakeArmSubsystem extends SubsystemBase {
     private final TalonFX IntakeArmMotor;
-
+    private final DigitalInput IntakeArmZeroLimitSwitch;
     private final PIDController IntakeArmPidController;
 
     private final VoltageOut voltageReg;
@@ -26,16 +26,20 @@ public class IntakeArmSubsystem extends SubsystemBase {
     public IntakeArmSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
         IntakeArmMotor = new TalonFX(0, CANivore);
-
+        IntakeArmZeroLimitSwitch = new DigitalInput(1);
         IntakeArmPidController = new PIDController(0.01, 0, 0);
         
-        voltageReg = new VoltageOut(0.0);
     }
 
     public void runIntakeArm(double speed) {
+        
+        // if limit switch is pressed, and going same direction as limit switch, STOP
+        if (hoodZeroLimitSwitch.get() && speed < 0) {
+            speed = 0;
+        }
         IntakeArmMotor.set(speed);
     }
-
+    
     public void setIntakeArmSpeed(double wantedSpeed) {
         IntakeArmMotor.set(IntakeArmPidController.calculate(IntakeArmMotor.getVelocity().getValueAsDouble(), wantedSpeed));
     }
@@ -44,7 +48,6 @@ public class IntakeArmSubsystem extends SubsystemBase {
         IntakeArmMotor.set(IntakeArmPidController.calculate(IntakeArmMotor.getPosition().getValueAsDouble(), wantedIntakeArmRotation));
     }
 
-    
     @Override
     public void periodic() {
     }
