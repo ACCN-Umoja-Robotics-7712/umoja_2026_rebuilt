@@ -40,7 +40,9 @@ public class IntakeArmSubsystem extends SubsystemBase {
         IntakeArmMotor.set(IntakeArmPidController.calculate(IntakeArmMotor.getVelocity().getValueAsDouble(), wantedSpeed));
     }
 
-
+    public void setIntakeArmAngle(double wantedIntakeArmRotation) {
+        IntakeArmMotor.set(IntakeArmPidController.calculate(IntakeArmMotor.getPosition().getValueAsDouble(), wantedIntakeArmRotation));
+    }
 
     
     @Override
