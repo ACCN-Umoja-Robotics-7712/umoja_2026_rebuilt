@@ -25,11 +25,11 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         voltageReg = new VoltageOut(0.0);
     }
 
-    public void runShooter(double speed) {
+    public void runIntake(double speed) {
         intakeRollerMotor.set(speed);
     }
 
-    public void setShooterSpeed(double wantedSpeed) {
+    public void setIntakeSpeed(double wantedSpeed) {
         intakeRollerMotor.set(intakeRollerPidController.calculate(intakeRollerMotor.getVelocity().getValueAsDouble(), wantedSpeed));
     }
     
