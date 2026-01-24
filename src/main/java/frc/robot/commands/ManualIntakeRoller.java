@@ -3,17 +3,16 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterTurretSubsystem;
+import frc.robot.subsystems.IntakeRollerSubsystem;
 
-public class IntakeRollerCommand extends Command{
-    ShooterTurretSubsystem turret;
-    Supplier<Double> turretSpeed;
+public class ManualIntakeRoller extends Command{
+    IntakeRollerSubsystem intakeRoller;
+    Supplier<Double> rollerSpeed;
 
-    public IntakeRollerCommand(ShooterTurretSubsystem turret, Supplier<Double> turretSpeed){
-        this.turret = turret;
-        this.turretSpeed = turretSpeed;
-
-        addRequirements(turret);
+    public ManualIntakeRoller(IntakeRollerSubsystem intakeRoller, Supplier<Double> rollerSpeed){
+        this.intakeRoller = intakeRoller;
+        this.rollerSpeed = rollerSpeed;
+        addRequirements(intakeRoller);
     }
 
     @Override
@@ -23,7 +22,7 @@ public class IntakeRollerCommand extends Command{
 
     @Override
     public void execute(){
-        turret.runTurret(turretSpeed.get());
+        intakeRoller.runIntake(rollerSpeed.get());
     }
 
     @Override
