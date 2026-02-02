@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
     // Pose2d redRobotRight = RobotContainer.swerveSubsystem.offsetPoint(Constants.RobotPositions.redReefBackLeft11, Constants.Measurements.branchOffset);
 
   Pathfinding.setPathfinder(new LocalADStar());
-  FollowPathCommand.warmupCommand().schedule();
+  CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
     // autoChooser.addCmd("simple auto", RobotContainer.auto::simpleAuto);
     // // autoChooser.addRoutine("auto2", RobotContainer.auto::auto2);
     // autoChooser.addRoutine("NONE", RobotContainer.auto::noneAuto);
@@ -123,7 +123,7 @@ public class Robot extends TimedRobot {
 
     // // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule(); // Today
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 
