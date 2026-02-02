@@ -10,6 +10,11 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -18,55 +23,35 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {
-    private final TalonFX flywheelMotor;
+    private final SparkFlex flywheelMotor;
+    private final SparkFlex flywheelMotorFollower;
 
     private final PIDController flywheelPidController;
     private final SimpleMotorFeedforward FFController;
 
-    private final VoltageOut voltageReg;
-
-    private final SysIdRoutine sysIdRoutine;
-
     public ShooterFlywheelSubsystem() {
-        CANBus CANivore = new CANBus("CANivore");
-        flywheelMotor = new TalonFX(0, CANivore);
+        // TODO: Update to constants file
+        int leader = 1;
+        flywheelMotor = new SparkFlex(leader, MotorType.kBrushless);
+        flywheelMotorFollower = new SparkFlex(2, MotorType.kBrushless);
+
+        SparkFlexConfig followerConfig = new SparkFlexConfig();
+        followerConfig.follow(leader, true);
+
+        flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         flywheelPidController = new PIDController(0, 0, 0);
         FFController = new SimpleMotorFeedforward(0, 0,0);
-        
-        voltageReg = new VoltageOut(0.0);
-        sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,        // Use default ramp rate (1 V/s)
-                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                null,        // Use default timeout (10 s)
-                            // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (volts) -> flywheelMotor.setControl(voltageReg.withOutput(volts.in(Volts))),
-                null,
-                this
-            )
-        );
-    }
 
+    }
     public void runShooter(double speed) {
         flywheelMotor.set(speed);
     }
 
     public void setShooterVelocity(double wantedVelocity) {
         double feedforward = FFController.calculate(wantedVelocity);
-        double pid = flywheelPidController.calculate(flywheelMotor.getVelocity().getValueAsDouble(), wantedVelocity);
+        double pid = flywheelPidController.calculate(flywheelMotor.getEncoder().getVelocity(), wantedVelocity);
         flywheelMotor.setVoltage(feedforward + pid);
-    }
-
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction);
-    }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction);
     }
     
     @Override

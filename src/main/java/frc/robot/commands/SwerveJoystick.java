@@ -95,7 +95,6 @@ public class SwerveJoystick extends Command {
         RobotContainer.currentTrajectory = null;
         RobotContainer.goalPose = null;
       
-      
           // 1. Get joystic inputs
           double xSpeed = xSpdFunction.get();
           double ySpeed = ySpdFunction.get();
@@ -135,7 +134,6 @@ public class SwerveJoystick extends Command {
             if (RobotContainer.shouldAutoFixDrift == 1) {
               RobotContainer.wantedAngle = swerveSubsystem.getHeading();
               // RobotContainer.wantedAngle = 0; 
-
               // align
             } else {
               RobotContainer.wantedAngle = -1;
@@ -212,13 +210,13 @@ public class SwerveJoystick extends Command {
           SmartDashboard.putBoolean("Auto Fix Drift", RobotContainer.shouldAutoFixDrift == 1);
         }
 
-  // Called once the command ends or is interrupted.
+  // Called once the command ends or is interrupted
   @Override
   public void end(boolean interrupted) {
     swerveSubsystem.stopModules();
   }
 
-  // Returns true when the command should end.
+  // Returns true when the command should end
   @Override
   public boolean isFinished() {
     return false;

@@ -6,11 +6,8 @@ package frc.robot;
 
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.CoralArmStates;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ElevatorStates;
 import frc.robot.Constants.GameConstants;
-import frc.robot.Constants.RobotPositions;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTagCommand;
 

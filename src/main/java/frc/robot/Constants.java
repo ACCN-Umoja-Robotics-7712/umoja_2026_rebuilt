@@ -46,7 +46,9 @@ public final class Constants {
         public static final double 
         kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
         public static final double kTurnEncoderRPM2RadPerSec = kTurnEncoderRot2Rad / 60;
-        public static final double kPTurning = 0.6;
+        public static final double kPTurning = 0.42;
+        public static final double kPDriving = 0.25;
+        
     }
 
     public static final class DriveConstants {
@@ -87,12 +89,12 @@ public final class Constants {
         public static final boolean kBackRightDriveReversed = false;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 17;
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 22;
-        public static final int kFrontRightDriveAbsoluteEncoderPort = 27;
-        public static final int kBackRightDriveAbsoluteEncoderPort = 12;
+        public static final int kBackLeftDriveAbsoluteEncoderPort = 12;
+        public static final int kFrontRightDriveAbsoluteEncoderPort = 22;
+        public static final int kBackRightDriveAbsoluteEncoderPort = 27;
 
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
-        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = true;
+        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = true;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
@@ -114,7 +116,7 @@ public final class Constants {
         public static final double kBackLeftDriveAbsoluteEncoderOffsetDegree = 0;
         public static final double kBackRightDriveAbsoluteEncoderOffsetDegree = 0;
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 4.0;
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 4.3;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
@@ -137,81 +139,6 @@ public final class Constants {
 
         public static final double kPDrift = 0.045;
         public static final double kIDrift = 0.0065; //Changed before test
-    }
-
-
-    public static final class RobotStates{
-
-        public static final int NONE = -1;
-        public static final int PICKUP = 0;
-        public static final int L1 = 1;
-        public static final int L2 = 2;
-        public static final int L3 = 3;
-        public static final int L4 = 4; 
-        public static final int CLIMB_READY = 5;
-        public static final int CLIMBING = 6;
-        public static final int REMOVE = 7;
-    }
-
-    public static final class DeepClimbStates{ //Not used
-        
-        public static final double NONE = 01; 
-        public static final double ZERO = 0; 
-        public static final double READY = 0; // encoder value
-        public static final double CLIMBING = 0; // encoder value
-    }
-
-    public static final class DeepClimbConstants{
-
-        public static final int climbMotorID = 3;
-        public static final double deepClimbBottomLimit = 0;
-        public static final double kP = 0;
-        public static final double kI = 0;
-    }
-
-    public static final class CoralConstants {
-
-        public static final int coralIntakeMotorID = 1;
-        public static final int coralArmMotorID = 2;
-
-        public static final double coralArmBottomLimit = 5.0;
-        public static final double coralArmTopLimit = 140; // TODO: Change this
-        public static final double coralArmElevatorLimit = 81;
-
-        public static final double kP = 0.1;
-        
-        public static final double armPickupPosition = 57;
-
-        public static final double shootPositionL1 = 0;
-        public static final double shootPositionL23 = 0;
-        public static final double shootPositionL4 = 0;
-
-        public static final double hasCoralProximity = 130;
-
-        public static final double coralCurrentDiff = 0.05;
-
-    }
-
-    public static final class CoralArmStates {
-        
-        public static final double NONE = -1;
-        public static final double PICKUP = 54.5;
-        public static final double L1 = 10.5;
-        public static final double L23 = 36;
-        public static final double L4 = 33; // TODO: Fix value
-        public static final double CLIMB = 0; // TODO: Find climb value
-        public static final double ALGAE = 26.5;
-        public static final double Barge_1 = 26; //New Addittion, W.I.P.
-        public static final double Barge_2 = 35; // New Addition, W.I.P.
-    }
-
-    public static final class CoralIntakeStates {
-        
-        public static final double NONE = -1;
-        public static final double INTAKE = 1;
-        public static final double READY = 2;
-        public static final double SHOOTING = 3;
-
     }
 
     public static final class ElevatorConstants {
@@ -237,18 +164,6 @@ public final class Constants {
                 100);
 
     }
-
-    public static final class ElevatorStates {
-
-        public static final double NONE = -1;
-        public static final double L1 = 5;
-        public static final double L2 = 12;
-        public static final double ALGAE = 48;
-        public static final double L3 = 67-4;
-        public static final double L4 = 150;
-        public static final double CLIMB = 0;
-        public static final double BARGE = 151;
-    };
 
     public static final class LEDConstants {
         public static final int numLEDsPerStrip = 24;
@@ -378,29 +293,6 @@ public final class Constants {
         public static final Color[] uColors = {uRed, uDarkOrange, uGreen, uOrange};
     }
 
-    
-    public static final class AprilTagPositions {
-        // all in m, 0 is left
-        public static final Pose2d redPickupLeft1 = new Pose2d(16.697198, 0.65532, new Rotation2d(126));
-        public static final Pose2d redPickupRight2 = new Pose2d(16.697198, 7.3964799999999995, new Rotation2d(234));
-        public static final Pose2d redProcessor3 = new Pose2d(11.560809999999998, 8.05561, new Rotation2d(270));
-        public static final Pose2d redReefLeft6 = new Pose2d(13.474446, 3.3063179999999996, new Rotation2d(30));
-        public static final Pose2d redReefCenter7 = new Pose2d(13.890498, 4.0259, new Rotation2d(0));
-        public static final Pose2d redReefRight8 = new Pose2d(13.474446, 4.745482, new Rotation2d(30));
-        public static final Pose2d redReefBackRight9 = new Pose2d(12.643358, 4.745482, new Rotation2d(120));
-        public static final Pose2d redReefBackCenter10 = new Pose2d(12.227305999999999, 4.0259, new Rotation2d(180));
-        public static final Pose2d redReefBackLeft11 = new Pose2d(12.643358, 3.3063179999999996, new Rotation2d(240));
-        public static final Pose2d bluePickupRight12 = new Pose2d(0.851154, 0.65532, new Rotation2d(54));
-        public static final Pose2d bluePickupLeft13 = new Pose2d(0.851154, 7.3964799999999995, new Rotation2d(306));
-        public static final Pose2d blueProcessor16 = new Pose2d(5.9875419999999995, -0.0038099999999999996, new Rotation2d(90));
-        public static final Pose2d blueReefRight17 = new Pose2d(4.073905999999999, 3.3063179999999996, new Rotation2d(240));
-        public static final Pose2d blueReefCenter18 = new Pose2d(3.6576, 4.0259, new Rotation2d(180));
-        public static final Pose2d blueReefLeft19 = new Pose2d(4.073905999999999, 4.745482, new Rotation2d(120));
-        public static final Pose2d blueReefBackLeft20 = new Pose2d(4.904739999999999, 4.745482, new Rotation2d(60));
-        public static final Pose2d blueReefBackCenter21 = new Pose2d(5.321046, 4.0259, new Rotation2d(0));
-        public static final Pose2d blueReefBackRight22 = new Pose2d(4.904739999999999, 3.3063179999999996, new Rotation2d(300));
-    }
-
     public static final class Measurements {
         // all in m
         // robot l/w 28.5 by 28.5 inches
@@ -411,96 +303,6 @@ public final class Constants {
         public static final double robotSideOffset = 0.0254; // intake is 1 inch to the left so move robot 1 inch to the right
         public static final double branchOffset = 0.1651; // 6.5 inches
         public static final double coralStationDivotOffset = 0.2032; // 8 inches
-    }
-
-    public static final class RobotPositions {
-        public static final Pose2d redCenter = new Pose2d(11.62, 4.0259, new Rotation2d(0));
-        public static final Pose2d redCenterSafe = new Pose2d(11.35, 4.0259, new Rotation2d(0));
-        
-        public static final Pose2d redPickupLeft1 = new Pose2d(AprilTagPositions.redPickupLeft1.getX()-Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(54))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)), 
-        AprilTagPositions.redPickupLeft1.getY()+Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(54)) - Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)), new Rotation2d(Units.degreesToRadians(306)));
-
-        public static final Pose2d redPickupRight2 = new Pose2d(AprilTagPositions.redPickupRight2.getX()-Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(54)) + Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)), 
-        AprilTagPositions.redPickupRight2.getY()-Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(54))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)), new Rotation2d(Units.degreesToRadians(54)));
-
-        public static final Pose2d redProcessor3 = new Pose2d(AprilTagPositions.redProcessor3.getX()+Measurements.robotSideOffset, AprilTagPositions.redProcessor3.getY()-Measurements.robotCenterToFront, new Rotation2d(Units.degreesToRadians(90)));
-
-        public static final Pose2d redReefLeft6 = new Pose2d(AprilTagPositions.redReefLeft6.getX()+Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), 
-        AprilTagPositions.redReefLeft6.getY()-Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(120)));
-
-        public static final Pose2d redReefCenter7 = new Pose2d(AprilTagPositions.redReefCenter7.getX()+Measurements.robotCenterToFront, AprilTagPositions.redReefCenter7.getY()+Measurements.robotSideOffset, new Rotation2d(Units.degreesToRadians(180)));
-
-        public static final Pose2d redReefRight8 = new Pose2d(AprilTagPositions.redReefRight8.getX()+Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), 
-        AprilTagPositions.redReefRight8.getY()+Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.cos(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(240)));
-
-        public static final Pose2d redReefBackRight9 = new Pose2d(AprilTagPositions.redReefBackRight9.getX()-Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)),
-        AprilTagPositions.redReefBackRight9.getY()+Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(300)));
-
-        public static final Pose2d redReefBackCenter10 = new Pose2d(AprilTagPositions.redReefBackCenter10.getX()-Measurements.robotCenterToFront, AprilTagPositions.redReefBackCenter10.getY()-Measurements.robotSideOffset, new Rotation2d(Units.degreesToRadians(0)));
-
-        public static final Pose2d redReefBackLeft11 = new Pose2d(AprilTagPositions.redReefBackLeft11.getX()-Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), 
-        AprilTagPositions.redReefBackLeft11.getY()-Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(60)));
-
-        public static final Pose2d bluePickupRight12 = new Pose2d(AprilTagPositions.bluePickupRight12.getX()+Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(54))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)),
-        AprilTagPositions.bluePickupRight12.getY()+Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(54))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)), new Rotation2d(Units.degreesToRadians(234)));
-
-        public static final Pose2d bluePickupLeft13 = new Pose2d(AprilTagPositions.bluePickupLeft13.getX()+Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(54))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)),
-        AprilTagPositions.bluePickupLeft13.getY()-Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(54)) + Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(54)), new Rotation2d(Units.degreesToRadians(126)));
-
-        public static final Pose2d blueProcessor16 = new Pose2d(AprilTagPositions.blueProcessor16.getX()-Measurements.robotSideOffset, AprilTagPositions.blueProcessor16.getY()+Measurements.robotCenterToFront, new Rotation2d(Units.degreesToRadians(270)));
-
-        public static final Pose2d blueReefRight17 = new Pose2d(AprilTagPositions.blueReefRight17.getX()-Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), 
-        AprilTagPositions.blueReefRight17.getY()-Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.cos(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(60)));
-
-        public static final Pose2d blueReefCenter18 = new Pose2d(AprilTagPositions.blueReefCenter18.getX()-Measurements.robotCenterToFront, AprilTagPositions.blueReefCenter18.getY()-Measurements.robotSideOffset, new Rotation2d(Units.degreesToRadians(0)));
-
-        public static final Pose2d blueReefLeft19 = new Pose2d(AprilTagPositions.blueReefLeft19.getX()-Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), 
-        AprilTagPositions.blueReefLeft19.getY()+Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(300)));
-
-        public static final Pose2d blueReefBackLeft20 = new Pose2d(AprilTagPositions.blueReefBackLeft20.getX()+Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))-Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), 
-        AprilTagPositions.blueReefBackLeft20.getY()+Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(240)));
-
-        public static final Pose2d blueReefBackCenter21 = new Pose2d(AprilTagPositions.blueReefBackCenter21.getX()+Measurements.robotCenterToFront, AprilTagPositions.blueReefBackCenter21.getY()+Measurements.robotSideOffset, new Rotation2d(Units.degreesToRadians(180)));
-
-        public static final Pose2d blueReefBackRight22 = new Pose2d(AprilTagPositions.blueReefBackRight22.getX()+Measurements.robotCenterToFront*Math.cos(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)),
-        AprilTagPositions.blueReefBackRight22.getY()-Measurements.robotCenterToFront*Math.sin(Units.degreesToRadians(60))+Measurements.robotSideOffset*Math.sin(Units.degreesToRadians(60)), new Rotation2d(Units.degreesToRadians(120)));        
-
-    }
-
-    public static final Pose2d[] bluePickUpPositions = { RobotPositions.bluePickupRight12, RobotPositions.bluePickupLeft13};
-    public static final Pose2d[] blueReefPositions = { RobotPositions.blueReefRight17, RobotPositions.blueReefCenter18, RobotPositions.blueReefLeft19, RobotPositions.blueReefBackLeft20, RobotPositions.blueReefBackCenter21, RobotPositions.blueReefBackRight22};
-    public static final Pose2d blueProcessorPosition = RobotPositions.blueProcessor16;
-    public static final Pose2d[] redPickUpPositions = { RobotPositions.redPickupLeft1, RobotPositions.redPickupRight2};
-    public static final Pose2d[] redReefPositions = { RobotPositions.redReefLeft6, RobotPositions.redReefCenter7, RobotPositions.redReefRight8, RobotPositions.redReefBackRight9, RobotPositions.redReefBackCenter10, RobotPositions.redReefBackLeft11};
-    public static final Pose2d redProcessorPosition = RobotPositions.redProcessor3;
-
-    // TODO: Update at comp
-    public static final class BranchOffsets { // (Side offset -ve right, forward offset -ve back)
-        public static final Pair<Double, Double> blueBranchAOffset = new Pair<Double, Double>(-0.03, 0.0);
-        public static final Pair<Double, Double> blueBranchBOffset =  new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> blueBranchCOffset =  new Pair<Double, Double>(-0.06 /* -0.1 (to the right) */, 0.0);
-        public static final Pair<Double, Double> blueBranchDOffset =  new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> blueBranchEOffset =  new Pair<Double, Double>(-0.08 /* -0.03 */, 0.0);
-        public static final Pair<Double, Double> blueBranchFOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> blueBranchGOffset = new Pair<Double, Double>(-0.07, 0.0);
-        public static final Pair<Double, Double> blueBranchHOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> blueBranchIOffset = new Pair<Double, Double>(-0.07, 0.0);
-        public static final Pair<Double, Double> blueBranchJOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> blueBranchKOffset = new Pair<Double, Double>(-0.05, 0.0);
-        public static final Pair<Double, Double> blueBranchLOffset = new Pair<Double, Double>(0.0, 0.0);
-        
-        public static final Pair<Double, Double> redBranchAOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> redBranchBOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> redBranchCOffset = new Pair<Double, Double>(-0.09, 0.0);
-        public static final Pair<Double, Double> redBranchDOffset = new Pair<Double, Double>(0.03, 0.0);
-        public static final Pair<Double, Double> redBranchEOffset = new Pair<Double, Double>(-0.04, 0.0);
-        public static final Pair<Double, Double> redBranchFOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> redBranchGOffset = new Pair<Double, Double>(-0.07, 0.0);
-        public static final Pair<Double, Double> redBranchHOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> redBranchIOffset = new Pair<Double, Double>(-0.07, 0.0);
-        public static final Pair<Double, Double> redBranchJOffset = new Pair<Double, Double>(0.0, 0.0);
-        public static final Pair<Double, Double> redBranchKOffset = new Pair<Double, Double>(-0.05, 0.0);
-        public static final Pair<Double, Double> redBranchLOffset = new Pair<Double, Double>(0.0, 0.0);
     }
 
     public static final PathConstraints pathConstraints = new PathConstraints(4.8, 1.3, 540, 720);

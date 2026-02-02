@@ -96,7 +96,7 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackRightDriveAbsoluteEncoderOffsetDegree, 
         DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-    private AHRS gyro = new AHRS(NavXComType.kMXP_SPI, 66);
+    private AHRS gyro = new AHRS(NavXComType.kUSB1, 66);
     private TrajectoryConfig trajectoryConfig;
     public PIDController shootController;
     public PIDController xController;
