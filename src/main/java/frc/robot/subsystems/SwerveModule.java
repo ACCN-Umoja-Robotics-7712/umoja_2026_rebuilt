@@ -66,7 +66,7 @@ public class SwerveModule {
         // turnMotor.configure(turnConfig, SparkMax.ResetMode.kNoResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
 
         turnPIDController = new PIDController(ModuleConstants.kPTurning, 0, 0);
-        turnPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        turnPIDController.enableContinuousInput(0, 2*Math.PI);
         drivePIDController = new PIDController(ModuleConstants.kPDriving, 0, 0);
         
         resetEncoders();
@@ -133,8 +133,8 @@ public class SwerveModule {
         // SmartDashboard.putNumber("GOAL: " + absoluteEncoderID, Math.toDegrees(state.angle.getRadians()));
         // SmartDashboard.putNumber("Set motor percent: " + absoluteEncoderID, turnPidController.calculate(getAbsoluteEncoderRad(), state.angle.getRadians()));
         
-        turnMotor.set(turnPIDController.calculate(getTurningPosition(), state.angle.getRadians()));
-        //turnMotor.set(turnPidController.calculate(getTurningPosition(), state.angle.getDegrees()));
+        turnMotor.set(turnPIDController.calculate(getTurningPosition(), state.angle.getRadians() + Math.PI));
+        // turnMotor.set(turnPidController.calculate(getTurningPosition(), state.angle.getDegrees()));
     }
 
     public void stop() {

@@ -134,44 +134,44 @@ public class SwerveSubsystem extends SubsystemBase {
     
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
-        try{
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-        // Handle exception as needed
-            e.printStackTrace();
-            System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
-            return;
-        }
+        // try{
+        //     config = RobotConfig.fromGUISettings();
+        // } catch (Exception e) {
+        // // Handle exception as needed
+        //     e.printStackTrace();
+        //     System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
+        //     return;
+        // }
 
         // Configure AutoBuilder last
-        AutoBuilder.configure(
-                this::getPose, // Robot pose supplier
-                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> setModuleStatesFromSpeeds(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(Constants.AutoConstants.kPXController, Constants.AutoConstants.kIXController, 0), // Translation PID constants
-                        new PIDConstants(Constants.AutoConstants.kPThetaController, Constants.AutoConstants.kIThetaController, 0.0) // Rotation PID constants
-                ), // TODO: Auto PID
-                config,
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        // AutoBuilder.configure(
+        //         this::getPose, // Robot pose supplier
+        //         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        //         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        //         (speeds, feedforwards) -> setModuleStatesFromSpeeds(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        //         new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+        //                 new PIDConstants(Constants.AutoConstants.kPXController, Constants.AutoConstants.kIXController, 0), // Translation PID constants
+        //                 new PIDConstants(Constants.AutoConstants.kPThetaController, Constants.AutoConstants.kIThetaController, 0.0) // Rotation PID constants
+        //         ), // TODO: Auto PID
+        //         config,
+        //         () -> {
+        //             // Boolean supplier that controls when the path will be mirrored for the red alliance
+        //             // This will flip the path being followed to the red side of the field.
+        //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
-        );
+        //             var alliance = DriverStation.getAlliance();
+        //             if (alliance.isPresent()) {
+        //                 return alliance.get() == DriverStation.Alliance.Red;
+        //             }
+        //             return false;
+        //         },
+        //         this // Reference to this subsystem to set requirements
+        // );
         
-        trajectoryConfig = new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                        .setKinematics(DriveConstants.kDriveKinematics);
+        // trajectoryConfig = new TrajectoryConfig(
+        //         AutoConstants.kMaxSpeedMetersPerSecond,
+        //         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        //                 .setKinematics(DriveConstants.kDriveKinematics);
 
         // 3. Define PID controllers for tracking trajectory
         shootController = new PIDController(0.1, 0, 0);

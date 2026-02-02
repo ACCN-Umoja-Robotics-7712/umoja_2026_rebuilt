@@ -82,6 +82,7 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
+    // TODO: Could run before we get alliance color
     boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
     int flip = isBlue ? -1 : 1;
     RobotContainer.driverController.a().whileTrue(
