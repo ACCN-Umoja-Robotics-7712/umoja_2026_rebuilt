@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -117,11 +118,13 @@ public class SwerveModule {
             return;
         }
         state.optimize(getState().angle);
+        SmartDashboard.putNumber("Swerve wanted angle:" + absoluteEncoderID, state.angle.getDegrees());
         SmartDashboard.putNumber("Swerve current speed:" + absoluteEncoderID, getState().speedMetersPerSecond);
         SmartDashboard.putNumber("Swerve wanted speed:" + absoluteEncoderID, state.speedMetersPerSecond);
         SmartDashboard.putNumber("Swerve current:" + absoluteEncoderID, driveMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Swerve velocity:" + absoluteEncoderID, driveMotor.getVelocity().getValueAsDouble());
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        // driveMotor.set(0);
         // driveMotor.set(drivePIDController.calculate(getState().speedMetersPerSecond, state.speedMetersPerSecond));
         // TODO: CHANGE THIS TO PID
 
@@ -133,8 +136,9 @@ public class SwerveModule {
         // SmartDashboard.putNumber("GOAL: " + absoluteEncoderID, Math.toDegrees(state.angle.getRadians()));
         // SmartDashboard.putNumber("Set motor percent: " + absoluteEncoderID, turnPidController.calculate(getAbsoluteEncoderRad(), state.angle.getRadians()));
         
-        turnMotor.set(turnPIDController.calculate(getTurningPosition(), state.angle.getRadians() + Math.PI));
-        // turnMotor.set(turnPidController.calculate(getTurningPosition(), state.angle.getDegrees()));
+        double wantedAngleDegrees = (state.angle.getDegrees() + 360) % 360;
+        double error = getTurningPosition() - Math.toRadians(wantedAngleDegrees);
+        turnMotor.set(turnPIDController.calculate(0, error));
     }
 
     public void stop() {

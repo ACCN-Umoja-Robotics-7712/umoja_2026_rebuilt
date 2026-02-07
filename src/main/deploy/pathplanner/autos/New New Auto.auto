@@ -1,0 +1,56 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "alayah 1"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "alayah 2"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "alayah 3"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "alayah 4"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "alayah5"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
