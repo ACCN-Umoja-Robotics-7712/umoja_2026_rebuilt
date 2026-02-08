@@ -43,8 +43,7 @@ public final class Constants {
         public static final double kTurningMotorGearRatio = 1 / 21.42857142857143;//(12*14)/(72*50) based on #of teeth
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters; // Math.PI * kWheelDiameterMeters = Circumference
         public static final double kTurnEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-        public static final double 
-        kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
+        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
         public static final double kTurnEncoderRPM2RadPerSec = kTurnEncoderRot2Rad / 60;
         public static final double kPTurning = 0.2;
         public static final double kPDriving = 0.25;
@@ -52,9 +51,9 @@ public final class Constants {
     }
 
     public static final class DriveConstants {
-        public static final double kTrackWidth = Units.inchesToMeters(29-2.5); // 29 inches
+        public static final double kTrackWidth = Units.inchesToMeters(28-2.5); // 28 width (motor center 2.5 inches from edge)
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(27.375-2.5); // 27 + 3 med notch
+        public static final double kWheelBase = Units.inchesToMeters(26-2.5); // 26 length
         // Distance between front and back wheels
 
         public static final double kRobotRadius = Math.sqrt(Math.pow(kTrackWidth, 2) + Math.pow(kWheelBase, 2)) / 2;
@@ -139,6 +138,31 @@ public final class Constants {
 
         public static final double kPDrift = 0.045;
         public static final double kIDrift = 0.0065; //Changed before test
+        
+        public static final double kPAlignTrench = 0.06;
+        public static final double kIAlignTrench = 0.0;
+    }
+
+    public static final class TurretConstants {
+        public static final int flywheelMotorLeaderID = 0;
+        public static final int flywheelMotorFollowerID = 1;
+        public static final boolean flywheelMotorReversed = false;
+        public static final double kSfly = 0;
+        public static final double kPfly = 0;
+        public static final double kIfly = 0; 
+
+        public static final int hoodMotorID = 10;
+        public static final boolean hoodMotorReversed = true;
+        public static final int hoodAbsoluteEncoderID = 11;
+        public static final double kPhood = 0;
+        // public static final double kIhood = 0; 
+
+        public static final int turretMotorID = 20;
+        public static final boolean turretMotorReversed = false;
+        public static final int turretLimitSwitchID = 21;
+        public static final double kPturret = 0;
+        // public static final double kIhood = 0; 
+
     }
 
     public static final class ElevatorConstants {

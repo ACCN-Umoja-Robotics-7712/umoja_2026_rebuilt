@@ -166,14 +166,11 @@ public class Robot extends TimedRobot {
     //     RobotContainer.deepClimbSubsystem
     //   )
     // );
-    
-    boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-    int flip = isBlue ? -1 : 1;
     RobotContainer.swerveSubsystem.setDefaultCommand(
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,
-            () -> flip*RobotContainer.driverController.getLeftY(),
-            () -> flip*RobotContainer.driverController.getLeftX(),
+            () -> RobotContainer.driverController.getLeftY(),
+            () -> RobotContainer.driverController.getLeftX(),
             () -> RobotContainer.driverController.getRightX()
         )
     );

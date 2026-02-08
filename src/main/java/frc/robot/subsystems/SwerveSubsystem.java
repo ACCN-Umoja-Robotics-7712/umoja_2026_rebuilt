@@ -215,8 +215,8 @@ public class SwerveSubsystem extends SubsystemBase {
     public double getHeading(){
         double yaw = -gyro.getYaw();
 
-        // if blue flip
-        if (!DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red)) {
+        // if red flip
+        if (!DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue)) {
             yaw += 180;
         }
 
@@ -252,18 +252,8 @@ public class SwerveSubsystem extends SubsystemBase {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
     }
 
-    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
-    StructPublisher<Pose2d> nearestPosePublisher = NetworkTableInstance.getDefault().getStructTopic("NearestPose", Pose2d.struct).publish();
-    StructPublisher<Pose2d> nearestLeftPosePublisher = NetworkTableInstance.getDefault().getStructTopic("NearestLeftPose", Pose2d.struct).publish();
-    StructPublisher<Pose2d> nearestRightPosePublisher = NetworkTableInstance.getDefault().getStructTopic("NearestRightPose", Pose2d.struct).publish();
-    StructPublisher<Pose2d> nearestReefPublisher = NetworkTableInstance.getDefault().getStructTopic("Nearest Reef", Pose2d.struct).publish();
-    StructPublisher<Pose2d> nearestStationPublisher = NetworkTableInstance.getDefault().getStructTopic("Nearest Station", Pose2d.struct).publish();
-
-
     StructArrayPublisher<SwerveModuleState> swerveStatePublisher = NetworkTableInstance.getDefault()
 .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
-    StructArrayPublisher<Pose2d> allPointsPublisher = NetworkTableInstance.getDefault()
-.getStructArrayTopic("AllPosesArray", Pose2d.struct).publish();
 
     @Override
     public void periodic() {
@@ -295,57 +285,55 @@ public class SwerveSubsystem extends SubsystemBase {
         String tagLeftLimelightName = Constants.LimelightConstants.tagName;
         String driverLimelightName = Constants.LimelightConstants.driverName;
         String tagRightLimelightName = Constants.LimelightConstants.gamePieceName;
-        boolean hasTargetsLeft = LimelightHelpers.getTargetCount(tagLeftLimelightName) != 0;
-        boolean hasTargetsRight = LimelightHelpers.getTargetCount(tagRightLimelightName) != 0;
         boolean isDisabled = RobotContainer.gameState == GameConstants.Robot;
         boolean isNonGameTeleop = RobotContainer.gameState == GameConstants.TeleOp && DriverStation.getMatchType() == MatchType.None;
         
         boolean isAuto = RobotContainer.gameState == GameConstants.Auto;
        
-        LimelightHelpers.SetRobotOrientation(tagLeftLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetRobotOrientation(tagRightLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(tagLeftLimelightName);
-        LimelightHelpers.PoseEstimate rightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(tagRightLimelightName);
+        // LimelightHelpers.SetRobotOrientation(tagLeftLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        // LimelightHelpers.SetRobotOrientation(tagRightLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        // LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(tagLeftLimelightName);
+        // LimelightHelpers.PoseEstimate rightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(tagRightLimelightName);
 
-        boolean doRejectLeftUpdate = false;
-        boolean doRejectRightUpdate = false;
+        // boolean doRejectLeftUpdate = false;
+        // boolean doRejectRightUpdate = false;
 
-        if (Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-        {
-            doRejectLeftUpdate = true;
-            doRejectRightUpdate = true;
-        }
-        double visionTrustValue = 0.1;
-        if (RobotContainer.gameState == GameConstants.Robot) {
-            visionTrustValue = 0;
-        }
-        if (leftMT2 != null) {
-            if (leftMT2.tagCount == 0)
-            {
-                doRejectLeftUpdate = true;
-            }
-            if (!doRejectLeftUpdate)
-            {
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
-                poseEstimator.addVisionMeasurement(
-                    leftMT2.pose,
-                    leftMT2.timestampSeconds);
-                doRejectRightUpdate = true;
-            }
-        }
-        if (rightMT2 != null) {
-            if (rightMT2.tagCount == 0)
-            {
-                doRejectRightUpdate = true;
-            }
-            if (!doRejectRightUpdate)
-            {
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue+1,visionTrustValue+1,9999999));
-                poseEstimator.addVisionMeasurement(
-                    rightMT2.pose,
-                    rightMT2.timestampSeconds);
-            }
-        }
+        // if (Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        // {
+        //     doRejectLeftUpdate = true;
+        //     doRejectRightUpdate = true;
+        // }
+        // double visionTrustValue = 0.1;
+        // if (RobotContainer.gameState == GameConstants.Robot) {
+        //     visionTrustValue = 0;
+        // }
+        // if (leftMT2 != null) {
+        //     if (leftMT2.tagCount == 0)
+        //     {
+        //         doRejectLeftUpdate = true;
+        //     }
+        //     if (!doRejectLeftUpdate)
+        //     {
+        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
+        //         poseEstimator.addVisionMeasurement(
+        //             leftMT2.pose,
+        //             leftMT2.timestampSeconds);
+        //         doRejectRightUpdate = true;
+        //     }
+        // }
+        // if (rightMT2 != null) {
+        //     if (rightMT2.tagCount == 0)
+        //     {
+        //         doRejectRightUpdate = true;
+        //     }
+        //     if (!doRejectRightUpdate)
+        //     {
+        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue+1,visionTrustValue+1,9999999));
+        //         poseEstimator.addVisionMeasurement(
+        //             rightMT2.pose,
+        //             rightMT2.timestampSeconds);
+        //     }
+        // }
     }
 
     public void stopModules() {
