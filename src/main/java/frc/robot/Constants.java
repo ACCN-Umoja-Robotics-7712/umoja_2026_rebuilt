@@ -124,7 +124,7 @@ public final class Constants {
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
         public static final double kSlowButtonDriveModifier = 0.15;
-        public static final double kSlowButtonTurnModifier = 0.10;
+        public static final double kSlowButtonTurnModifier = 0.30;
         public static final double teleSpeed = 0.45;
         public static final double teleTurnSpeed = 0.3;
 

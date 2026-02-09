@@ -146,18 +146,18 @@ public class SwerveJoystick extends Command {
           }
 
           // 4. Construct desired chassis speeds
+            boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+            int flip = isBlue ? 1 : -1;
           ChassisSpeeds chassisSpeeds;
           if (!isRobotOrientatedDrive) {
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(flip*xSpeed, flip*ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
           } else {
-            boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-            int flip = isBlue ? -1 : 1;
             chassisSpeeds = new ChassisSpeeds(flip*xSpeed, flip*ySpeed, turningSpeed);
           }
 
           // 5. Convert chassis speeds to individual module states
           SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-          swerveSubsystem.setModuleStates(moduleStates); // TODO: add simple auto time thing
+          swerveSubsystem.setModuleStates(moduleStates);
 
           if(j.getRawButtonPressed(XBoxConstants.PAGE)){
             swerveSubsystem.zeroHeading();

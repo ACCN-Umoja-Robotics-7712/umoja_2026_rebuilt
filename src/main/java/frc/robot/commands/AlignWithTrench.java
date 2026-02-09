@@ -5,6 +5,12 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -20,6 +26,9 @@ public class AlignWithTrench extends Command{
   private final Supplier<Double> xSpdFunction, ySpdFunction;
   private final SlewRateLimiter xLimiter, yLimiter;
   private final double wantedAngle;
+
+    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("x speed").publish();
+    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("y speed").publish();
   
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
@@ -55,10 +64,9 @@ public class AlignWithTrench extends Command{
             xSpeed = 0.0;
             ySpeed = 0.0;
           }
-      
-          boolean isRobotOrientatedDrive = RobotContainer.driverController.getRawAxis(XBoxConstants.RT) >= 0.5;
+
           // 3. Make the driving smoother
-          if (!(RobotContainer.driverController.rightBumper().getAsBoolean()) || isRobotOrientatedDrive){
+          if (!(RobotContainer.driverController.rightBumper().getAsBoolean())){
             xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
             ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
           } else if (RobotContainer.driverController.leftBumper().getAsBoolean()){
@@ -71,9 +79,18 @@ public class AlignWithTrench extends Command{
 
         // if (canSeeTarget){
         //     double target_x = LimelightHelpers.getTX(Constants.LimelightConstants.tagName);
-        //     swerveSubsystem.alignWithTag(target_x, ySpeed, 0.0);
+        //     swerveSubsystem.alignWithTag(target_x, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
         // } else {
-            swerveSubsystem.alignWithTag(xSpeed, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
+          ChassisSpeeds chassisSpeeds;
+          boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+          int flipAlliance = isBlue ? 1 : -1;
+          int flipDirection = wantedAngle == 0 ? 1 : -1;
+          
+          // xSpeedPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
+
+          chassisSpeeds = new ChassisSpeeds(flipAlliance*flipDirection*xSpeed, flipAlliance*flipDirection*ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
+          SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+          swerveSubsystem.setModuleStates(moduleStates);
         // }
     }
 
