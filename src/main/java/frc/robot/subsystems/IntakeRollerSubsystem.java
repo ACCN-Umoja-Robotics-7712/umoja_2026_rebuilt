@@ -7,17 +7,31 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeArmStates;
+import frc.robot.Constants.IntakeRollerStates;
 
 public class IntakeRollerSubsystem extends SubsystemBase {
     private final TalonFX intakeRollerMotor;
-
     private final PIDController intakeRollerPidController;
+
+    private double state = IntakeRollerStates.NONE;
+    
 
     public IntakeRollerSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
         intakeRollerMotor = new TalonFX(0, CANivore);
 
         intakeRollerPidController = new PIDController(0.01, 0, 0);
+    }
+
+   public void setState(double armState) {
+        if (this.state != state) {
+            intakeRollerPidController.reset();
+            this.state = armState;
+        }
+    }
+    public boolean didReachState() {
+        return intakeRollerPidController.atSetpoint();
     }
 
     public void runIntake(double speed) {
@@ -30,5 +44,10 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     
     @Override
     public void periodic() {
+        if (state == IntakeRollerStates.NONE) {
+            runIntake(0);
+        } else {
+            setIntakeSpeed(state);
+        }
     }
 }
