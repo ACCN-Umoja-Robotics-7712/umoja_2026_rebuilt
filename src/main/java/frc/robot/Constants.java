@@ -169,29 +169,6 @@ public final class Constants {
         public static final double kI = 0;
     }
 
-    public static final class CoralConstants {
-
-        public static final int coralIntakeMotorID = 1;
-        public static final int coralArmMotorID = 2;
-
-        public static final double coralArmBottomLimit = 5.0;
-        public static final double coralArmTopLimit = 140; // TODO: Change this
-        public static final double coralArmElevatorLimit = 81;
-
-        public static final double kP = 0.1;
-        
-        public static final double armPickupPosition = 57;
-
-        public static final double shootPositionL1 = 0; // TODO: Change these
-        public static final double shootPositionL23 = 0;
-        public static final double shootPositionL4 = 0;
-
-        public static final double hasCoralProximity = 130;
-
-        public static final double coralCurrentDiff = 0.05;
-
-    }
-
     public static final class IntakeArmConstants { // Update Id's and limits
         public static final double leftMotorID = 0;
         public static final double rightMotorID = 1;
@@ -203,16 +180,7 @@ public final class Constants {
         public static final double NONE = -1;
         public static final double START = 0;
         public static final double RAMP = 0;
-        public static final double PICKUP = 0;
-    }
-
-    public static final class CoralIntakeStates {
-        
-        public static final double NONE = -1;
-        public static final double INTAKE = 1;
-        public static final double READY = 2;
-        public static final double SHOOTING = 3;
-
+        public static final double PICKUP = 1;
     }
 
     public static final class ElevatorConstants { // Remove if not used
