@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
     // Pose2d redRobotRight = RobotContainer.swerveSubsystem.offsetPoint(Constants.RobotPositions.redReefBackLeft11, Constants.Measurements.branchOffset);
 
   Pathfinding.setPathfinder(new LocalADStar());
-  FollowPathCommand.warmupCommand().schedule();
+  CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
     // autoChooser.addCmd("simple auto", RobotContainer.auto::simpleAuto);
     // // autoChooser.addRoutine("auto2", RobotContainer.auto::auto2);
     // autoChooser.addRoutine("NONE", RobotContainer.auto::noneAuto);
@@ -123,7 +123,7 @@ public class Robot extends TimedRobot {
 
     // // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule(); // Today
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 
@@ -166,14 +166,11 @@ public class Robot extends TimedRobot {
     //     RobotContainer.deepClimbSubsystem
     //   )
     // );
-    
-    boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-    int flip = isBlue ? -1 : 1;
     RobotContainer.swerveSubsystem.setDefaultCommand(
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,
-            () -> flip*RobotContainer.driverController.getLeftY(),
-            () -> flip*RobotContainer.driverController.getLeftX(),
+            () -> RobotContainer.driverController.getLeftY(),
+            () -> RobotContainer.driverController.getLeftX(),
             () -> RobotContainer.driverController.getRightX()
         )
     );

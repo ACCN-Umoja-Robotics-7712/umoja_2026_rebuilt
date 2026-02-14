@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -7,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -17,15 +19,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 
 public class SwerveModule {
-    public final SparkMax driveMotor, turnMotor;
+    public final TalonFX driveMotor;
+    public final TalonFX turnMotor;
     // private final RelativeEncoder driveEncoder, turnEncoder;
     private final PIDController turnPIDController;
+    private final PIDController drivePIDController;
     // public final CANcoder absoluteEncoder;
     public double absoluteEncoderDegreeOffset;
     public final CANcoder absoluteEncoder;
@@ -37,34 +42,39 @@ public class SwerveModule {
         CANconfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
         CANconfig.MagnetSensor.SensorDirection = isAbsoluteEncoderReversed ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
         // config.MagnetSensor.AbsoluteSensorRangeValue = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-        absoluteEncoder = new CANcoder(absoluteEncoderId, "rio");
+        
+        CANBus CANivoreBus = new CANBus("CANivore");
+        // CANBus rioCanBus = new CANBus("rio");
+
+        absoluteEncoder = new CANcoder(absoluteEncoderId, CANivoreBus);
         this.absoluteEncoderID = absoluteEncoderId;
         this.absoluteEncoderDegreeOffset = absoluteEncoderOffset;
 
-        driveMotor = new SparkMax(driveMotorId, MotorType.kBrushless);
-        turnMotor = new SparkMax(turnMotorId, MotorType.kBrushless);
+        driveMotor = new TalonFX(driveMotorId, CANivoreBus);
+        turnMotor = new TalonFX(turnMotorId, CANivoreBus);
+        // turnMotor = new SparkMax(turnMotorId, MotorType.kBrushless);
 
-        SparkMaxConfig driveConfig = new SparkMaxConfig();
-        driveConfig.idleMode(IdleMode.kCoast);
-        driveConfig.inverted(driveMotorReversed);
-        driveConfig.smartCurrentLimit(30);
+        // SparkMaxConfig driveConfig = new SparkMaxConfig();
+        // driveConfig.idleMode(IdleMode.kCoast);
+        // driveConfig.inverted(driveMotorReversed);
+        // driveConfig.smartCurrentLimit(30);
         
-        SparkMaxConfig turnConfig = new SparkMaxConfig();
-        turnConfig.idleMode(IdleMode.kCoast);
-        turnConfig.inverted(turnMotorReversed);
-        turnConfig.smartCurrentLimit(20);
+        // SparkMaxConfig turnConfig = new SparkMaxConfig();
+        // turnConfig.idleMode(IdleMode.kCoast);
+        // turnConfig.inverted(turnMotorReversed);
+        // turnConfig.smartCurrentLimit(20);
 
-        driveMotor.configure(turnConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
-        turnMotor.configure(turnConfig, SparkMax.ResetMode.kResetSafeParameters, SparkMax.PersistMode.kPersistParameters);        
+        // turnMotor.configure(turnConfig, SparkMax.ResetMode.kNoResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
 
         turnPIDController = new PIDController(ModuleConstants.kPTurning, 0, 0);
-        turnPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        turnPIDController.enableContinuousInput(0, 2*Math.PI);
+        drivePIDController = new PIDController(ModuleConstants.kPDriving, 0, 0);
         
         resetEncoders();
     }
 
     public double getDrivePosition() {
-        return driveMotor.getEncoder().getPosition()*ModuleConstants.kDriveEncoderRot2Meter;
+        return driveMotor.getPosition().getValueAsDouble()*ModuleConstants.kDriveEncoderRot2Meter;
     }
 
     public double getTurningPosition() {
@@ -72,11 +82,11 @@ public class SwerveModule {
     }
 
     public double getDriveVelocity() {
-        return driveMotor.getEncoder().getVelocity()*ModuleConstants.kDriveEncoderRot2Meter;
+        return driveMotor.getVelocity().getValueAsDouble()*ModuleConstants.kDriveEncoderRot2Meter;
     }
 
     public double getTurningVelocity() {
-        return turnMotor.getEncoder().getVelocity()*ModuleConstants.kTurnEncoderRot2Rad;
+        return turnMotor.getVelocity().getValueAsDouble()*ModuleConstants.kTurnEncoderRot2Rad;
     }
 
     public double getAbsoluteEncoderDegree() {
@@ -85,17 +95,17 @@ public class SwerveModule {
         // reverse direction so counter clockwise positive
         // double correctDirectionEncoder = correctZeroEncoder * -1;
         // add and mod to switch from negative to positive
-        return ((correctZeroEncoder + 360) % 360);   
+        return ((correctZeroEncoder % 360 + 360) % 360);   
     }
 
     public void resetEncoders() {
-        driveMotor.getEncoder().setPosition(0);
+        driveMotor.setPosition(0);
         resetTurn();
     }
 
     public void resetTurn(){
         double position = getAbsoluteEncoderDegree();
-        turnMotor.getEncoder().setPosition(position);
+        turnMotor.setPosition(position);
     }
 
     public SwerveModuleState getState() {
@@ -108,15 +118,17 @@ public class SwerveModule {
             return;
         }
         state.optimize(getState().angle);
-        SmartDashboard.putNumber("Swerve current speed" + absoluteEncoderID, getState().speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve wanted speed" + absoluteEncoderID, state.speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve current" + absoluteEncoderID, driveMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Swerve velocity" + absoluteEncoderID, driveMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Swerve wanted angle:" + absoluteEncoderID, state.angle.getDegrees());
+        SmartDashboard.putNumber("Swerve current speed:" + absoluteEncoderID, getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("Swerve wanted speed:" + absoluteEncoderID, state.speedMetersPerSecond);
+        SmartDashboard.putNumber("Swerve current:" + absoluteEncoderID, driveMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Swerve velocity:" + absoluteEncoderID, driveMotor.getVelocity().getValueAsDouble());
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        // driveMotor.set(drivePIDcontroller.calculate())
+        // driveMotor.set(0);
+        // driveMotor.set(drivePIDController.calculate(getState().speedMetersPerSecond, state.speedMetersPerSecond));
         // TODO: CHANGE THIS TO PID
 
-        //fill canbus
+        //Fill canbus
         // SmartDashboard.putNumber("ID (DRIVE) "+absoluteEncoderID + " TEMP: ", driveMotor.getMotorTemperature());
         // SmartDashboard.putNumber("ID (TURN) "+absoluteEncoderID + " TEMP: ", turnMotor.getMotorTemperature());
 
@@ -124,8 +136,9 @@ public class SwerveModule {
         // SmartDashboard.putNumber("GOAL: " + absoluteEncoderID, Math.toDegrees(state.angle.getRadians()));
         // SmartDashboard.putNumber("Set motor percent: " + absoluteEncoderID, turnPidController.calculate(getAbsoluteEncoderRad(), state.angle.getRadians()));
         
-        turnMotor.set(turnPIDController.calculate(getTurningPosition(), state.angle.getRadians()));
-        //turnMotor.set(turnPidController.calculate(getTurningPosition(), state.angle.getDegrees()));
+        double wantedAngleDegrees = (state.angle.getDegrees() + 360) % 360;
+        double error = getTurningPosition() - Math.toRadians(wantedAngleDegrees);
+        turnMotor.set(turnPIDController.calculate(0, error));
     }
 
     public void stop() {

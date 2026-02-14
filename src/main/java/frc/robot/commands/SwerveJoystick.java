@@ -88,13 +88,8 @@ public class SwerveJoystick extends Command {
           j.setRumble(RumbleType.kBothRumble, 0);
       }
 
-      Boolean aButtonPressed = j.getRawButton(XBoxConstants.A);
-      Boolean bButtonPressed = j.getRawButton(XBoxConstants.B);
-      Boolean xButtonPressed = j.getRawButton(XBoxConstants.X);
-      Boolean yButtonPressed = j.getRawButton(XBoxConstants.Y);
         RobotContainer.currentTrajectory = null;
         RobotContainer.goalPose = null;
-      
       
           // 1. Get joystic inputs
           double xSpeed = xSpdFunction.get();
@@ -130,12 +125,11 @@ public class SwerveJoystick extends Command {
           }
       
           // set current angle
-          if (RobotContainer.wantedAngle == -1 || RobotContainer.shouldAutoFixDrift == 2 || yButtonPressed) {
+          if (RobotContainer.wantedAngle == -1) {
             // auto fix drift
             if (RobotContainer.shouldAutoFixDrift == 1) {
               RobotContainer.wantedAngle = swerveSubsystem.getHeading();
               // RobotContainer.wantedAngle = 0; 
-
               // align
             } else {
               RobotContainer.wantedAngle = -1;
@@ -143,82 +137,48 @@ public class SwerveJoystick extends Command {
           }
 
           boolean drift = RobotContainer.shouldAutoFixDrift == 1 && turningSpeed == 0;
-          boolean align = RobotContainer.shouldAutoFixDrift == 2 && turningSpeed == 0;
-          if (drift || align) {
-            // Fixes negative angles from Pose2d
-            SmartDashboard.putNumber("JoystickTurn", turningSpeed);
-            if (RobotContainer.wantedAngle < 0) {
-              RobotContainer.wantedAngle += 360;
-            }
-            // fix drift
-            // if drifting
-            if (RobotContainer.wantedAngle != swerveSubsystem.getHeading()) {
-              // > 180 we want to go towards 0 but from negative to account for closest angle
-              double currentAngle = swerveSubsystem.getHeading();
-              double diff = Math.abs(currentAngle - RobotContainer.wantedAngle);
-              if (diff > 180) {
-                diff = 360 - diff;
-                // since diff is > 180, it passes the 360-0 range
-                // if we have 359 and want 1, we go positive, so no change
-                // if we have 1 and want 359, we go negative, so multiple -1
-                if (RobotContainer.wantedAngle > 180) {
-                  diff = diff * -1;
-                }
-              } else {
-                // if going from 5 to 10, do nothing
-                // if going from 10 to 5, we go negative so multiple -1
-                if (currentAngle > RobotContainer.wantedAngle) {
-                  diff = diff * -1;
-                }
-              }
-
-              turningSpeed = driftController.calculate(-diff, 0);
-              
-              // only fix drift when moving
-              // if (joystickX == 0 && joystickY == 0) {
-              //   turningSpeed = 0;
-              // }
-            }
+          if (drift) {
+            double diff = RobotContainer.diffFromWantedAngle(RobotContainer.wantedAngle);
+            turningSpeed = driftController.calculate(diff, 0);
           } else {
             // set new angle
             RobotContainer.wantedAngle = -1;
           }
 
           // 4. Construct desired chassis speeds
+            boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+            int flip = isBlue ? 1 : -1;
           ChassisSpeeds chassisSpeeds;
           if (!isRobotOrientatedDrive) {
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(flip*xSpeed, flip*ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
           } else {
-            boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-            int flip = isBlue ? -1 : 1;
             chassisSpeeds = new ChassisSpeeds(flip*xSpeed, flip*ySpeed, turningSpeed);
           }
 
           // 5. Convert chassis speeds to individual module states
           SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-          swerveSubsystem.setModuleStates(moduleStates); // TODO: add simple auto time thing
+          swerveSubsystem.setModuleStates(moduleStates);
 
           if(j.getRawButtonPressed(XBoxConstants.PAGE)){
             swerveSubsystem.zeroHeading();
           }
           if(j.getRawButtonPressed(XBoxConstants.MENU)){
             RobotContainer.shouldAutoFixDrift += 1;
-            if (RobotContainer.shouldAutoFixDrift > 2) {
+            if (RobotContainer.shouldAutoFixDrift > 1) {
               RobotContainer.shouldAutoFixDrift = 0;
             }
             System.out.println("AUTO FIX DRIFT TURNED " + Integer.toString(RobotContainer.shouldAutoFixDrift));
           }
-          SmartDashboard.putBoolean("Auto Fix Align", RobotContainer.shouldAutoFixDrift == 2);
           SmartDashboard.putBoolean("Auto Fix Drift", RobotContainer.shouldAutoFixDrift == 1);
         }
 
-  // Called once the command ends or is interrupted.
+  // Called once the command ends or is interrupted
   @Override
   public void end(boolean interrupted) {
     swerveSubsystem.stopModules();
   }
 
-  // Returns true when the command should end.
+  // Returns true when the command should end
   @Override
   public boolean isFinished() {
     return false;

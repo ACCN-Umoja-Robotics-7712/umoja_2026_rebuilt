@@ -10,72 +10,55 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig.Presets;
+import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.TurretConstants;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
-    private final TalonFX hoodMotor;
-    private final DigitalInput hoodZeroLimitSwitch;
+    private final SparkMax hoodMotor;
 
     private final PIDController hoodPidController;
-
-    private final VoltageOut voltageReg;
-
-    private final SysIdRoutine sysIdRoutine;
+    
+    DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder").publish();
 
     public ShooterHoodSubsystem() {
-        CANBus CANivore = new CANBus("CANivore");
-        hoodMotor = new TalonFX(2, CANivore);
-        hoodZeroLimitSwitch = new DigitalInput(1);
-
-        hoodPidController = new PIDController(0.01, 0, 0);
+        hoodMotor = new SparkMax(TurretConstants.hoodMotorID, MotorType.kBrushless);
         
-        voltageReg = new VoltageOut(0.0);
-        sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,        // Use default ramp rate (1 V/s)
-                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                null,        // Use default timeout (10 s)
-                            // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (volts) -> hoodMotor.setControl(voltageReg.withOutput(volts.in(Volts))),
-                null,
-                this
-            )
-        );
+        SparkBaseConfig config = Presets.REV_NEO_550;
+        config.inverted(TurretConstants.hoodMotorReversed);
+        hoodMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }
 
     public void runHood(double speed) {
-        // if limit switch is pressed, and going same direction as limit switch, STOP
-        if (hoodZeroLimitSwitch.get() && speed < 0) {
-            speed = 0;
-        }
-
         hoodMotor.set(speed);
     }
     
     public void setHoodAngle(double wantedHoodRotation) {
-        hoodMotor.set(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodRotation));
-    }
-
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction);
-    }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction);
+        hoodMotor.set(hoodPidController.calculate(hoodMotor.getAbsoluteEncoder().getPosition(), wantedHoodRotation));
     }
     
     @Override
     public void periodic() {
-        if (hoodZeroLimitSwitch.get()) {
-            hoodMotor.setPosition(0);
-        }
+        absoluteEncodPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
     }
 }

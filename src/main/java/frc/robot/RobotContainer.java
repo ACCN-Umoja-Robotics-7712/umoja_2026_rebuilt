@@ -6,13 +6,10 @@ package frc.robot;
 
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.CoralArmStates;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ElevatorStates;
 import frc.robot.Constants.GameConstants;
-import frc.robot.Constants.RobotPositions;
 import frc.robot.Constants.USB;
-import frc.robot.commands.AlignWithTagCommand;
+import frc.robot.commands.AlignWithTrench;
 
 import java.util.List;
 
@@ -57,7 +54,7 @@ public class RobotContainer {
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
 
   public static double wantedAngle = -1;
-  public static int shouldAutoFixDrift = 0; // 1 = auto drift, 2 = auto align, 0 = none
+  public static int shouldAutoFixDrift = 0; // 1 = auto drift, 0 = none
   public static int gameState = GameConstants.Robot;
   public static Trajectory currentTrajectory = null;
   public static Pose2d goalPose = null;
@@ -85,14 +82,53 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
-    boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-    int flip = isBlue ? -1 : 1;
-    RobotContainer.driverController.a().whileTrue(
-      new AlignWithTagCommand(
+    // Button Commands
+    RobotContainer.driverController.y().whileTrue(
+      new AlignWithTrench(
         RobotContainer.swerveSubsystem,
-        () -> flip*RobotContainer.driverController.getLeftX(),
-        () -> flip*RobotContainer.driverController.getLeftY()
+        () -> RobotContainer.driverController.getLeftY(),
+        () -> RobotContainer.driverController.getLeftX(),
+        0
       )
     );
+    RobotContainer.driverController.a().whileTrue(
+      new AlignWithTrench(
+        RobotContainer.swerveSubsystem,
+        () -> RobotContainer.driverController.getLeftY(),
+        () -> RobotContainer.driverController.getLeftX(),
+        180
+      )
+    );
+  }
+
+  public static double diffFromWantedAngle(double wantedAngle) {
+    if (wantedAngle < 0) {
+      wantedAngle += 360;
+    }
+    // fix drift
+    // if drifting
+    if (wantedAngle != swerveSubsystem.getHeading()) {
+      // > 180 we want to go towards 0 but from negative to account for closest angle
+      double currentAngle = swerveSubsystem.getHeading();
+      double diff = Math.abs(currentAngle - wantedAngle);
+      if (diff > 180) {
+        diff = 360 - diff;
+        // since diff is > 180, it passes the 360-0 range
+        // if we have 359 and want 1, we go positive, so no change
+        // if we have 1 and want 359, we go negative, so multiple -1
+        if (wantedAngle > 180) {
+          diff = diff * -1;
+        }
+      } else {
+        // if going from 5 to 10, do nothing
+        // if going from 10 to 5, we go negative so multiple -1
+        if (currentAngle > wantedAngle) {
+          diff = diff * -1;
+        }
+      }
+      return diff;
+    } else {
+      return 0;
+    }
   }
 }
