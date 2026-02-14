@@ -3,8 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterFlywheelSubsystem;
 
-public class ShootCommand extends Command{
-    ShooterFlywheelSubsystem flywheel;
+public class ShootCommand extends Command {
+    private ShooterFlywheelSubsystem flywheel;
 
     public ShootCommand(ShooterFlywheelSubsystem flywheel) {
         this.flywheel = flywheel;
@@ -17,7 +17,7 @@ public class ShootCommand extends Command{
     }
 
     @Override
-    public void execute () {
+    public void execute() {
         flywheel.runShooter(0.5);
     }
 
@@ -25,7 +25,7 @@ public class ShootCommand extends Command{
 
     @Override
     public void end(boolean isInterrupted) {
-        System.out.println("Align with tag end is interrupted" + isInterrupted);
+        System.out.println("Shoot Command ended, interrupted: " + isInterrupted);
         flywheel.runShooter(0);
     }
 }
