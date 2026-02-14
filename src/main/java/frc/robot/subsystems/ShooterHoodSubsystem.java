@@ -23,10 +23,6 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     private final PIDController hoodPidController;
 
-    private final VoltageOut voltageReg;
-
-    private final SysIdRoutine sysIdRoutine;
-
     public ShooterHoodSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
         hoodMotor = new TalonFX(2, CANivore);
@@ -34,21 +30,6 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
         hoodPidController = new PIDController(0.01, 0, 0);
         
-        voltageReg = new VoltageOut(0.0);
-        sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,        // Use default ramp rate (1 V/s)
-                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                null,        // Use default timeout (10 s)
-                            // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (volts) -> hoodMotor.setControl(voltageReg.withOutput(volts.in(Volts))),
-                null,
-                this
-            )
-        );
     }
 
     public void runHood(double speed) {
@@ -64,14 +45,6 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         hoodMotor.set(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodRotation));
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction);
-    }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction);
-    }
-    
     @Override
     public void periodic() {
         if (hoodZeroLimitSwitch.get()) {

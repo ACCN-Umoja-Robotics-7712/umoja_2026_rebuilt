@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,15 +13,11 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 
     private final PIDController intakeRollerPidController;
 
-    private final VoltageOut voltageReg;
-
     public IntakeRollerSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
         intakeRollerMotor = new TalonFX(0, CANivore);
 
         intakeRollerPidController = new PIDController(0.01, 0, 0);
-        
-        voltageReg = new VoltageOut(0.0);
     }
 
     public void runIntake(double speed) {

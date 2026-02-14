@@ -25,7 +25,7 @@ public class MoveIntakeArm extends Command{
 
     @Override
     public void end(boolean isInterrupted){
-        System.out.println("ARM END");
+        System.out.println("ARM END INTERRUPTED: " + isInterrupted);
     }
 
     @Override

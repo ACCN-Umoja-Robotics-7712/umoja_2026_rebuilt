@@ -4,50 +4,29 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ShooterStates;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {
+
     private final TalonFX flywheelMotor;
 
     private final PIDController flywheelPidController;
 
-    private final VoltageOut voltageReg;
-
-    private final SysIdRoutine sysIdRoutine;
+    private double state = ShooterStates.NONE;
 
     public ShooterFlywheelSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
         flywheelMotor = new TalonFX(0, CANivore);
 
         flywheelPidController = new PIDController(0.01, 0, 0);
-        
-        voltageReg = new VoltageOut(0.0);
-        sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,        // Use default ramp rate (1 V/s)
-                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                null,        // Use default timeout (10 s)
-                            // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (volts) -> flywheelMotor.setControl(voltageReg.withOutput(volts.in(Volts))),
-                null,
-                this
-            )
-        );
     }
-
     public void runShooter(double speed) {
         flywheelMotor.set(speed);
     }
@@ -56,15 +35,23 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotor.set(flywheelPidController.calculate(flywheelMotor.getVelocity().getValueAsDouble(), wantedSpeed));
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction);
+    public void setState(double ShooterState) {
+        if (this.state != ShooterState) {
+            flywheelPidController.reset();
+            this.state = ShooterState;
+        }
     }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction);
+      public boolean didReachState() {
+        return flywheelPidController.atSetpoint();
     }
     
     @Override
     public void periodic() {
+        if (state == ShooterStates.NONE) {
+            runShooter(0);
+        } else {
+            setShooterSpeed(state);
+        }
     }
 }

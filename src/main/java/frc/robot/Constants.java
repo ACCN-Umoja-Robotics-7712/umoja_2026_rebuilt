@@ -183,6 +183,12 @@ public final class Constants {
         public static final double PICKUP = 1;
     }
 
+    
+    public static final class ShooterStates {
+        public static final double NONE = 0;
+        public static final double SHOOTING = 1;
+    };
+
     public static final class ElevatorConstants { // Remove if not used
         public static final int leftMotorID = 50;
         public static final int rightMotorID = 51;
@@ -206,18 +212,6 @@ public final class Constants {
                 100);
 
     }
-
-    public static final class ElevatorStates { // Change to hood states?
-
-        public static final double NONE = -1;
-        public static final double L1 = 5;
-        public static final double L2 = 12;
-        public static final double ALGAE = 48;
-        public static final double L3 = 67-4;
-        public static final double L4 = 150;
-        public static final double CLIMB = 0;
-        public static final double BARGE = 151;
-    };
 
     public static final class LEDConstants {
         public static final int numLEDsPerStrip = 24;
