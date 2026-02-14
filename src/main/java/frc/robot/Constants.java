@@ -192,17 +192,18 @@ public final class Constants {
 
     }
 
-    public static final class CoralArmStates {
+    public static final class IntakeArmConstants {
+        public static final double leftMotorID = 0;
+        public static final double rightMotorID = 1;
         
+        public static final double armExtendLimit = 152.0; 
+    }
+
+    public static final class IntakeArmStates {
         public static final double NONE = -1;
-        public static final double PICKUP = 54.5;
-        public static final double L1 = 10.5;
-        public static final double L23 = 36;
-        public static final double L4 = 33; // TODO: Fix value
-        public static final double CLIMB = 0; // TODO: Find climb value
-        public static final double ALGAE = 26.5;
-        public static final double Barge_1 = 26; //New Addittion, W.I.P.
-        public static final double Barge_2 = 35; // New Addition, W.I.P.
+        public static final double START = 0;
+        public static final double RAMP = 0;
+        public static final double PICKUP = 0;
     }
 
     public static final class CoralIntakeStates {

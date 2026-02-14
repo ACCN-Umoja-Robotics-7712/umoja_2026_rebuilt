@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.CoralArmStates;
+import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorStates;
 import frc.robot.Constants.GameConstants;
