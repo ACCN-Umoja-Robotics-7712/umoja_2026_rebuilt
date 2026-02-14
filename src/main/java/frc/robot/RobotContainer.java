@@ -15,7 +15,6 @@ import java.util.List;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import choreo.Choreo;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
