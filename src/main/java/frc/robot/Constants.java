@@ -188,6 +188,22 @@ public final class Constants {
         public static final double NONE = 0;
         public static final double SHOOTING = 1;
     };
+ 
+    public static final class hoodStates {
+        public static final double NONE = 0;
+        public static final double FIRST = 1;
+    };
+
+    public static final class TurretStates {
+        public static final double NONE = 0;
+        public static final double TRENCH = 90;
+    };
+
+    public static final class IntakeRollerStates {
+        public static final double NONE = 0;
+        public static final double IN = 1;
+        public static final double OUT = 2;
+    };
 
     public static final class ElevatorConstants { // Remove if not used
         public static final int leftMotorID = 50;

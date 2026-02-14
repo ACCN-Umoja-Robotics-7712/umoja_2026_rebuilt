@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.TurretStates;
 
 public class ShooterTurretSubsystem extends SubsystemBase {
     private final TalonFX turretMotor;
@@ -18,6 +19,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     private final PIDController turretPidController;
 
+    private double state = TurretStates.NONE;
 
     public ShooterTurretSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
@@ -38,6 +40,14 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public void setTurretAngle(double wantedTurretRotation) {
         turretMotor.set(turretPidController.calculate(turretMotor.getPosition().getValueAsDouble(), wantedTurretRotation));
+    }
+
+    public void setState(double TurretStates) {
+        if (this.state != TurretStates) {
+            turretPidController.reset();
+            this.state = TurretStates;
+        }
+
     }
 
     @Override

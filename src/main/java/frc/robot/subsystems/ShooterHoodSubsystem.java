@@ -16,12 +16,17 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ShooterStates;
+import frc.robot.Constants.hoodStates;
+import frc.robot.Constants;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
     private final DigitalInput hoodZeroLimitSwitch;
 
     private final PIDController hoodPidController;
+
+    private double state = hoodStates.NONE;
 
     public ShooterHoodSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
@@ -30,6 +35,13 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
         hoodPidController = new PIDController(0.01, 0, 0);
         
+    }
+
+    public void setState(double hoodStates) {
+        if (this.state != hoodStates) {
+            hoodPidController.reset();
+            this.state = hoodStates;
+        }
     }
 
     public void runHood(double speed) {
