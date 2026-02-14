@@ -128,7 +128,7 @@ public final class Constants {
         public static final double teleTurnSpeed = 0.3;
 
         public static final double kPDrive = 1.5;
-        public static final double kIDrive = 0.01;
+        public static final double kIDrive = 0.01; // Test again after robot gets wired, was 0.06 before test
 
         public static final double kPTurning = 5;
         public static final double kITurning = 0.05;
@@ -182,7 +182,7 @@ public final class Constants {
         
         public static final double armPickupPosition = 57;
 
-        public static final double shootPositionL1 = 0;
+        public static final double shootPositionL1 = 0; // TODO: Change these
         public static final double shootPositionL23 = 0;
         public static final double shootPositionL4 = 0;
 
@@ -192,7 +192,7 @@ public final class Constants {
 
     }
 
-    public static final class IntakeArmConstants {
+    public static final class IntakeArmConstants { // Update Id's and limits
         public static final double leftMotorID = 0;
         public static final double rightMotorID = 1;
         
@@ -215,7 +215,7 @@ public final class Constants {
 
     }
 
-    public static final class ElevatorConstants {
+    public static final class ElevatorConstants { // Remove if not used
         public static final int leftMotorID = 50;
         public static final int rightMotorID = 51;
 
@@ -239,7 +239,7 @@ public final class Constants {
 
     }
 
-    public static final class ElevatorStates {
+    public static final class ElevatorStates { // Change to hood states?
 
         public static final double NONE = -1;
         public static final double L1 = 5;
