@@ -211,6 +211,11 @@ public final class Constants {
         public static final double OUT = 2;
     };
 
+    public static final class IndexerConstants {
+        public static final int indexerMotorID = 61;
+        public static final int kickerMotorID = 62;
+    }
+
     public static final class ElevatorConstants { // Remove if not used
         public static final int leftMotorID = 50;
         public static final int rightMotorID = 51;

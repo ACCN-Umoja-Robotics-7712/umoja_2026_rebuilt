@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.IntakeRollerSubsystem;
+import frc.robot.subsystems.ShooterFlywheelSubsystem;
+import frc.robot.subsystems.ShooterHoodSubsystem;
+import frc.robot.subsystems.ShooterTurretSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -16,8 +20,11 @@ import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTrench;
+import frc.robot.commands.ManualShooterFlywheelCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
+import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
+import frc.robot.commands.ManualCommands.ManualTurretCommand;
 
 import java.util.List;
 
@@ -58,6 +65,14 @@ public class RobotContainer {
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
   public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
+  public final static ShooterFlywheelSubsystem shooterFlywheelSubsystem = new ShooterFlywheelSubsystem();
+  // public final static ShooterHoodSubsystem shooterHoodSubsystem = new ShooterHoodSubsystem();
+  public final static IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
+  public final static ShooterTurretSubsystem ShooterTurretSubsystem = new ShooterTurretSubsystem();
+
+
+
+
   public final static CommandXboxController driverController = new CommandXboxController(USB.DRIVER_CONTROLLER);
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
 
@@ -107,17 +122,49 @@ public class RobotContainer {
         180
       )
     );
-    RobotContainer.driverController.rightStick().whileTrue(
+
+    //Manual Commands (Just for Now)
+    // Intake Roller
+    RobotContainer.operatorController.leftBumper().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> driverController.getRightY()
+        () -> operatorController.getRightY() * 0.6
       )
     );
-    
-    // RobotContainer.driverController.rightStick().whileTrue(
-    //   new ManualIntakeArmCommand(intakeArmSubsystem,
-    //     () -> driverController.getRightY()
+
+    //Flywheel Motor
+    // RobotContainer.operatorController.rightStick().whileTrue(
+    //   new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
+    //     () -> operatorController.getRightY() * 0.5
     //   )
     // );
+
+    // Hood Motor
+    // RobotContainer.operatorController.rightStick().whileTrue(
+    //   new ManualShooterHoodCommand(shooterHoodSubsystem,
+    //     () -> operatorController.getRightY() * 0.5
+    //   )
+    // ); 
+
+    // Turret Motor
+    // RobotContainer.operatorController.rightStick().whileTrue(
+    //   new ManualTurretCommand(ShooterTurretSubsystem,
+    //     () -> operatorController.getRightY()
+    //   )
+    // );
+
+    // Indexer Motor
+    // RobotContainer.operatorController.rightStick().whileTrue(
+    //   new ManualIndexerCommand(IndexerSubsystem,
+    //     () -> operatorController.getRightY()
+    //   )
+    // );
+
+    // Intake Arm Motor
+    RobotContainer.operatorController.rightBumper().whileTrue(
+      new ManualIntakeArmCommand(intakeArmSubsystem,
+        () -> operatorController.getRightY() * 0.6
+      )
+    );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {

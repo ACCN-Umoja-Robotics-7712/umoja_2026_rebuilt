@@ -25,9 +25,9 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private double state = IntakeArmStates.NONE;
 
     public IntakeArmSubsystem() {
-        CANBus CANivore = new CANBus("CANivore");
-        intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, CANivore);
-        intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, CANivore);
+        CANBus rio = new CANBus("rio");
+        intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, rio);
+        intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, rio);
 
         intakeArmMotorFollower.setControl(new Follower(intakeArmMotorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
 
@@ -62,7 +62,6 @@ public class IntakeArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (state == IntakeArmStates.NONE) {
-            runIntakeArm(0);
         } else {
             setIntakeArmAngle(state);
         }

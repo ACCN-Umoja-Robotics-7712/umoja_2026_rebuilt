@@ -19,8 +19,8 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     
 
     public IntakeRollerSubsystem() {
-        CANBus CANivore = new CANBus("CANivore");
-        intakeRollerMotor = new TalonFX(IntakeConstants.rollerMotorID, CANivore);
+        CANBus rio = new CANBus("rio");
+        intakeRollerMotor = new TalonFX(IntakeConstants.rollerMotorID, rio);
 
         intakeRollerPidController = new PIDController(IntakeConstants.rollerkP, 0, 0);
     }
@@ -46,7 +46,6 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (state == IntakeRollerStates.NONE) {
-            runIntake(0);
         } else {
             setIntakeSpeed(state);
         }
