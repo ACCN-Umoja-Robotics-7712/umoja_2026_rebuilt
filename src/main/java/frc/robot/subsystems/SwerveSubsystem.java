@@ -16,6 +16,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.studica.frc.AHRS.NavXComType;
 import com.studica.frc.AHRS.NavXUpdateRate;
 
+
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -97,7 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackRightDriveAbsoluteEncoderPort,
         DriveConstants.kBackRightDriveAbsoluteEncoderOffsetDegree, 
         DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
-        
+
     CANBus CANivore = new CANBus("CANivore");
     private final Pigeon2 gyro = new Pigeon2(1, CANivore);
     private TrajectoryConfig trajectoryConfig;

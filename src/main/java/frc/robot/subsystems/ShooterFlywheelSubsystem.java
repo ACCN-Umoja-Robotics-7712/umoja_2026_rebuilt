@@ -4,11 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -23,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.ShooterStates;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {
     private final SparkFlex flywheelMotorLeader;
@@ -30,6 +27,8 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
     private final PIDController flywheelPidController;
     private final SimpleMotorFeedforward FFController;
+
+    private double state = ShooterStates.NONE;
 
     public ShooterFlywheelSubsystem() {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
@@ -44,7 +43,6 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
         flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, 0);
         FFController = new SimpleMotorFeedforward(TurretConstants.kSfly, 0,0);
-
     }
     public void runShooter(double speed) {
         flywheelMotorLeader.set(speed);
@@ -56,7 +54,27 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader.setVoltage(feedforward + pid);
     }
     
+    public void setShooterSpeed(double wantedSpeed) {
+        flywheelMotorLeader.set(flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedSpeed));
+    }
+
+    public void setState(double ShooterState) {
+        if (this.state != ShooterState) {
+            flywheelPidController.reset();
+            this.state = ShooterState;
+        }
+    }
+
+      public boolean didReachState() {
+        return flywheelPidController.atSetpoint();
+    }
+    
     @Override
     public void periodic() {
+        if (state == ShooterStates.NONE) {
+            runShooter(0);
+        } else {
+            setShooterSpeed(state);
+        }
     }
 }

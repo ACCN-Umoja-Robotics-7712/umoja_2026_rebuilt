@@ -129,7 +129,7 @@ public final class Constants {
         public static final double teleTurnSpeed = 0.3;
 
         public static final double kPDrive = 1.5;
-        public static final double kIDrive = 0.01;
+        public static final double kIDrive = 0.01; // Test again after robot gets wired, was 0.06 before test
 
         public static final double kPTurning = 5;
         public static final double kITurning = 0.05;
@@ -162,10 +162,56 @@ public final class Constants {
         public static final int turretLimitSwitchID = 21;
         public static final double kPturret = 0;
         // public static final double kIhood = 0; 
-
     }
 
-    public static final class ElevatorConstants {
+    public static final class IntakeArmConstants { // Update Id's and limits
+        public static final double leftMotorID = 0;
+        public static final double rightMotorID = 1;
+        
+        public static final double armExtendLimit = 152.0; 
+    }
+
+    public static final class IntakeArmStates {
+        public static final double NONE = -1;
+        public static final double START = 0;
+        public static final double RAMP = 0;
+        public static final double PICKUP = 1;
+    }
+
+    
+    public static final class ShooterStates {
+        public static final double NONE = 0;
+        public static final double SHOOTING = 1;
+    };
+ 
+    public static final class hoodStates {
+        public static final double NONE = 0;
+        public static final double FIRST = 1;
+    };
+
+    public static final class TurretStates {
+        public static final double NONE = 0;
+        public static final double TRENCH = 90;
+    };
+
+    public static final class IntakeConstants {
+        public static final int leftMotorID = 44;
+        public static final int rightMotorID = 45;
+        public static final int rollerMotorID = 46;
+
+        public static final int intakeArmZeroLimitSwitchID = 1;
+
+        public static final double rollerkP = 0.01;
+        public static final double armkP = 0.01;
+    }
+
+    public static final class IntakeRollerStates {
+        public static final double NONE = 0;
+        public static final double IN = 1;
+        public static final double OUT = 2;
+    };
+
+    public static final class ElevatorConstants { // Remove if not used
         public static final int leftMotorID = 50;
         public static final int rightMotorID = 51;
 

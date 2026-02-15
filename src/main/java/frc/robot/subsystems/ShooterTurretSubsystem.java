@@ -4,18 +4,14 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.TurretStates;
 
 public class ShooterTurretSubsystem extends SubsystemBase {
     private final TalonFX turretMotor;
@@ -23,9 +19,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     private final PIDController turretPidController;
 
-    private final VoltageOut voltageReg;
-
-    private final SysIdRoutine sysIdRoutine;
+    private double state = TurretStates.NONE;
 
     public ShooterTurretSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
@@ -33,22 +27,6 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretZeroLimitSwitch = new DigitalInput(0);
         
         turretPidController = new PIDController(0.01, 0, 0);
-        
-        voltageReg = new VoltageOut(0.0);
-        sysIdRoutine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,        // Use default ramp rate (1 V/s)
-                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                null,        // Use default timeout (10 s)
-                            // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (volts) -> turretMotor.setControl(voltageReg.withOutput(volts.in(Volts))),
-                null,
-                this
-            )
-        );
     }
 
     public void runTurret(double speed) {
@@ -64,14 +42,14 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.set(turretPidController.calculate(turretMotor.getPosition().getValueAsDouble(), wantedTurretRotation));
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction);
+    public void setState(double TurretStates) {
+        if (this.state != TurretStates) {
+            turretPidController.reset();
+            this.state = TurretStates;
+        }
+
     }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction);
-    }
-    
     @Override
     public void periodic() {
         if (turretZeroLimitSwitch.get()) {

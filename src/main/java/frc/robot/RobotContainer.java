@@ -4,15 +4,20 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.IntakeRollerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ShooterStates;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ShooterStates;
 import frc.robot.Constants.GameConstants;
+import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTrench;
-import frc.robot.commands.ManualIntakeArmCommand;
-import frc.robot.commands.ManualIntakeRoller;
+import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
+import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 
 import java.util.List;
 
@@ -37,7 +42,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
@@ -53,6 +57,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
+  public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
   public final static CommandXboxController driverController = new CommandXboxController(USB.DRIVER_CONTROLLER);
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
 
@@ -103,8 +108,16 @@ public class RobotContainer {
       )
     );
     RobotContainer.driverController.rightStick().whileTrue(
-      new ManualIntakeRoller(intakeR)
-    )
+      new ManualIntakeRoller(intakeRollerSubsystem,
+        () -> driverController.getRightY()
+      )
+    );
+    
+    // RobotContainer.driverController.rightStick().whileTrue(
+    //   new ManualIntakeArmCommand(intakeArmSubsystem,
+    //     () -> driverController.getRightY()
+    //   )
+    // );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {
