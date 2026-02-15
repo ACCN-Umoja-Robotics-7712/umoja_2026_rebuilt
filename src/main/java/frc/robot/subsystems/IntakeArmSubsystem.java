@@ -8,11 +8,13 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.google.flatbuffers.Constants;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeArmStates;
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeArmSubsystem extends SubsystemBase {
     private final TalonFX intakeArmMotorLeader;
@@ -24,13 +26,13 @@ public class IntakeArmSubsystem extends SubsystemBase {
 
     public IntakeArmSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
-        intakeArmMotorLeader = new TalonFX(0, CANivore);
-        intakeArmMotorFollower = new TalonFX(1, CANivore);
+        intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, CANivore);
+        intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, CANivore);
 
         intakeArmMotorFollower.setControl(new Follower(intakeArmMotorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
 
-        intakeArmZeroLimitSwitch = new DigitalInput(1);
-        intakeArmPidController = new PIDController(0.01, 0, 0);
+        intakeArmZeroLimitSwitch = new DigitalInput(IntakeConstants.intakeArmZeroLimitSwitchID);
+        intakeArmPidController = new PIDController(IntakeConstants.armkP, 0, 0);
     }
 
     public void runIntakeArm(double speed) {

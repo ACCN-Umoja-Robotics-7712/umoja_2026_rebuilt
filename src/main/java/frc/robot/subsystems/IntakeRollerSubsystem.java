@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeArmStates;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeRollerStates;
 
 public class IntakeRollerSubsystem extends SubsystemBase {
@@ -19,15 +20,15 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 
     public IntakeRollerSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
-        intakeRollerMotor = new TalonFX(Constants.IntakeConstants.intakeRollerID, CANivore);
+        intakeRollerMotor = new TalonFX(IntakeConstants.rollerMotorID, CANivore);
 
-        intakeRollerPidController = new PIDController(0.01, 0, 0);
+        intakeRollerPidController = new PIDController(IntakeConstants.rollerkP, 0, 0);
     }
 
-   public void setState(double armState) {
-        if (this.state != state) {
+   public void setState(double rollerState) {
+        if (this.state != rollerState) {
             intakeRollerPidController.reset();
-            this.state = armState;
+            this.state = rollerState;
         }
     }
     public boolean didReachState() {
