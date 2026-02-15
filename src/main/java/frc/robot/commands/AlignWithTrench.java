@@ -25,7 +25,7 @@ public class AlignWithTrench extends Command{
     SwerveSubsystem swerveSubsystem;
   private final Supplier<Double> xSpdFunction, ySpdFunction;
   private final SlewRateLimiter xLimiter, yLimiter;
-  private final double wantedAngle;
+  private double wantedAngle;
 
     DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("x speed").publish();
     DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("y speed").publish();
@@ -85,6 +85,14 @@ public class AlignWithTrench extends Command{
           boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
           int flipAlliance = isBlue ? 1 : -1;
           int flipDirection = wantedAngle == 0 ? 1 : -1;
+          if (!isBlue) {
+            // flip wantedAngle for redside
+            if (wantedAngle == 0) {
+              wantedAngle = 180;
+            } else {
+              wantedAngle = 0;
+            }
+          }
           
           // xSpeedPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
 

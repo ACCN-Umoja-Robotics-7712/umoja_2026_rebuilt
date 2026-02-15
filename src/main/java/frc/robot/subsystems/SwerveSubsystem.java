@@ -5,6 +5,8 @@ import com.studica.frc.AHRS;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
@@ -95,8 +97,9 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackRightDriveAbsoluteEncoderPort,
         DriveConstants.kBackRightDriveAbsoluteEncoderOffsetDegree, 
         DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
-
-    private AHRS gyro = new AHRS(NavXComType.kUSB1, 66);
+        
+    CANBus CANivore = new CANBus("CANivore");
+    private final Pigeon2 gyro = new Pigeon2(1, CANivore);
     private TrajectoryConfig trajectoryConfig;
     public PIDController shootController;
     public PIDController xController;
@@ -122,7 +125,6 @@ public class SwerveSubsystem extends SubsystemBase {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
-                gyro.enableLogging(true);
 
                 zeroHeading();
                 resetEncoders();
@@ -210,10 +212,11 @@ public class SwerveSubsystem extends SubsystemBase {
     public void zeroHeading(){
         RobotContainer.wantedAngle = -1;
         gyro.reset();
+        System.out.println("Gyro Reset");
     }
 
     public double getHeading(){
-        double yaw = -gyro.getYaw();
+        double yaw = -gyro.getYaw().getValueAsDouble();
 
         // if red flip
         if (!DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue)) {

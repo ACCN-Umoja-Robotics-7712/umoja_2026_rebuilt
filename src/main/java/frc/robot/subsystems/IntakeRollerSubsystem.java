@@ -18,7 +18,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 
     public IntakeRollerSubsystem() {
         CANBus CANivore = new CANBus("CANivore");
-        intakeRollerMotor = new TalonFX(0, CANivore);
+        intakeRollerMotor = new TalonFX(Constants.IntakeConstants.intakeRollerID, CANivore);
 
         intakeRollerPidController = new PIDController(0.01, 0, 0);
         

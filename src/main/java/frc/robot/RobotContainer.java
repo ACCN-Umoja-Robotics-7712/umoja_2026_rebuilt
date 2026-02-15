@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.IntakeRollerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTrench;
+import frc.robot.commands.ManualIntakeArmCommand;
+import frc.robot.commands.ManualIntakeRoller;
 
 import java.util.List;
 
@@ -49,6 +52,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
   public final static CommandXboxController driverController = new CommandXboxController(USB.DRIVER_CONTROLLER);
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
 
@@ -98,6 +102,9 @@ public class RobotContainer {
         180
       )
     );
+    RobotContainer.driverController.rightStick().whileTrue(
+      new ManualIntakeRoller(intakeR)
+    )
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {
@@ -125,7 +132,7 @@ public class RobotContainer {
           diff = diff * -1;
         }
       }
-      return diff;
+      return -diff;
     } else {
       return 0;
     }
