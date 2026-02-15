@@ -61,7 +61,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
  
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // The robot's subsystems and commands are defined here
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
   public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
@@ -127,7 +127,7 @@ public class RobotContainer {
     // Intake Roller
     RobotContainer.operatorController.leftBumper().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> operatorController.getRightY() * 0.6
+        () -> operatorController.getRightY() * 0.65
       )
     );
 
@@ -155,7 +155,7 @@ public class RobotContainer {
     // Indexer Motor
     // RobotContainer.operatorController.rightStick().whileTrue(
     //   new ManualIndexerCommand(IndexerSubsystem,
-    //     () -> operatorController.getRightY()
+    //     () -> operatorController.getRightY() * 0.5
     //   )
     // );
 
