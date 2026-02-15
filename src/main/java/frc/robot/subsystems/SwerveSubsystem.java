@@ -5,6 +5,7 @@ import com.studica.frc.AHRS;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
@@ -13,6 +14,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.studica.frc.AHRS.NavXComType;
 import com.studica.frc.AHRS.NavXUpdateRate;
+
 
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.apriltag.AprilTag;
@@ -96,7 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackRightDriveAbsoluteEncoderOffsetDegree, 
         DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-    private AHRS gyro = new AHRS(NavXComType.kMXP_SPI, 66);
+    private final Pigeon2 gyro = new Pigeon2(100, "CANivore");
     private TrajectoryConfig trajectoryConfig;
     public PIDController shootController;
     public PIDController xController;
