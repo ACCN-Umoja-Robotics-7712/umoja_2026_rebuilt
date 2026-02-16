@@ -5,14 +5,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IndexerSubsystem;
 
 public class ManualIndexerCommand extends Command {
-    IndexerSubsystem indexerMotor;
+    IndexerSubsystem indexerSubsystem;
     Supplier<Double> indexerMotorSpeedSupplier;
 
-    public ManualIndexerCommand(IndexerSubsystem indexerMotor, Supplier<Double> indexerMotorSpeedSupplier){
-        this.indexerMotor = indexerMotor;
+    public ManualIndexerCommand(IndexerSubsystem indexerSubsystem, Supplier<Double> indexerMotorSpeedSupplier){
+        this.indexerSubsystem = indexerSubsystem;
         this.indexerMotorSpeedSupplier = indexerMotorSpeedSupplier;
 
-        addRequirements(indexerMotor);
+        addRequirements(indexerSubsystem);
     }  
 
     @Override
@@ -22,13 +22,13 @@ public class ManualIndexerCommand extends Command {
 
     @Override
     public void execute(){
-        indexerMotor.runIndexer(indexerMotorSpeedSupplier.get());
+        indexerSubsystem.runIndexer(indexerMotorSpeedSupplier.get());
     }
 
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Manual Indexer end interrupted:" + isInterrupted);
-        indexerMotor.runIndexer(0);
+        indexerSubsystem.runIndexer(0);
     }
 
     @Override

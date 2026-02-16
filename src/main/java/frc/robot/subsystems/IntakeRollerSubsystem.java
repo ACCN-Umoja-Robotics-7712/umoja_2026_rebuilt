@@ -10,6 +10,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -31,7 +32,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     public IntakeRollerSubsystem() {
         intakeRollerMotor = new SparkFlex(IntakeConstants.rollerMotorID, MotorType.kBrushless);
         
-        SparkBaseConfig intakeRollerConfig = Presets.REV_Vortex;
+        SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(80);
         intakeRollerMotor.configure(intakeRollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         intakeRollerPidController = new PIDController(IntakeConstants.rollerkP, 0, 0);
     }

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig.Presets;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -30,7 +31,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     public ShooterHoodSubsystem() {
         hoodMotor = new SparkMax(TurretConstants.hoodMotorID, MotorType.kBrushless);
         
-        SparkBaseConfig config = Presets.REV_NEO_550;
+        SparkBaseConfig config = new SparkMaxConfig().smartCurrentLimit(15);
         config.inverted(TurretConstants.hoodMotorReversed);
         hoodMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

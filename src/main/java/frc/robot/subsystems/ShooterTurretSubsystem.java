@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig.Presets;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -29,7 +30,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
-        SparkBaseConfig turretConfig = Presets.REV_Vortex;
+        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(80);
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
         

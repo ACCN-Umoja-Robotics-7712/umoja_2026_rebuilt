@@ -192,8 +192,8 @@ public final class Constants {
     };
 
     public static final class IntakeConstants {
-        public static final int leftMotorID = 44;
-        public static final int rightMotorID = 45;
+        public static final int leftMotorID = 45;
+        public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
         public static final int intakeArmZeroLimitSwitchID = 1;

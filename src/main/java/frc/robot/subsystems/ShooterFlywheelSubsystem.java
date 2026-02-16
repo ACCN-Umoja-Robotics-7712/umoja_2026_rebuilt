@@ -10,6 +10,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -31,10 +32,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
-        SparkBaseConfig leaderConfig = Presets.REV_Vortex;
+        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(80);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkBaseConfig followerConfig = Presets.REV_Vortex;
+        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(80);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower is opposite of leader
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

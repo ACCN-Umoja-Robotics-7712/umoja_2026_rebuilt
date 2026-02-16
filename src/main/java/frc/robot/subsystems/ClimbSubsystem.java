@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 // import com.revrobotics.spark.config.LimitSwitchConfig; (Not sure if we need this)
 import com.revrobotics.spark.config.SparkBaseConfig;
@@ -27,7 +28,7 @@ public class ClimbSubsystem extends SubsystemBase {
     
     public ClimbSubsystem(){
 
-        SparkBaseConfig climbConfig = Presets.REV_Vortex; // I also imported SparkMax incase we are using those
+        SparkBaseConfig climbConfig = new SparkFlexConfig().smartCurrentLimit(80); // I also imported SparkMax incase we are using those
         climbConfig.idleMode(IdleMode.kBrake);
         climbConfig.inverted(false);
 
