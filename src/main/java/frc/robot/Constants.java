@@ -345,10 +345,12 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-        public static final String tagName = "limelight";
+        public static final String turretName = "limelight";
         public static final String gamePieceName = "limelight-gp";
-        public static final String driverName = "driver";
+        public static final String climbName = "limelight-climb";
         public static final int Estimate_Distance = 20;
+        public static final int aprilTagPipeline = 0;
+        public static final int gamePiecePipeline = 1;
     }
 
     public static final class Colors {

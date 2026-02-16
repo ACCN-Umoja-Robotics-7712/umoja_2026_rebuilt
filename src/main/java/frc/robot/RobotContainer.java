@@ -38,7 +38,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
-  public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
+  // public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
   public final static ShooterFlywheelSubsystem shooterFlywheelSubsystem = new ShooterFlywheelSubsystem();
   // public final static ShooterHoodSubsystem shooterHoodSubsystem = new ShooterHoodSubsystem();
   public final static IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
@@ -102,7 +102,7 @@ public class RobotContainer {
     // Intake Roller
     RobotContainer.operatorController.leftBumper().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> 0.65
+        () -> 0.30
       )
     );
 

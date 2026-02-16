@@ -6,14 +6,21 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.TurretStates;
 
 public class ShooterTurretSubsystem extends SubsystemBase {
-    private final TalonFX turretMotor;
+    private final SparkMax turretMotor;
     private final DigitalInput turretZeroLimitSwitch;
 
     private final PIDController turretPidController;
@@ -21,11 +28,12 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double state = TurretStates.NONE;
 
     public ShooterTurretSubsystem() {
-        CANBus CANivore = new CANBus("CANivore");
-        turretMotor = new TalonFX(1, CANivore);
-        turretZeroLimitSwitch = new DigitalInput(0);
+        turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
+        SparkBaseConfig turretConfig = Presets.REV_Vortex;
+        turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
         
-        turretPidController = new PIDController(0.01, 0, 0);
+        turretPidController = new PIDController(TurretConstants.kPturret, 0, 0);
     }
 
     public void runTurret(double speed) {
@@ -38,7 +46,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public void setTurretAngle(double wantedTurretRotation) {
-        turretMotor.set(turretPidController.calculate(turretMotor.getPosition().getValueAsDouble(), wantedTurretRotation));
+        turretMotor.set(turretPidController.calculate(turretMotor.getEncoder().getPosition(), wantedTurretRotation));
     }
 
     public void setState(double TurretStates) {
@@ -52,7 +60,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (turretZeroLimitSwitch.get()) {
-            turretMotor.setPosition(0);
+            turretMotor.getEncoder().setPosition(0);
         }
     }
 }
