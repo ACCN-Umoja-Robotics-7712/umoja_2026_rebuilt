@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.IntakeRollerSubsystem;
@@ -14,6 +15,7 @@ import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.ShooterFlywheelCommand;
+import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
@@ -43,6 +45,7 @@ public class RobotContainer {
   // public final static ShooterHoodSubsystem shooterHoodSubsystem = new ShooterHoodSubsystem();
   public final static IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   public final static ShooterTurretSubsystem ShooterTurretSubsystem = new ShooterTurretSubsystem();
+  public final static ClimbSubsystem climbSubsystem = new ClimbSubsystem();
 
 
 
@@ -139,6 +142,13 @@ public class RobotContainer {
     //     () -> driverController.getRightY()
     //   )
     // );
+
+    // Climber
+    RobotContainer.operatorController.rightStick().whileTrue(
+      new ManualClimbCommand(climbSubsystem,
+        () -> 0.30
+      )
+    );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {
