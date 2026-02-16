@@ -4,24 +4,25 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.controller.PIDController;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;
 
-public class IndexerSubsystem {
-    private TalonFX indexerMotor;
-    private TalonFX kickerMotor;
+public class IndexerSubsystem extends SubsystemBase {
+    private SparkFlex indexerMotor;
+    private SparkFlex kickerMotor;
     
     public IndexerSubsystem() {
-        CANBus rio = new CANBus("rio");
-        indexerMotor = new TalonFX(IndexerConstants.indexerMotorID, rio);
-        kickerMotor = new TalonFX(IndexerConstants.kickerMotorID, rio);
+        indexerMotor = new SparkFlex(IndexerConstants.indexerMotorID, MotorType.kBrushless);
+        kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
     }
 
     public void runIndexer(double speed) { // Can change the speed for each motor independently
         indexerMotor.set(speed);
-        kickerMotor.set(speed);
+        kickerMotor.set(speed*0.3);
     }
 
 }

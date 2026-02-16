@@ -6,15 +6,34 @@ import frc.robot.subsystems.IndexerSubsystem;
 
 public class ManualIndexerCommand extends Command {
     IndexerSubsystem indexerMotor;
-    IndexerSubsystem kickerMotor;
+    Supplier<Double> indexerMotorSpeedSupplier;
 
-    Supplier<Double> indexerMotorSpedSupplier;
-
-    public ManualIndexerCommand(IndexerSubsystem indexerMotor, IndexerSubsystem kickerMotor, Supplier<Double> indexerMotorSupplier){
+    public ManualIndexerCommand(IndexerSubsystem indexerMotor, Supplier<Double> indexerMotorSpeedSupplier){
         this.indexerMotor = indexerMotor;
-        this.kickerMotor = kickerMotor;
+        this.indexerMotorSpeedSupplier = indexerMotorSpeedSupplier;
 
-        addRequirements();
+        addRequirements(indexerMotor);
+    }  
+
+    @Override
+    public void initialize(){
+        System.out.println("Manual Indexer Initialized");
+    }
+
+    @Override
+    public void execute(){
+        indexerMotor.runIndexer(indexerMotorSpeedSupplier.get());
+    }
+
+    @Override
+    public void end(boolean isInterrupted){
+        System.out.println("Manual Indexer end interrupted:" + isInterrupted);
+        indexerMotor.runIndexer(0);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 
 }

@@ -1,20 +1,19 @@
-package frc.robot.commands;
+package frc.robot.commands.ManualCommands;
 
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.ShooterFlywheelSubsystem;
 
 public class ManualShooterFlywheelCommand extends Command{
-        ShooterFlywheelSubsystem Flywheel;
-        Supplier<Double> FlywheelSpeed;
+        ShooterFlywheelSubsystem flywheel;
+        Supplier<Double> flywheelSpeed;
     
-        public ManualShooterFlywheelCommand(ShooterFlywheelSubsystem Flywheel, Supplier<Double> FlywheelSpeed){
-            this.Flywheel = Flywheel;
-            this.FlywheelSpeed = FlywheelSpeed;
+        public ManualShooterFlywheelCommand(ShooterFlywheelSubsystem flywheel, Supplier<Double> flywheelSpeed){
+            this.flywheel = flywheel;
+            this.flywheelSpeed = flywheelSpeed;
 
-        addRequirements(Flywheel);
+        addRequirements(flywheel);
     }
 
     @Override
@@ -24,11 +23,12 @@ public class ManualShooterFlywheelCommand extends Command{
 
     @Override
     public void execute(){
-        Flywheel.runShooter(FlywheelSpeed.get());
+        flywheel.runShooter(flywheelSpeed.get());
     }
 
     @Override
     public void end(boolean isInterrupted){
+        flywheel.runShooter(0);
         System.out.println("Manual Flywheel Shooter end interrupted:" + isInterrupted);
     }
 

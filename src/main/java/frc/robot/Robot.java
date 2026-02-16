@@ -7,23 +7,13 @@ package frc.robot;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.Constants.Colors;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants;
-import frc.robot.Constants.XBoxConstants;
 import frc.robot.commands.SwerveJoystick;
 
 /**
@@ -41,7 +31,7 @@ public class Robot extends TimedRobot {
   
   // private AutoChooser autoChooser;
 
-  private double autoStartTimer = 0;
+  // private double autoStartTimer = 0;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -111,7 +101,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autoStartTimer = Timer.getTimestamp();
+    // autoStartTimer = Timer.getTimestamp();
 
     RobotContainer.swerveSubsystem.zeroHeading();
 
@@ -131,10 +121,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     RobotContainer.gameState = GameConstants.Auto;
-    ChassisSpeeds autoChassisSpeeds = new ChassisSpeeds(0, 0.5, 0);
-    ChassisSpeeds stopChassisSpeeds = new ChassisSpeeds(0, 0, 0);
-    SwerveModuleState[] autoState = DriveConstants.kDriveKinematics.toSwerveModuleStates(autoChassisSpeeds);
-    SwerveModuleState[] stopState = DriveConstants.kDriveKinematics.toSwerveModuleStates(stopChassisSpeeds);
+    // ChassisSpeeds autoChassisSpeeds = new ChassisSpeeds(0, 0.5, 0);
+    // ChassisSpeeds stopChassisSpeeds = new ChassisSpeeds(0, 0, 0);
+    // SwerveModuleState[] autoState = DriveConstants.kDriveKinematics.toSwerveModuleStates(autoChassisSpeeds);
+    // SwerveModuleState[] stopState = DriveConstants.kDriveKinematics.toSwerveModuleStates(stopChassisSpeeds);
       
       // if (RobotContainer.gameState == GameConstants.Auto){
       //   if (Math.abs(autoStartTimer - Timer.getTimestamp()) < 7){
@@ -202,7 +192,7 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {}
   
-  private boolean isRedAlliance() {
-    return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);  
-  }
+  // private boolean isRedAlliance() {
+  //   return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);  
+  // }
 }

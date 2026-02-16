@@ -6,8 +6,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakeRollerStates;
 
@@ -36,6 +36,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     }
 
     public void runIntake(double speed) {
+        SmartDashboard.putNumber("intake speed", speed);
         intakeRollerMotor.set(speed);
     }
 

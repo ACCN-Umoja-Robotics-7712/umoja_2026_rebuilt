@@ -1,66 +1,31 @@
 package frc.robot.subsystems;
 
-import com.studica.frc.AHRS;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.studica.frc.AHRS.NavXComType;
-import com.studica.frc.AHRS.NavXUpdateRate;
-
 
 import choreo.trajectory.SwerveSample;
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
-import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.DriverStation.MatchType;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.Colors;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.GameConstants;
-import frc.robot.LimelightHelpers;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -101,14 +66,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
     CANBus CANivore = new CANBus("CANivore");
     private final Pigeon2 gyro = new Pigeon2(1, CANivore);
-    private TrajectoryConfig trajectoryConfig;
     public PIDController shootController;
     public PIDController xController;
     public PIDController yController;
     public ProfiledPIDController thetaController;
     public HolonomicDriveController holonomicDriveController;
     public final Timer timer = new Timer();
-    private double wantedAngle = 0;
+    // private double wantedAngle = 0;
     
     public final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics, new Rotation2d(),
@@ -285,14 +249,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 backRight.getPosition()
             }
         );
-        
-        String tagLeftLimelightName = Constants.LimelightConstants.tagName;
-        String driverLimelightName = Constants.LimelightConstants.driverName;
-        String tagRightLimelightName = Constants.LimelightConstants.gamePieceName;
-        boolean isDisabled = RobotContainer.gameState == GameConstants.Robot;
-        boolean isNonGameTeleop = RobotContainer.gameState == GameConstants.TeleOp && DriverStation.getMatchType() == MatchType.None;
-        
-        boolean isAuto = RobotContainer.gameState == GameConstants.Auto;
        
         // LimelightHelpers.SetRobotOrientation(tagLeftLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         // LimelightHelpers.SetRobotOrientation(tagRightLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
@@ -381,7 +337,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double currentX = 0;
         double xError = targetX - currentX;
 
-        Pose2d pose = getPose();
+        // Pose2d pose = getPose();
 
         // ChassisSpeeds robotLOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
 

@@ -28,6 +28,7 @@ public class ManualIntakeRoller extends Command{
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Intake Rollers end interrupted:" + isInterrupted);
+        intakeRoller.runIntake(0);
     }
 
     @Override

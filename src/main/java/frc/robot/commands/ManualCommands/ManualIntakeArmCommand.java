@@ -1,7 +1,6 @@
 package frc.robot.commands.ManualCommands;
 
 import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeArmSubsystem;
 
@@ -29,6 +28,7 @@ public class ManualIntakeArmCommand extends Command {
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Manual Intake Arm end interrupted:" + isInterrupted);
+        intakeArm.runIntakeArm(0);
     }
 
     @Override

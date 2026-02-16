@@ -2,24 +2,14 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -30,7 +20,7 @@ public class SwerveModule {
     public final TalonFX turnMotor;
     // private final RelativeEncoder driveEncoder, turnEncoder;
     private final PIDController turnPIDController;
-    private final PIDController drivePIDController;
+    // private final PIDController drivePIDController;
     // public final CANcoder absoluteEncoder;
     public double absoluteEncoderDegreeOffset;
     public final CANcoder absoluteEncoder;
@@ -68,7 +58,7 @@ public class SwerveModule {
 
         turnPIDController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         turnPIDController.enableContinuousInput(0, 2*Math.PI);
-        drivePIDController = new PIDController(ModuleConstants.kPDriving, 0, 0);
+        // drivePIDController = new PIDController(ModuleConstants.kPDriving, 0, 0);
         
         resetEncoders();
     }

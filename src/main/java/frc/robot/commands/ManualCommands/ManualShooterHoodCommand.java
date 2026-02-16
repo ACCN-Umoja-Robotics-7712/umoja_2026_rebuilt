@@ -29,6 +29,7 @@ public class ManualShooterHoodCommand extends Command{
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Manual Shooter Hood end interrupted:" + isInterrupted);
+        ManualShooterHood.runHood(0);
     }
 
     @Override

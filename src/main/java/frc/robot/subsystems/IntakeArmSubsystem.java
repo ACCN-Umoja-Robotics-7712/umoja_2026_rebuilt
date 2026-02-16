@@ -8,10 +8,10 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import com.google.flatbuffers.Constants;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.IntakeConstants;
@@ -41,6 +41,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
         if (intakeArmZeroLimitSwitch.get() && speed < 0) {
             speed = 0;
         }
+        SmartDashboard.putNumber("Arm speed", speed);
         intakeArmMotorLeader.set(speed);
     }
     

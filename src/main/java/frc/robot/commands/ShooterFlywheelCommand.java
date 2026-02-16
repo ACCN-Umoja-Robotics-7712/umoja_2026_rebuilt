@@ -28,6 +28,7 @@ public class ShooterFlywheelCommand extends Command {
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Shooter is interrupted:" + isInterrupted);
+        flywheelMotorLeader.runShooter(0);
     }
 
     @Override

@@ -8,47 +8,21 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.IntakeRollerSubsystem;
 import frc.robot.subsystems.ShooterFlywheelSubsystem;
-import frc.robot.subsystems.ShooterHoodSubsystem;
 import frc.robot.subsystems.ShooterTurretSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ShooterStates;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ShooterStates;
 import frc.robot.Constants.GameConstants;
-import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTrench;
-import frc.robot.commands.ManualShooterFlywheelCommand;
+import frc.robot.commands.ShooterFlywheelCommand;
+import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
-import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
-import frc.robot.commands.ManualCommands.ManualTurretCommand;
-
-import java.util.List;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Joystick;
+
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
@@ -105,7 +79,7 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
-    // Button Commands
+    // Align with trench
     RobotContainer.driverController.y().whileTrue(
       new AlignWithTrench(
         RobotContainer.swerveSubsystem,
@@ -114,6 +88,7 @@ public class RobotContainer {
         0
       )
     );
+
     RobotContainer.driverController.a().whileTrue(
       new AlignWithTrench(
         RobotContainer.swerveSubsystem,
@@ -127,17 +102,16 @@ public class RobotContainer {
     // Intake Roller
     RobotContainer.operatorController.leftBumper().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> operatorController.getRightY() * 0.65
+        () -> 0.65
       )
     );
 
     //Flywheel Motor
-    // RobotContainer.operatorController.rightStick().whileTrue(
-    //   new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-    //     () -> operatorController.getRightY() * 0.5
-    //   )
-    // );
-
+    RobotContainer.operatorController.a().whileTrue(
+      new ShooterFlywheelCommand(shooterFlywheelSubsystem,
+        () -> -1.0
+      )
+    );
     // Hood Motor
     // RobotContainer.operatorController.rightStick().whileTrue(
     //   new ManualShooterHoodCommand(shooterHoodSubsystem,
@@ -153,18 +127,18 @@ public class RobotContainer {
     // );
 
     // Indexer Motor
-    // RobotContainer.operatorController.rightStick().whileTrue(
-    //   new ManualIndexerCommand(IndexerSubsystem,
-    //     () -> operatorController.getRightY() * 0.5
-    //   )
-    // );
-
-    // Intake Arm Motor
     RobotContainer.operatorController.rightBumper().whileTrue(
-      new ManualIntakeArmCommand(intakeArmSubsystem,
-        () -> operatorController.getRightY() * 0.6
+      new ManualIndexerCommand(indexerSubsystem,
+        () -> 0.6
       )
     );
+
+    // Intake Arm Motor
+    // RobotContainer.driverController.rightBumper().whileTrue(
+    //   new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,
+    //     () -> driverController.getRightY()
+    //   )
+    // );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {

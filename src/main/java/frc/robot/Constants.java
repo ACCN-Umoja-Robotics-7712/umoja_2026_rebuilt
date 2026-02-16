@@ -6,9 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.path.PathConstraints;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -144,8 +141,8 @@ public final class Constants {
     }
 
     public static final class TurretConstants {
-        public static final int flywheelMotorLeaderID = 0;
-        public static final int flywheelMotorFollowerID = 1;
+        public static final int flywheelMotorLeaderID = 1;
+        public static final int flywheelMotorFollowerID = 2;
         public static final boolean flywheelMotorReversed = false;
         public static final double kSfly = 0;
         public static final double kPfly = 0;
@@ -212,8 +209,8 @@ public final class Constants {
     };
 
     public static final class IndexerConstants {
-        public static final int indexerMotorID = 61;
-        public static final int kickerMotorID = 62;
+        public static final int indexerMotorID = 3;
+        public static final int kickerMotorID = 5;
     }
 
     public static final class ElevatorConstants { // Remove if not used

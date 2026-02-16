@@ -29,6 +29,7 @@ public class ManualTurretCommand extends Command{
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Manual Turret end interrupted:" + isInterrupted);
+        turret.runTurret(0);
     }
 
     @Override
