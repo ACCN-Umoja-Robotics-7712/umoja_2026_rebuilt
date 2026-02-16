@@ -213,28 +213,17 @@ public final class Constants {
         public static final int kickerMotorID = 5;
     }
 
-    public static final class ElevatorConstants { // Remove if not used
-        public static final int leftMotorID = 50;
-        public static final int rightMotorID = 51;
+    public static final class ClimbConstants {
+        public static final int climbMotorID = 61;
 
-        public static final double elevatorTopLimit = 152.0; 
-        public static final double elevatorBottomLimit = 5.0;
+        public static final int kP = 0;
+        public static final int kI = 0;
+    }
 
-        public static final double kP = 0.1; // TODO: Change/test to 0.13
-        public static final double kI = 0.0005; 
-
-        public static final double slowDown = 0.8;
-
-        public static final double elevatorArmLimit = 42;
-
-        public static final int elevatorMotor1ID = 8;
-        public static final int elevatorMotor2ID = 9;
-
-        public static final TrapezoidProfile.Constraints kElevatorConstraints =
-            new TrapezoidProfile.Constraints(
-                125,
-                100);
-
+    public static final class ClimbStates {
+        public static final double NONE = -1;
+        public static final double RETRACTED = 0;
+        public static final double L1 = 1;
     }
 
     public static final class LEDConstants {
@@ -371,7 +360,7 @@ public final class Constants {
         // all in m
         // robot l/w 28.5 by 28.5 inches
         // bumper width ~= 3 inches
-        // TODO: Need to add potential intake front distance
+        //** */ TODO: Change this to 2026 game //** */
         public static final double robotCenterToFront = 0.45085 + 0.03 + 0.2; // robot length/2 + bumper width = 14.25 + 3.5 = 17.75 inches  
         // public static final double robotCenterToFront = 0.50085; // Test
         public static final double robotSideOffset = 0.0254; // intake is 1 inch to the left so move robot 1 inch to the right

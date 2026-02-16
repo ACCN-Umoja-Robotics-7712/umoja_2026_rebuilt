@@ -27,7 +27,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void end(boolean isInterrupted) {
-        System.out.println("Shoot Command ended, interrupted: " + isInterrupted);
+        System.out.println("SHOOTER END INTERRUPTED: " + isInterrupted);
     }
 
     @Override

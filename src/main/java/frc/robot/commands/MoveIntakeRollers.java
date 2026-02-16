@@ -25,7 +25,7 @@ public class MoveIntakeRollers extends Command{
 
     @Override
     public void end(boolean isInterrupted){
-        System.out.println("ROLLER END");
+        System.out.println("ROLLER END INTERRUPTED: " + isInterrupted);
     }
 
     @Override

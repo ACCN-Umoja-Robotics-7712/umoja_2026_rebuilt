@@ -62,6 +62,9 @@ public class IntakeArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Pulish values on Elastic, this goes to SmartDashboard - Lewi
+        SmartDashboard.putNumber("Intake Arm position", intakeArmMotorLeader.getPosition().getValueAsDouble());
+        
         if (state == IntakeArmStates.NONE) {
         } else {
             setIntakeArmAngle(state);

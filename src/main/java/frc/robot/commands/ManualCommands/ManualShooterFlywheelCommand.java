@@ -29,7 +29,7 @@ public class ManualShooterFlywheelCommand extends Command{
     @Override
     public void end(boolean isInterrupted){
         flywheel.runShooter(0);
-        System.out.println("Manual Flywheel Shooter end interrupted:" + isInterrupted);
+        System.out.println("Manual Shooter Flywheel end interrupted:" + isInterrupted);
     }
 
     @Override

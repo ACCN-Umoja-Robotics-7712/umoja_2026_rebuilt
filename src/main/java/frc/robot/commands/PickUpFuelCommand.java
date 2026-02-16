@@ -8,8 +8,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.DriveConstants;
@@ -18,7 +16,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.RobotContainer;
 
-public class PickUpCommand extends Command{
+public class PickUpFuelCommand extends Command{
     SwerveSubsystem swerveSubsystem;
   private final Supplier<Double> xSpdFunction, ySpdFunction;
   private final SlewRateLimiter xLimiter, yLimiter;
@@ -29,7 +27,7 @@ public class PickUpCommand extends Command{
   
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
-    public PickUpCommand(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, double angle){
+    public PickUpFuelCommand(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, double angle){
         this.swerveSubsystem = swerveSubsystem;
 
         this.xSpdFunction = xSpdFunction;
