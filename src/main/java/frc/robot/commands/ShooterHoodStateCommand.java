@@ -1,13 +1,13 @@
-package frc.robot.commands.autonomous;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterHoodSubsystem;
 
-public class Movehood extends Command{
+public class ShooterHoodStateCommand extends Command{
     ShooterHoodSubsystem hood;
     double hoodState;
 
-    public Movehood(ShooterHoodSubsystem hood, double hoodState){
+    public ShooterHoodStateCommand(ShooterHoodSubsystem hood, double hoodState){
         this.hood = hood;
         this.hoodState = hoodState;
 

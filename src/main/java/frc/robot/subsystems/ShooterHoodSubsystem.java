@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig.Presets;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -20,7 +22,7 @@ import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.hoodStates;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
-    private final SparkMax hoodMotor;
+    private final TalonFX hoodMotor;
 
     private final PIDController hoodPidController;
     
@@ -29,12 +31,9 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     private double state = hoodStates.NONE;
 
     public ShooterHoodSubsystem() {
-        hoodMotor = new SparkMax(TurretConstants.hoodMotorID, MotorType.kBrushless);
+        CANBus CANivore = new CANBus("CANivore");
+        hoodMotor = new TalonFX(TurretConstants.hoodMotorID, CANivore);
         
-        SparkBaseConfig config = new SparkMaxConfig().smartCurrentLimit(15);
-        config.inverted(TurretConstants.hoodMotorReversed);
-        hoodMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }
 
@@ -45,16 +44,20 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         }
     }
 
+    public boolean didReachState() {
+        return hoodPidController.atSetpoint();
+    }
+
     public void runHood(double speed) {
         hoodMotor.set(speed);
     }
     
     public void setHoodAngle(double wantedHoodRotation) {
-        hoodMotor.set(hoodPidController.calculate(hoodMotor.getAbsoluteEncoder().getPosition(), wantedHoodRotation));
+        hoodMotor.set(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodRotation));
     }
 
     @Override
     public void periodic() {
-        absoluteEncodPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
+        absoluteEncodPublisher.accept(hoodMotor.getPosition().getValueAsDouble());
     }
 }

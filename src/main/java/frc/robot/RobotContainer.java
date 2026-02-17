@@ -136,7 +136,7 @@ public class RobotContainer {
     // Indexer Motor
     RobotContainer.operatorController.y().whileTrue(
       new ManualIndexerCommand(indexerSubsystem,
-        () -> 0.8
+        () -> 0.5
       )
     );
 
