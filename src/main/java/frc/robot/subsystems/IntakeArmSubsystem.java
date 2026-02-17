@@ -38,9 +38,9 @@ public class IntakeArmSubsystem extends SubsystemBase {
     public void runIntakeArm(double speed) {
         
         // if limit switch is pressed, and going same direction as limit switch, STOP
-        if (intakeArmZeroLimitSwitch.get() && speed < 0) {
-            speed = 0;
-        }
+        // if (intakeArmZeroLimitSwitch.get() && speed < 0) {
+        //     speed = 0;
+        // }
         SmartDashboard.putNumber("Arm speed", speed);
         intakeArmMotorLeader.set(speed);
     }

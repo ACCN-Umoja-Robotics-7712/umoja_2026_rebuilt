@@ -120,18 +120,18 @@ public class RobotContainer {
     );
 
     // Hood Motor
-    RobotContainer.operatorController.leftBumper().whileTrue(
-      new ManualShooterHoodCommand(shooterHoodSubsystem,
-        () -> operatorController.getLeftY() * 0.1
-      )
-    ); 
+    // RobotContainer.operatorController.leftBumper().whileTrue(
+    //   new ManualShooterHoodCommand(shooterHoodSubsystem,
+    //     () -> operatorController.getLeftY() * 0.1
+    //   )
+    // ); 
 
     // Turret Motor
-    RobotContainer.operatorController.leftBumper().whileTrue(
-      new ManualTurretCommand(ShooterTurretSubsystem,
-        () -> operatorController.getLeftX() * 0.3
-      )
-    );
+    // RobotContainer.operatorController.leftBumper().whileTrue(
+    //   new ManualTurretCommand(ShooterTurretSubsystem,
+    //     () -> operatorController.getLeftX() * 0.3
+    //   )
+    // );
 
     // Indexer Motor
     RobotContainer.operatorController.y().whileTrue(
@@ -141,18 +141,18 @@ public class RobotContainer {
     );
 
     //Intake Arm Motor
-    RobotContainer.driverController.rightBumper().whileTrue(
+    RobotContainer.operatorController.rightBumper().whileTrue(
       new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,
-        () -> driverController.getRightY() * 0.7
+        () -> operatorController.getRightY() * 0.5
       )
     );
 
   //  // Climber
-    RobotContainer.operatorController.b().whileTrue(
-      new ManualClimbCommand(climbSubsystem,
-        () -> 0.30
-      )
-    );
+    // RobotContainer.operatorController.b().whileTrue(
+    //   new ManualClimbCommand(climbSubsystem,
+    //     () -> 0.30
+    //   )
+    // );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {
