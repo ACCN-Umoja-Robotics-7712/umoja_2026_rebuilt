@@ -181,7 +181,10 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHeading(){
-        double yaw = -gyro.getYaw().getValueAsDouble();
+        double yaw = gyro.getYaw().getValueAsDouble();
+
+        // TODO: Gyro turning right when turning left, might be swapping diagonal motors or just switching heading direction
+        // double check heading is between 0-360, no negatives
 
         // if red flip
         if (!DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue)) {
