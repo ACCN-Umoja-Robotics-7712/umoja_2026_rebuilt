@@ -94,19 +94,6 @@ public final class Constants {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        // OLD OFFSETS
-        // public static final double kFrontLeftDriveAbsoluteEncoderOffsetRot = 0.849;
-        // public static final double kBackLeftDriveAbsoluteEncoderOffsetRot = 0.597;
-        // public static final double kFrontRightDriveAbsoluteEncoderOffsetRot = 0.148;
-        // public static final double kBackRightDriveAbsoluteEncoderOffsetRot = 0.613;
-
-        // OFFSETS
-        // If robot is positively off, subtract
-        // Else, add
-        // public static final double kFrontLeftDriveAbsoluteEncoderOffsetDegree = 61.645715;
-        // public static final double kFrontRightDriveAbsoluteEncoderOffsetDegree = 212.642091;
-        // public static final double kBackLeftDriveAbsoluteEncoderOffsetDegree = 163.585028;
-        // public static final double kBackRightDriveAbsoluteEncoderOffsetDegree = 89.405267;
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetDegree = 0;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetDegree = 0;
         public static final double kBackLeftDriveAbsoluteEncoderOffsetDegree = 0;
