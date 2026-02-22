@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.IntakeConstants;
 
@@ -21,11 +22,12 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private final TalonFX intakeArmMotorFollower;
     private final DigitalInput intakeArmZeroLimitSwitch;
     private final PIDController intakeArmPidController;
+    private final Trigger intakeArmTrigger;
 
     private double state = IntakeArmStates.NONE;
 
     public IntakeArmSubsystem() {
-        CANBus rio = new CANBus("rio");
+        CANBus rio = new CANBus("rio"); // TODO: Default Coast when disabled, and Brake when enabled
         intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, rio);
         intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, rio);
 
@@ -33,6 +35,8 @@ public class IntakeArmSubsystem extends SubsystemBase {
 
         intakeArmZeroLimitSwitch = new DigitalInput(IntakeConstants.intakeArmZeroLimitSwitchID);
         intakeArmPidController = new PIDController(IntakeConstants.armkP, 0, 0);
+
+        intakeArmTrigger = new Trigger(intakeArmZeroLimitSwitch::get);
     }
 
     public void runIntakeArm(double speed) {

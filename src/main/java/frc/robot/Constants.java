@@ -135,13 +135,13 @@ public final class Constants {
         public static final double kPfly = 0;
         public static final double kIfly = 0; 
 
-        public static final int hoodMotorID = 10;
+        public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
-        public static final int hoodAbsoluteEncoderID = 11;
+        public static final int hoodAbsoluteEncoderID = 0;
         public static final double kPhood = 0;
         // public static final double kIhood = 0; 
 
-        public static final int turretMotorID = 20;
+        public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 21;
         public static final double kPturret = 0;
@@ -201,7 +201,7 @@ public final class Constants {
     }
 
     public static final class ClimbConstants {
-        public static final int climbMotorID = 61;
+        public static final int climbMotorID = 61; // Update it on the REV Hardware (Do it for all other motor IDs and Encoder IDs)
 
         public static final int kP = 0;
         public static final int kI = 0;

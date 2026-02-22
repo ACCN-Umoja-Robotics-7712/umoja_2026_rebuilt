@@ -5,14 +5,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ClimbSubsystem;
 
 public class ManualClimbCommand extends Command {
-    ClimbSubsystem climbMotor;
+    ClimbSubsystem climbSubsystem;
     Supplier<Double> climbSpeed;
 
-    public ManualClimbCommand(ClimbSubsystem climbMotor, Supplier<Double> climbSpeed){
-        this.climbMotor = climbMotor;
+    public ManualClimbCommand(ClimbSubsystem climbSubsystem, Supplier<Double> climbSpeed){
+        this.climbSubsystem = climbSubsystem;
         this.climbSpeed = climbSpeed;
 
-        addRequirements(climbMotor);
+        addRequirements(climbSubsystem);
     }
 
     @Override
@@ -22,13 +22,13 @@ public class ManualClimbCommand extends Command {
 
     @Override
     public void execute(){
-        climbMotor.runClimber(climbSpeed.get());
+        climbSubsystem.runClimber(climbSpeed.get());
     }
 
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Manual Climber end interrupted:" + isInterrupted);
-        climbMotor.runClimber(0);
+        climbSubsystem.runClimber(0);
     }
 
     @Override

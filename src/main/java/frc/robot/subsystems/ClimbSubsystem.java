@@ -1,15 +1,12 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkFlexConfig.Presets;
-// import com.revrobotics.spark.config.LimitSwitchConfig; (Not sure if we need this)
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -28,7 +25,7 @@ public class ClimbSubsystem extends SubsystemBase {
     
     public ClimbSubsystem(){
 
-        SparkBaseConfig climbConfig = new SparkFlexConfig().smartCurrentLimit(80); // I also imported SparkMax incase we are using those
+        SparkBaseConfig climbConfig = new SparkFlexConfig().smartCurrentLimit(15); // Neo_550: Current Limit is 15
         climbConfig.idleMode(IdleMode.kBrake);
         climbConfig.inverted(false);
 
@@ -53,8 +50,12 @@ public class ClimbSubsystem extends SubsystemBase {
         } 
     }
 
-    public void setClimbSpeed(double wantedSpeed) {
-        climbMotor.set(climbPID.calculate(climbMotor.getEncoder().getVelocity(), wantedSpeed));
+    public void setClimbPosition(double wantedPosition) {
+        climbMotor.set(climbPID.calculate(climbMotor.getEncoder().getPosition(), wantedPosition));
+    }
+
+    public void zeroClimbPosition() {
+        climbMotor.getEncoder().setPosition(0);
     }
 
     public double getState(){
@@ -74,7 +75,7 @@ public class ClimbSubsystem extends SubsystemBase {
 
         if (state == ClimbStates.NONE) {
         } else {
-            setClimbSpeed(state);
+            setClimbPosition(state);
         }
     }
 }

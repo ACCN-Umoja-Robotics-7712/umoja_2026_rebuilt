@@ -27,8 +27,6 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 
     private double state = IntakeRollerStates.NONE;
     
-
-
     public IntakeRollerSubsystem() {
         intakeRollerMotor = new SparkFlex(IntakeConstants.rollerMotorID, MotorType.kBrushless);
         

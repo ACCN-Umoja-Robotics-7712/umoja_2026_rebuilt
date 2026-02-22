@@ -2,16 +2,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
@@ -22,11 +18,11 @@ public class IndexerSubsystem extends SubsystemBase {
     
     public IndexerSubsystem() {
         indexerMotor = new SparkFlex(IndexerConstants.indexerMotorID, MotorType.kBrushless);
-        SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(80);
+        SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO_Vortex
         indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
-        SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(80);
+        SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO_Vortex (Current Limit is 80) 
         kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 

@@ -17,23 +17,27 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.hoodStates;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
-
+    private final DutyCycleEncoder hoodAbsolDutyCycleEncoder;
     private final PIDController hoodPidController;
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder").publish();
 
     private double state = hoodStates.NONE;
 
+
     public ShooterHoodSubsystem() {
-        CANBus CANivore = new CANBus("CANivore");
-        hoodMotor = new TalonFX(TurretConstants.hoodMotorID, CANivore);
-        
+        CANBus rio = new CANBus("rio");
+        hoodMotor = new TalonFX(TurretConstants.hoodMotorID, rio);
+        hoodAbsolDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }
 
@@ -58,6 +62,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        absoluteEncodPublisher.accept(hoodMotor.getPosition().getValueAsDouble());
+        absoluteEncodPublisher.accept(hoodAbsolDutyCycleEncoder.get());
+        SmartDashboard.putNumber("Wanted angle", hoodAbsolDutyCycleEncoder.get());
     }
 }

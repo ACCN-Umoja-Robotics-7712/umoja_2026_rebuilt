@@ -106,53 +106,63 @@ public class RobotContainer {
 
     //Manual Commands (Just for Now)
     // Intake Roller
-    RobotContainer.driverController.leftBumper().whileTrue(
+    driverController.leftBumper().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> 0.30
+        () -> -0.30
       )
     );
 
     //Flywheel Motor
-    RobotContainer.operatorController.rightBumper().whileTrue(
+    operatorController.rightTrigger().whileTrue(
       new ShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.2
+        () -> -0.6
       )
     );
 
     // Hood Motor
-    // RobotContainer.operatorController.leftBumper().whileTrue(
-    //   new ManualShooterHoodCommand(shooterHoodSubsystem,
-    //     () -> operatorController.getLeftY() * 0.1
-    //   )
-    // ); 
+    operatorController.leftTrigger().whileTrue(
+      new ManualShooterHoodCommand(shooterHoodSubsystem,
+        () -> operatorController.getLeftY() * 0.1
+      )
+    ); 
 
     // Turret Motor
-    // RobotContainer.operatorController.leftBumper().whileTrue(
-    //   new ManualTurretCommand(ShooterTurretSubsystem,
-    //     () -> operatorController.getLeftX() * 0.3
-    //   )
-    // );
+    operatorController.leftBumper().whileTrue(
+      new ManualTurretCommand(ShooterTurretSubsystem,
+        () -> operatorController.getLeftX() * 0.3
+      )
+    );
 
     // Indexer Motor
-    RobotContainer.operatorController.y().whileTrue(
+    operatorController.y().whileTrue(
       new ManualIndexerCommand(indexerSubsystem,
         () -> 0.5
       )
     );
 
     //Intake Arm Motor
-    RobotContainer.operatorController.rightBumper().whileTrue(
+    operatorController.rightBumper().whileTrue(
       new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,
-        () -> operatorController.getRightY() * 0.5
+        () -> operatorController.getRightY() * 0.7
       )
     );
 
-  //  // Climber
-    // RobotContainer.operatorController.b().whileTrue(
-    //   new ManualClimbCommand(climbSubsystem,
-    //     () -> 0.30
-    //   )
-    // );
+   // Climber
+    operatorController.b()
+    .whileTrue(
+      new ManualClimbCommand(climbSubsystem,
+        () -> 0.3
+      )
+    );
+
+    // Climber (Other way)
+    operatorController.rightBumper()
+    .and(operatorController.b())
+    .whileTrue(
+      new ManualClimbCommand(climbSubsystem,
+        () -> -0.3
+      )
+    );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {
