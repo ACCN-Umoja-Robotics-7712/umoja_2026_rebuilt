@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.config.RobotConfig;
 
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -26,6 +27,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.GameConstants;
+import frc.robot.Constants.LimelightConstants;
+import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -253,50 +259,43 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         );
        
-        // LimelightHelpers.SetRobotOrientation(tagLeftLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        // LimelightHelpers.SetRobotOrientation(tagRightLimelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        // LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(tagLeftLimelightName);
-        // LimelightHelpers.PoseEstimate rightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(tagRightLimelightName);
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        // double forward = Constants.LimelightConstants.forwardOffset;
+        // double side = Constants.LimelightConstants.sideOffset;
+        double up = Constants.TurretConstants.upOffset;
+        double yaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees() + Constants.TurretConstants.rollOffset; // roll is the angle that would be the turret yaw, so add it to the robot yaw to get the turret yaw
+        double pitch = Constants.TurretConstants.pitchOffset;
+        double roll = Constants.TurretConstants.rollOffset;
+        double side = Constants.TurretConstants.sideOffset;
+        double forward = Constants.TurretConstants.forwardOffset;
+        LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.turretName, forward, side, up, pitch, yaw, roll);
+        LimelightHelpers.PoseEstimate turretMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.turretName);
 
-        // boolean doRejectLeftUpdate = false;
-        // boolean doRejectRightUpdate = false;
+        boolean rejectTurretUpdate = false;
 
-        // if (Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-        // {
-        //     doRejectLeftUpdate = true;
-        //     doRejectRightUpdate = true;
-        // }
-        // double visionTrustValue = 0.1;
-        // if (RobotContainer.gameState == GameConstants.Robot) {
-        //     visionTrustValue = 0;
-        // }
-        // if (leftMT2 != null) {
-        //     if (leftMT2.tagCount == 0)
-        //     {
-        //         doRejectLeftUpdate = true;
-        //     }
-        //     if (!doRejectLeftUpdate)
-        //     {
-        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
-        //         poseEstimator.addVisionMeasurement(
-        //             leftMT2.pose,
-        //             leftMT2.timestampSeconds);
-        //         doRejectRightUpdate = true;
-        //     }
-        // }
-        // if (rightMT2 != null) {
-        //     if (rightMT2.tagCount == 0)
-        //     {
-        //         doRejectRightUpdate = true;
-        //     }
-        //     if (!doRejectRightUpdate)
-        //     {
-        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue+1,visionTrustValue+1,9999999));
-        //         poseEstimator.addVisionMeasurement(
-        //             rightMT2.pose,
-        //             rightMT2.timestampSeconds);
-        //     }
-        // }
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+            rejectTurretUpdate = true;
+        }
+        double visionTrustValue = 0.1;
+        if (RobotContainer.gameState == GameConstants.Disabled) {
+            visionTrustValue = 0;
+        }
+        if (turretMT2 != null) {
+            if (turretMT2.tagCount == 0) {
+                rejectTurretUpdate = true;
+            } else if (turretMT2.tagCount == 1) {
+                visionTrustValue = 1;
+            }
+            
+            if (!rejectTurretUpdate)
+            {
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
+                poseEstimator.addVisionMeasurement(
+                    turretMT2.pose,
+                    turretMT2.timestampSeconds);
+            }
+        }
     }
 
     public void stopModules() {

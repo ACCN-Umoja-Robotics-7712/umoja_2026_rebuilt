@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.ShooterStates;
@@ -71,7 +72,9 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
     public void periodic() {
         if (state == ShooterStates.NONE) {
         } else {
-            setShooterSpeed(state);
+            setShooterVelocity(state);
         }
+
+        SmartDashboard.putNumber("Flywheel Velocity: ", flywheelMotorLeader.getEncoder().getVelocity());
     }
 }

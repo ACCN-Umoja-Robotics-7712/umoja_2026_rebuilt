@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -90,7 +91,8 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    RobotContainer.gameState = GameConstants.Robot;
+    RobotContainer.gameState = GameConstants.Disabled;
+    RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Coast);
   }
 
   @Override
@@ -104,6 +106,7 @@ public class Robot extends TimedRobot {
     // autoStartTimer = Timer.getTimestamp();
 
     RobotContainer.swerveSubsystem.zeroHeading();
+    RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Brake);
 
     // Reset and start the timer when the autonomous period begins
     timer.restart();
@@ -139,6 +142,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     RobotContainer.gameState = GameConstants.TeleOp;
+    RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Brake);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -156,6 +160,7 @@ public class Robot extends TimedRobot {
     //     RobotContainer.deepClimbSubsystem
     //   )
     // );
+  
     RobotContainer.swerveSubsystem.setDefaultCommand(
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,

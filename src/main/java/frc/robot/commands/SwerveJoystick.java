@@ -62,6 +62,11 @@ public class SwerveJoystick extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    boolean isLastShiftEndingAndEndGame = DriverStation.getMatchTime() <= 33;
+    boolean is3rdShiftEnding = DriverStation.getMatchTime() >= 55 && DriverStation.getMatchTime() <= 58; 
+    boolean is2ndShiftEnding = DriverStation.getMatchTime() >= 80 && DriverStation.getMatchTime() <= 83;
+    boolean is1stShiftEnding = DriverStation.getMatchTime() >= 105 && DriverStation.getMatchTime() <= 108;
+    boolean isTransitionShiftEnding = DriverStation.getMatchTime() >= 105 && DriverStation.getMatchTime() <= 108; 
       if (DriverStation.getMatchType() != MatchType.None && DriverStation.getMatchTime() <= 30) {
           j.setRumble(RumbleType.kBothRumble, 0.2);
       } else {

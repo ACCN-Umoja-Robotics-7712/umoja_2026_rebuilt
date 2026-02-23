@@ -9,8 +9,10 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.IntakeRollerStates;
 
 public class IndexerSubsystem extends SubsystemBase {
     private SparkFlex indexerMotor;
@@ -27,8 +29,13 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public void runIndexer(double speed) { // Can change the speed for each motor independently
-        indexerMotor.set(speed);
-        kickerMotor.set(speed*0.3);
+        indexerMotor.set(speed*0.26); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75%
+        kickerMotor.set(speed);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Indexer velocity", indexerMotor.getEncoder().getVelocity());
     }
 
 }

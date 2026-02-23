@@ -106,7 +106,6 @@ public class AlignWithTrench extends Command{
     @Override
     public boolean isFinished() {
         return false;
-        // return swerveSubsystem.hasCoralSensor();
     }
     
 }

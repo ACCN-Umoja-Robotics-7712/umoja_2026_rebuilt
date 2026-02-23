@@ -9,7 +9,11 @@ import com.revrobotics.spark.config.SparkMaxConfig.Presets;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -17,6 +21,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +31,7 @@ import frc.robot.Constants.hoodStates;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
-    private final DutyCycleEncoder hoodAbsolDutyCycleEncoder;
+    private final DutyCycleEncoder hoodAbsoluteDutyCycleEncoder;
     private final PIDController hoodPidController;
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder").publish();
@@ -37,7 +42,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     public ShooterHoodSubsystem() {
         CANBus rio = new CANBus("rio");
         hoodMotor = new TalonFX(TurretConstants.hoodMotorID, rio);
-        hoodAbsolDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
+        hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }
 
@@ -62,7 +67,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        absoluteEncodPublisher.accept(hoodAbsolDutyCycleEncoder.get());
-        SmartDashboard.putNumber("Wanted angle", hoodAbsolDutyCycleEncoder.get());
+        absoluteEncodPublisher.accept(hoodAbsoluteDutyCycleEncoder.get());
+        SmartDashboard.putNumber("Wanted hood angle", hoodAbsoluteDutyCycleEncoder.get());
     }
 }

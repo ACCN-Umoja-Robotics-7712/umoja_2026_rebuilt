@@ -16,6 +16,7 @@ import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.USB;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.ShooterFlywheelCommand;
+import frc.robot.commands.ShooterFlywheelCommandcopy;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
@@ -58,7 +59,7 @@ public class RobotContainer {
 
   public static double wantedAngle = -1;
   public static int shouldAutoFixDrift = 0; // 1 = auto drift, 0 = none
-  public static int gameState = GameConstants.Robot;
+  public static int gameState = GameConstants.Disabled;
   public static Trajectory currentTrajectory = null;
   public static Pose2d goalPose = null;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -115,14 +116,29 @@ public class RobotContainer {
     //Flywheel Motor
     operatorController.rightTrigger().whileTrue(
       new ShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.6
+        () -> -0.8
+      )
+    );
+
+    operatorController.rightTrigger()
+    .and(operatorController.a())
+    .whileTrue(
+      new ShooterFlywheelCommand(shooterFlywheelSubsystem,
+        () -> -1.0
+      )
+    );
+
+    // Secret Flywheel
+    driverController.rightTrigger().whileTrue(
+      new ShooterFlywheelCommandcopy(shooterFlywheelSubsystem,
+        () -> -0.8
       )
     );
 
     // Hood Motor
-    operatorController.leftTrigger().whileTrue(
+    operatorController.rightStick().whileTrue(
       new ManualShooterHoodCommand(shooterHoodSubsystem,
-        () -> operatorController.getLeftY() * 0.1
+        () -> operatorController.getRightY() * 0.1
       )
     ); 
 
@@ -134,33 +150,46 @@ public class RobotContainer {
     );
 
     // Indexer Motor
-    operatorController.y().whileTrue(
+    operatorController.leftTrigger().whileTrue(
       new ManualIndexerCommand(indexerSubsystem,
-        () -> 0.5
+        () -> 1.0
+      )
+    );
+    // Indexer Motor (Reverse)
+    operatorController.leftTrigger()
+    .and(operatorController.y())
+    .whileTrue(
+      new ManualIndexerCommand(indexerSubsystem,
+        () -> -1.0
       )
     );
 
     //Intake Arm Motor
-    operatorController.rightBumper().whileTrue(
-      new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,
-        () -> operatorController.getRightY() * 0.7
+    driverController.rightBumper().whileTrue(
+      new ManualIntakeArmCommand(intakeArmSubsystem,
+        () -> 0.19
+      )
+    );
+
+    driverController.x().whileTrue(
+      new ManualIntakeArmCommand(intakeArmSubsystem, 
+        () -> -0.1
       )
     );
 
    // Climber
-    operatorController.b()
+    operatorController.x()
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
-        () -> 0.3
+        () -> 1.0
       )
     );
 
     // Climber (Other way)
-    operatorController.rightBumper()
-    .and(operatorController.b())
+    operatorController.b()
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
-        () -> -0.3
+        () -> -1.0
       )
     );
   }

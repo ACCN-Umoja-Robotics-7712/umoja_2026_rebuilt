@@ -37,17 +37,17 @@ public class ClimbSubsystem extends SubsystemBase {
     }
     
     public void runClimber(double percent){
-        if(!climbLimitSwitch.get()){ //If the climber isn't fully down operate regularly
-            climbMotor.set(percent);
-        } 
-        else { //If the climber is down:
-            if(percent<0){ //If they want to move the climber up, allow it.
+        // if(!climbLimitSwitch.get()){ //If the climber isn't fully down operate regularly
+        //     climbMotor.set(percent);
+        // } 
+        // else { //If the climber is down:
+        //     if(percent<0){ //If they want to move the climber up, allow it.
                 climbMotor.set(percent);
-            }
-            else { //Don't let them bring the climber back down
-                climbMotor.set(0);
-            }
-        } 
+        //     }
+        //     else { //Don't let them bring the climber back down
+        //         climbMotor.set(0);
+        //     }
+        // } 
     }
 
     public void setClimbPosition(double wantedPosition) {

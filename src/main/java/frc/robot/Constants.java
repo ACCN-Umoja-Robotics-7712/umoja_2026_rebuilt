@@ -146,6 +146,14 @@ public final class Constants {
         public static final int turretLimitSwitchID = 21;
         public static final double kPturret = 0;
         // public static final double kIhood = 0; 
+
+        public static final int pitchOffset = 20; // 20 degrees up
+        public static final int rollOffset = 0; // 0 degrees to the right
+        public static final int upOffset = 0; // m up
+        public static final int forwardOffset = 0; // m forward
+        public static final int sideOffset = 0; // m to the right
+
+        public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
     }
 
     public static final class IntakeArmConstants { // Update Id's and limits
@@ -219,7 +227,7 @@ public final class Constants {
     }
 
     public static final class GameConstants {
-        public static final int Robot = 0;
+        public static final int Disabled = 0;
         public static final int Auto = 1;
         public static final int TeleOp = 2;
     }

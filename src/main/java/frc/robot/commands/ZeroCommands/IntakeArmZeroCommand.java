@@ -24,6 +24,5 @@ public class IntakeArmZeroCommand extends Command {
 
     @Override
     public void end(boolean isInterrupted){
-        // System.out.println("Intake zero'd");
     }
 }
