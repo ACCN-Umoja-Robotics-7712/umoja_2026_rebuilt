@@ -32,6 +32,6 @@ public class ShootCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return flywheel.didReachState();
+        return flywheel.didReachVelocity();
     }
 }

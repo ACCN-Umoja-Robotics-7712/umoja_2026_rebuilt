@@ -2,7 +2,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.VecBuilder;
@@ -17,8 +20,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -77,6 +82,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public PIDController yController;
     public ProfiledPIDController thetaController;
     public HolonomicDriveController holonomicDriveController;
+    public TrajectoryConfig trajectoryConfig;
     public final Timer timer = new Timer();
     // private double wantedAngle = 0;
     
@@ -107,44 +113,44 @@ public class SwerveSubsystem extends SubsystemBase {
     
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
-        // try{
-        //     config = RobotConfig.fromGUISettings();
-        // } catch (Exception e) {
-        // // Handle exception as needed
-        //     e.printStackTrace();
-        //     System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
-        //     return;
-        // }
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+        // Handle exception as needed
+            e.printStackTrace();
+            System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
+            return;
+        }
 
         // Configure AutoBuilder last
-        // AutoBuilder.configure(
-        //         this::getPose, // Robot pose supplier
-        //         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-        //         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        //         (speeds, feedforwards) -> setModuleStatesFromSpeeds(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        //         new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-        //                 new PIDConstants(Constants.AutoConstants.kPXController, Constants.AutoConstants.kIXController, 0), // Translation PID constants
-        //                 new PIDConstants(Constants.AutoConstants.kPThetaController, Constants.AutoConstants.kIThetaController, 0.0) // Rotation PID constants
-        //         ), // TODO: Auto PID
-        //         config,
-        //         () -> {
-        //             // Boolean supplier that controls when the path will be mirrored for the red alliance
-        //             // This will flip the path being followed to the red side of the field.
-        //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        AutoBuilder.configure(
+                this::getPose, // Robot pose supplier
+                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (speeds, feedforwards) -> setModuleStatesFromSpeeds(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(Constants.AutoConstants.kPXController, Constants.AutoConstants.kIXController, 0), // Translation PID constants
+                        new PIDConstants(Constants.AutoConstants.kPThetaController, Constants.AutoConstants.kIThetaController, 0.0) // Rotation PID constants
+                ), // TODO: Auto PID
+                config,
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-        //             var alliance = DriverStation.getAlliance();
-        //             if (alliance.isPresent()) {
-        //                 return alliance.get() == DriverStation.Alliance.Red;
-        //             }
-        //             return false;
-        //         },
-        //         this // Reference to this subsystem to set requirements
-        // );
+                    // var alliance = DriverStation.getAlliance();
+                    // if (alliance.isPresent()) {
+                    //     return alliance.get() == DriverStation.Alliance.Red;
+                    // }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
         
-        // trajectoryConfig = new TrajectoryConfig(
-        //         AutoConstants.kMaxSpeedMetersPerSecond,
-        //         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        //                 .setKinematics(DriveConstants.kDriveKinematics);
+        trajectoryConfig = new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                        .setKinematics(DriveConstants.kDriveKinematics);
 
         // 3. Define PID controllers for tracking trajectory
         shootController = new PIDController(0.1, 0, 0);
@@ -229,6 +235,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
     }
 
+    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
     StructArrayPublisher<SwerveModuleState> swerveStatePublisher = NetworkTableInstance.getDefault()
 .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
@@ -296,6 +303,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     turretMT2.timestampSeconds);
             }
         }
+        posePublisher.set(getPose());
     }
 
     public void stopModules() {

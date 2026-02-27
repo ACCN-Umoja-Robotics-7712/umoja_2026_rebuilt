@@ -20,16 +20,16 @@ public class IndexerSubsystem extends SubsystemBase {
     
     public IndexerSubsystem() {
         indexerMotor = new SparkFlex(IndexerConstants.indexerMotorID, MotorType.kBrushless);
-        SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO_Vortex
+        SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
         indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
-        SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO_Vortex (Current Limit is 80) 
+        SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex (Current Limit is 80) 
         kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void runIndexer(double speed) { // Can change the speed for each motor independently
-        indexerMotor.set(speed*0.26); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75%
+        indexerMotor.set(speed*0.30); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75%
         kickerMotor.set(speed);
     }
 

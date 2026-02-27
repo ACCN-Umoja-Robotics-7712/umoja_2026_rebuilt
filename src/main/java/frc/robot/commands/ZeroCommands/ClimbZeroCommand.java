@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ClimbSubsystem;
 
-public class IntakeArmZeroCommand extends Command {
+public class ClimbZeroCommand extends Command {
     
     ClimbSubsystem climbSubsystem;
 
-    public IntakeArmZeroCommand(ClimbSubsystem climbSubsystem){
+    public ClimbZeroCommand(ClimbSubsystem climbSubsystem){
         this.climbSubsystem = climbSubsystem;
     }
 
@@ -19,7 +19,8 @@ public class IntakeArmZeroCommand extends Command {
     }
 
     @Override
-    public void execute(){this.climbSubsystem.zeroClimbPosition();
+    public void execute(){
+        this.climbSubsystem.zeroClimbPosition();
     }
 
     @Override

@@ -3,11 +3,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeArmSubsystem;
 
-public class MoveIntakeArm extends Command{
+public class SetIntakeArmState extends Command{
     IntakeArmSubsystem arm;
     double armState;
 
-    public MoveIntakeArm(IntakeArmSubsystem arm, double armState){
+    public SetIntakeArmState(IntakeArmSubsystem arm, double armState){
         this.arm = arm;
         this.armState = armState;
 

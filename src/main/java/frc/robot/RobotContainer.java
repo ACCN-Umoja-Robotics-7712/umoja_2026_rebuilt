@@ -14,9 +14,12 @@ import frc.robot.subsystems.ShooterTurretSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.USB;
+import frc.robot.Constants.XBoxConstants;
 import frc.robot.commands.AlignWithTrench;
-import frc.robot.commands.ShooterFlywheelCommand;
-import frc.robot.commands.ShooterFlywheelCommandcopy;
+import frc.robot.commands.Autos;
+import frc.robot.commands.SetShooterFlywheelVelocityCommand;
+import frc.robot.commands.SwerveJoystick;
+import frc.robot.commands.SetShooterFlywheelVelocityCommand;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
@@ -26,7 +29,9 @@ import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
-
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -42,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  
 public class RobotContainer {
   // The robot's subsystems and commands are defined here
+  public final static Autos autos = new Autos();
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
   public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
@@ -86,6 +92,16 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
+    RobotContainer.swerveSubsystem.setDefaultCommand(
+        new SwerveJoystick(
+            RobotContainer.swerveSubsystem,
+            () -> RobotContainer.driverController.getLeftY(),
+            () -> RobotContainer.driverController.getLeftX(),
+            () -> RobotContainer.driverController.getRightX()
+        )
+    );
+
+
     // Align with trench
     RobotContainer.driverController.y().whileTrue(
       new AlignWithTrench(
@@ -115,23 +131,36 @@ public class RobotContainer {
 
     //Flywheel Motor
     operatorController.rightTrigger().whileTrue(
-      new ShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.8
+      new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
+        () -> 0.4
       )
     );
+
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 1.0);
+    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> -0.1);
+
+    // operatorController.rightTrigger()
+    // .and(operatorController.a())
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new SetShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -2300.0),
+    //     new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
+    //   )
+    // );
 
     operatorController.rightTrigger()
     .and(operatorController.a())
     .whileTrue(
-      new ShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -1.0
+      new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
+        () -> 0.8
+
       )
     );
-
-    // Secret Flywheel
-    driverController.rightTrigger().whileTrue(
-      new ShooterFlywheelCommandcopy(shooterFlywheelSubsystem,
-        () -> -0.8
+    operatorController.rightTrigger()
+    .and(operatorController.y())
+    .whileTrue(
+      new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
+        () -> 1.0
       )
     );
 
@@ -165,13 +194,13 @@ public class RobotContainer {
     );
 
     //Intake Arm Motor
-    driverController.rightBumper().whileTrue(
+    driverController.rightTrigger().whileTrue(
       new ManualIntakeArmCommand(intakeArmSubsystem,
-        () -> 0.19
+        () -> 0.19*driverController.getRawAxis(XBoxConstants.RT)
       )
     );
 
-    driverController.x().whileTrue(
+    driverController.leftTrigger().whileTrue(
       new ManualIntakeArmCommand(intakeArmSubsystem, 
         () -> -0.1
       )
@@ -219,7 +248,7 @@ public class RobotContainer {
           diff = diff * -1;
         }
       }
-      return -diff;
+      return diff;
     } else {
       return 0;
     }

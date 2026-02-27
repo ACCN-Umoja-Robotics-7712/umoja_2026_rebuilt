@@ -27,16 +27,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.Constants.hoodStates;
+import frc.robot.Constants.HoodStates;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
     private final DutyCycleEncoder hoodAbsoluteDutyCycleEncoder;
     private final PIDController hoodPidController;
     
-    DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder").publish();
+    DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder network").publish();
 
-    private double state = hoodStates.NONE;
+    private double state = HoodStates.NONE;
 
 
     public ShooterHoodSubsystem() {
@@ -46,10 +46,13 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }
 
-    public void setState(double hoodStates) {
-        if (this.state != hoodStates) {
+    public void setState(double hoodState) {
+        if (this.state != hoodState) {
             hoodPidController.reset();
-            this.state = hoodStates;
+            this.state = hoodState;
+        } else {
+            hoodPidController.reset();
+            this.state = HoodStates.NONE;
         }
     }
 
@@ -67,7 +70,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        absoluteEncodPublisher.accept(hoodAbsoluteDutyCycleEncoder.get());
-        SmartDashboard.putNumber("Wanted hood angle", hoodAbsoluteDutyCycleEncoder.get());
+        absoluteEncodPublisher.set(hoodAbsoluteDutyCycleEncoder.get());
+        SmartDashboard.putNumber("hood absolute encoder smart dashboard", hoodAbsoluteDutyCycleEncoder.get());
+        SmartDashboard.putNumber("hood encoder", hoodMotor.getPosition().getValueAsDouble());
     }
 }

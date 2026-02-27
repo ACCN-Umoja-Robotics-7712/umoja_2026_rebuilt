@@ -30,7 +30,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
-        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(80);
+        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15); // Neo_550: Current Limit is 15
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
         

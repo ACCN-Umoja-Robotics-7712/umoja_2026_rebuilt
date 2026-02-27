@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterFlywheelSubsystem;
 
-public class ShooterFlywheelCommand extends Command {
+public class SetShooterFlywheelVelocityCommand extends Command {
     ShooterFlywheelSubsystem flywheelMotorLeader;
     Supplier<Double> shooterRPMSupplier;
 
-    public ShooterFlywheelCommand(ShooterFlywheelSubsystem flywheelMotorLeader, Supplier<Double> shooterRPMSupplier){
+    public SetShooterFlywheelVelocityCommand(ShooterFlywheelSubsystem flywheelMotorLeader, Supplier<Double> shooterRPMSupplier){
         this.flywheelMotorLeader = flywheelMotorLeader;
         this.shooterRPMSupplier = shooterRPMSupplier;
         addRequirements(flywheelMotorLeader); 
@@ -22,17 +22,16 @@ public class ShooterFlywheelCommand extends Command {
 
     @Override
     public void execute(){
-        flywheelMotorLeader.runShooter(shooterRPMSupplier.get());
+        flywheelMotorLeader.setShooterVelocity(shooterRPMSupplier.get());
     }
 
     @Override
     public void end(boolean isInterrupted){
         System.out.println("SHOOTER END INTERRUPTED:" + isInterrupted);
-        flywheelMotorLeader.runShooter(0);
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return flywheelMotorLeader.didReachVelocity();
     }
 }

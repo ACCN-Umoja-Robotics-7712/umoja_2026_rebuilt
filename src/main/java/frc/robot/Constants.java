@@ -128,16 +128,17 @@ public final class Constants {
     }
 
     public static final class TurretConstants {
-        public static final int flywheelMotorLeaderID = 1;
-        public static final int flywheelMotorFollowerID = 2;
+        public static final int flywheelMotorLeaderID = 2;
+        public static final int flywheelMotorFollowerID = 1;
         public static final boolean flywheelMotorReversed = false;
-        public static final double kSfly = 0;
+        public static final double kSfly = 0.1;
+        public static final double kVfly = 0.0018;
         public static final double kPfly = 0;
         public static final double kIfly = 0; 
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
-        public static final int hoodAbsoluteEncoderID = 0;
+        public static final int hoodAbsoluteEncoderID = 1;
         public static final double kPhood = 0;
         // public static final double kIhood = 0; 
 
@@ -176,7 +177,7 @@ public final class Constants {
         public static final double SHOOTING = 1;
     };
  
-    public static final class hoodStates {
+    public static final class HoodStates {
         public static final double NONE = 0;
         public static final double FIRST = 1;
     };

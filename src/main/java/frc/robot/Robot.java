@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
   Pathfinding.setPathfinder(new LocalADStar());
   CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
     // autoChooser.addCmd("simple auto", RobotContainer.auto::simpleAuto);
-    // // autoChooser.addRoutine("auto2", RobotContainer.auto::auto2);
+    // autoChooser.addRoutine("auto2", RobotContainer.auto::auto2);
     // autoChooser.addRoutine("NONE", RobotContainer.auto::noneAuto);
 
 
@@ -111,8 +111,8 @@ public class Robot extends TimedRobot {
     // Reset and start the timer when the autonomous period begins
     timer.restart();
     
-    // m_autonomousCommand = RobotContainer.auto.getAuto();
-    m_autonomousCommand = null;
+    m_autonomousCommand = RobotContainer.autos.getSimpleAuto();
+    // m_autonomousCommand = null;
 
     // // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -161,14 +161,14 @@ public class Robot extends TimedRobot {
     //   )
     // );
   
-    RobotContainer.swerveSubsystem.setDefaultCommand(
-        new SwerveJoystick(
-            RobotContainer.swerveSubsystem,
-            () -> RobotContainer.driverController.getLeftY(),
-            () -> RobotContainer.driverController.getLeftX(),
-            () -> RobotContainer.driverController.getRightX()
-        )
-    );
+    // RobotContainer.swerveSubsystem.setDefaultCommand(
+    //     new SwerveJoystick(
+    //         RobotContainer.swerveSubsystem,
+    //         () -> RobotContainer.driverController.getLeftY(),
+    //         () -> RobotContainer.driverController.getLeftX(),
+    //         () -> RobotContainer.driverController.getRightX()
+    //     )
+    // );
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

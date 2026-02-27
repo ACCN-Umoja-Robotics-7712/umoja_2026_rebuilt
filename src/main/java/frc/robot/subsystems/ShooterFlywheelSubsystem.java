@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.commands.TurretCommand;
 import frc.robot.Constants.ShooterStates;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {
@@ -33,15 +34,17 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
-        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(80);
+        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(40);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(80);
+        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower is opposite of leader
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, 0);
-        FFController = new SimpleMotorFeedforward(TurretConstants.kSfly, 0,0);
+        FFController = new SimpleMotorFeedforward(TurretConstants.kSfly, TurretConstants.kVfly,0);
+        
+        flywheelPidController.setTolerance(5, 5); // 5 RPM tolerance and 5 RPM/s velocity tolerance
     }
     public void runShooter(double speed) {
         flywheelMotorLeader.set(speed);
@@ -53,8 +56,8 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader.setVoltage(feedforward + pid);
     }
     
-    public void setShooterSpeed(double wantedSpeed) {
-        flywheelMotorLeader.set(flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedSpeed));
+    public void setShooterSpeed(double wantedRPM) {
+        flywheelMotorLeader.set(flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedRPM));
     }
 
     public void setState(double ShooterState) {
@@ -64,7 +67,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         }
     }
 
-      public boolean didReachState() {
+      public boolean didReachVelocity() {
         return flywheelPidController.atSetpoint();
     }
     
