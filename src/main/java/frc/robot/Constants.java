@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -154,7 +156,13 @@ public final class Constants {
         public static final int forwardOffset = 0; // m forward
         public static final int sideOffset = 0; // m to the right
 
+        public static final double turretMotorEncoderToRotationRatio = 1.0/42.0; // encoder is 42 ticks per rotation
+        public static final double turretGearRatio = 1.0; // 1:1 gear ratio (update if you change the gear ratio)
+        public static final double turretPositionInRotationsRatio = turretMotorEncoderToRotationRatio * turretGearRatio; // rotations the turret turns per encoder rotation
+        public static final double turretPositionInDegreesRatio = 360.0 * turretMotorEncoderToRotationRatio; // degrees the turret turns per encoder rotation
         public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
+        public static final double turretCenterFromRobotCenterForwardLength = -0.3; // meters (negative cause turret is behind the robot center) 
+        public static final double turretCenterFromRobotCenterSideLength = -0.3; // meters (positive cause turret is to the right of the robot center)
     }
 
     public static final class IntakeArmConstants { // Update Id's and limits
@@ -174,17 +182,8 @@ public final class Constants {
     
     public static final class ShooterStates {
         public static final double NONE = 0;
-        public static final double SHOOTING = 1;
-    };
- 
-    public static final class HoodStates {
-        public static final double NONE = 0;
-        public static final double FIRST = 1;
-    };
-
-    public static final class TurretStates {
-        public static final double NONE = 0;
-        public static final double TRENCH = 90;
+        public static final double AUTO_BLUE = 1;
+        public static final double AUTO_RED = 2;
     };
 
     public static final class IntakeConstants {
@@ -235,8 +234,8 @@ public final class Constants {
 
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 4;
-        public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 2;
+        public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
 
@@ -362,6 +361,11 @@ public final class Constants {
         public static final double robotSideOffset = 0.0254; // intake is 1 inch to the left so move robot 1 inch to the right
         public static final double branchOffset = 0.1651; // 6.5 inches
         public static final double coralStationDivotOffset = 0.2032; // 8 inches
+    }
+
+    public static final class SHOOTING_POSES {
+        public static final Pose2d RED_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
+        public static final Pose2d BLUE_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
     }
 
     public static final PathConstraints pathConstraints = new PathConstraints(4.8, 1.3, 540, 720);

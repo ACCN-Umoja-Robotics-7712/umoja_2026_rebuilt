@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -85,10 +86,10 @@ public class Autos {
         chooser.addOption("tune", AUTO.TUNE_AUTO);
         chooser.setDefaultOption("Default", null);
         
-        ppChooser = AutoBuilder.buildAutoChooser();
+        // ppChooser = AutoBuilder.buildAutoChooser();
         // // Put the auto chooser on the dashboard
         SmartDashboard.putData("AUTOS", chooser);
-        SmartDashboard.putData("PP AUTOS", ppChooser);
+        // SmartDashboard.putData("PP AUTOS", ppChooser);
         
         // 1. Create trajectory settings
         this.trajectoryConfig = new TrajectoryConfig(
@@ -132,49 +133,52 @@ public class Autos {
     // }
 
   public Command getSimpleAuto() {
-    // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 60);
 
     Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
     Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
     posePublisher.set(endPose);
 
-    edu.wpi.first.math.trajectory.Trajectory traj = TrajectoryGenerator.generateTrajectory(
+    Trajectory traj = TrajectoryGenerator.generateTrajectory(
       swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
       List.of(),
       endPose,
       trajectoryConfig);
       
 
-    edu.wpi.first.math.trajectory.Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+    Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
       endPose,
       List.of(),
       pickUpPose,
       trajectoryConfig);
 
     // 4. Construct command to follow trajectory 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        traj,
-        swerveSubsystem::getPose, 
-        DriveConstants.kDriveKinematics,
-        xController,
-        yController,
-        thetaController,
-        swerveSubsystem::setModuleStates,
-        swerveSubsystem);
+    // SwerveControllerCommand path1 = new SwerveControllerCommand(
+    //     traj,
+    //     swerveSubsystem::getPose, 
+    //     DriveConstants.kDriveKinematics,
+    //     xController,
+    //     yController,
+    //     thetaController,
+    //     swerveSubsystem::setModuleStates,
+    //     swerveSubsystem);
 
-    SwerveControllerCommand swerveControllerCommand2 = new SwerveControllerCommand(
-        traj2,
-        swerveSubsystem::getPose, 
-        DriveConstants.kDriveKinematics,
-        xController,
-        yController,
-        thetaController,
-        swerveSubsystem::setModuleStates,
-        swerveSubsystem);
-    return swerveControllerCommand.andThen(
+    // SwerveControllerCommand path2 = new SwerveControllerCommand(
+    //     traj2,
+    //     swerveSubsystem::getPose, 
+    //     DriveConstants.kDriveKinematics,
+    //     xController,
+    //     yController,
+    //     thetaController,
+    //     swerveSubsystem::setModuleStates,
+    //     swerveSubsystem);
+    
+    Command path1 = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
+    Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+    
+    return path1.andThen(
         new ParallelCommandGroup(
             new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.30),
-            swerveControllerCommand2
+            path2
             )
     );
   }

@@ -31,6 +31,6 @@ public class SetShooterHoodStateCommand extends Command{
 
     @Override
     public boolean isFinished() {
-        return hood.didReachState();
+        return hood.didReachValue();
     }
 }

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -16,11 +18,13 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
@@ -84,7 +88,9 @@ public class SwerveSubsystem extends SubsystemBase {
     public HolonomicDriveController holonomicDriveController;
     public TrajectoryConfig trajectoryConfig;
     public final Timer timer = new Timer();
-    // private double wantedAngle = 0;
+    private double turretToTargetAngle = 0;
+    private double turretToTargetHoodValue = 0;
+    private double turretToTargetRPMValue = 0;
     
     public final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics, new Rotation2d(),
@@ -236,8 +242,19 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
+    StructArrayPublisher<Pose2d> allPointsPublisher = NetworkTableInstance.getDefault()
+.getStructArrayTopic("AllPosesArray", Pose2d.struct).publish();
+
     StructArrayPublisher<SwerveModuleState> swerveStatePublisher = NetworkTableInstance.getDefault()
 .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
+
+
+    public void publishRobotPositions() {
+        ArrayList<Pose2d> allPoints = new ArrayList<>();
+        allPoints.add(new Pose2d(3.568, 7.602, new Rotation2d(0)));
+        allPoints.add(new Pose2d(3.568, 7.602, new Rotation2d(0)));
+        allPointsPublisher.set(allPoints.toArray(new Pose2d[0]));
+    }
 
     @Override
     public void periodic() {
@@ -266,15 +283,13 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         );
        
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        // double forward = Constants.LimelightConstants.forwardOffset;
-        // double side = Constants.LimelightConstants.sideOffset;
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, getHeading(), 0, 0, 0, 0, 0);
         double up = Constants.TurretConstants.upOffset;
-        double yaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees() + Constants.TurretConstants.rollOffset; // roll is the angle that would be the turret yaw, so add it to the robot yaw to get the turret yaw
+        double yaw =  RobotContainer.shooterTurretSubsystem.getAngle()+180; // add 180 to switch from turret angle to camera angle
         double pitch = Constants.TurretConstants.pitchOffset;
         double roll = Constants.TurretConstants.rollOffset;
-        double side = Constants.TurretConstants.sideOffset;
-        double forward = Constants.TurretConstants.forwardOffset;
+        double forward = Constants.TurretConstants.turretCenterToCameraCentreLength * Math.cos(Math.toRadians(yaw)) + TurretConstants.turretCenterFromRobotCenterForwardLength;
+        double side = Constants.TurretConstants.turretCenterToCameraCentreLength * Math.sin(Math.toRadians(yaw)) + TurretConstants.turretCenterFromRobotCenterSideLength;
         LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.turretName, forward, side, up, pitch, yaw, roll);
         LimelightHelpers.PoseEstimate turretMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.turretName);
 
@@ -304,6 +319,13 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
         posePublisher.set(getPose());
+        
+        double[] angleDistance = updateTurretAngleDistanceToTarget(Constants.SHOOTING_POSES.RED_HUB_POSE);
+        this.turretToTargetAngle = angleDistance[0];
+        double distanceToTarget = angleDistance[1];
+        double[] rpmHoodValues = updateRPMHoodValues(distanceToTarget);
+        this.turretToTargetRPMValue = rpmHoodValues[0];
+        this.turretToTargetHoodValue = rpmHoodValues[1];
     }
 
     public void stopModules() {
@@ -359,5 +381,32 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("TARGET X ERROR", xError);
 
         setModuleStatesFromSpeeds(speeds);
+    }
+    
+    // TODO: Move to vision subsystem
+    public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
+        Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
+        double angleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);
+        double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
+        return new double[] {Math.toDegrees(angleToTarget) + 180 - RobotContainer.swerveSubsystem.getHeading(), distanceToTarget}; // add 180 to move turret to face front of robot, subtract robot heading to get turret angle relative to robot
+    }
+
+    public double getTurretToTargetAngle() {
+        return turretToTargetAngle;
+    }
+
+    public double getTurretToTargetRPMValue() {
+        return turretToTargetRPMValue;
+    }
+
+    public double getTurretToTargetHoodValue() {
+        return turretToTargetHoodValue;
+    }
+
+    public double[] updateRPMHoodValues(double distanceToTarget) {
+        // Example calculation for RPM and hood values based on distance
+        double rpm = 1000 + (distanceToTarget * 50); // Example formula
+        double hoodValue = 15 + (distanceToTarget * 0.1); // Example formula
+        return new double[] {rpm, hoodValue};
     }
 }

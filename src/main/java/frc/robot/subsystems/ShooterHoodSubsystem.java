@@ -19,6 +19,8 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.CurrentUnit;
@@ -27,7 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.Constants.HoodStates;
+import frc.robot.Constants.ShooterStates;
 
 public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
@@ -36,7 +38,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder network").publish();
 
-    private double state = HoodStates.NONE;
+    private double state = ShooterStates.NONE;
 
 
     public ShooterHoodSubsystem() {
@@ -46,17 +48,15 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }
 
-    public void setState(double hoodState) {
-        if (this.state != hoodState) {
-            hoodPidController.reset();
-            this.state = hoodState;
+    public void setState(double state) {
+        if (this.state != state) {
+            this.state = state;
         } else {
-            hoodPidController.reset();
-            this.state = HoodStates.NONE;
+            this.state = ShooterStates.NONE;
         }
     }
 
-    public boolean didReachState() {
+    public boolean didReachValue() {
         return hoodPidController.atSetpoint();
     }
 
@@ -64,8 +64,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         hoodMotor.set(speed);
     }
     
-    public void setHoodAngle(double wantedHoodRotation) {
-        hoodMotor.set(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodRotation));
+    public void setHoodValue(double wantedHoodValue) {
+        hoodMotor.set(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValue));
     }
 
     @Override
@@ -73,5 +73,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         absoluteEncodPublisher.set(hoodAbsoluteDutyCycleEncoder.get());
         SmartDashboard.putNumber("hood absolute encoder smart dashboard", hoodAbsoluteDutyCycleEncoder.get());
         SmartDashboard.putNumber("hood encoder", hoodMotor.getPosition().getValueAsDouble());
+        if (state != ShooterStates.NONE) {
+            setHoodValue(RobotContainer.swerveSubsystem.getTurretToTargetHoodValue());
+        }
     }
 }

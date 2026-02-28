@@ -15,10 +15,14 @@ import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.Constants.TurretStates;
+import frc.robot.Constants.ShooterStates;
 
 public class ShooterTurretSubsystem extends SubsystemBase {
     private final SparkMax turretMotor;
@@ -26,7 +30,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     private final PIDController turretPidController;
 
-    private double state = TurretStates.NONE;
+    private double state = ShooterStates.NONE;
+    private double wantedAngle = 0;
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
@@ -46,16 +51,24 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.set(speed);
     }
 
-    public void setTurretAngle(double wantedTurretRotation) {
-        turretMotor.set(turretPidController.calculate(turretMotor.getEncoder().getPosition(), wantedTurretRotation));
+    public double getAngle() {
+        return turretMotor.getEncoder().getPosition()*TurretConstants.turretPositionInDegreesRatio;
+    }
+    
+    public boolean didReachAngle() {
+        return turretPidController.atSetpoint();
     }
 
-    public void setState(double TurretStates) {
-        if (this.state != TurretStates) {
-            turretPidController.reset();
-            this.state = TurretStates;
-        }
+    public void setTurretAngle(double wantedTurretAngleInDegrees) {
+        turretMotor.set(turretPidController.calculate(getAngle(), wantedTurretAngleInDegrees));
+    }
 
+    public void setState(double state) {
+        if (this.state != state) {
+            this.state = state;
+        } else {
+            this.state = ShooterStates.NONE;
+        }
     }
 
     @Override
@@ -63,5 +76,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // if (turretZeroLimitSwitch.get()) {
         //     turretMotor.getEncoder().setPosition(0);
         // }
+        if (state != ShooterStates.NONE) {
+            setTurretAngle(RobotContainer.swerveSubsystem.getTurretToTargetAngle());
+        }
     }
 }

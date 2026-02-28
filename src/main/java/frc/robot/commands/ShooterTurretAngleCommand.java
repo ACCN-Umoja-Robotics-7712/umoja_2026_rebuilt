@@ -3,15 +3,16 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ShooterStates;
 import frc.robot.subsystems.ShooterTurretSubsystem;
 
-public class TurretCommand extends Command {
+public class SetTurretAngleCommand extends Command {
     ShooterTurretSubsystem turret;
-    Supplier<Double> turretSpeed;
+    Supplier<Double> wantedTurretAngle;
 
-    public TurretCommand(ShooterTurretSubsystem turret, Supplier<Double> turretSpeed){
+    public SetTurretAngleCommand(ShooterTurretSubsystem turret, Supplier<Double> wantedTurretAngle){
         this.turret = turret;
-        this.turretSpeed = turretSpeed;
+        this.wantedTurretAngle = wantedTurretAngle;
 
         addRequirements(turret); 
     }
@@ -23,7 +24,7 @@ public class TurretCommand extends Command {
 
     @Override
     public void execute(){
-        turret.runTurret(turretSpeed.get());
+        turret.setTurretAngle(wantedTurretAngle.get());
     }
 
     @Override

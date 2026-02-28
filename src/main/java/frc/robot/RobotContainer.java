@@ -53,7 +53,7 @@ public class RobotContainer {
   public final static ShooterFlywheelSubsystem shooterFlywheelSubsystem = new ShooterFlywheelSubsystem();
   public final static ShooterHoodSubsystem shooterHoodSubsystem = new ShooterHoodSubsystem();
   public final static IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
-  public final static ShooterTurretSubsystem ShooterTurretSubsystem = new ShooterTurretSubsystem();
+  public final static ShooterTurretSubsystem shooterTurretSubsystem = new ShooterTurretSubsystem();
   public final static ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   
   // Make sure after swerve because swerve configures
@@ -172,7 +172,7 @@ public class RobotContainer {
 
     // Turret Motor
     operatorController.leftBumper().whileTrue(
-      new ManualTurretCommand(ShooterTurretSubsystem,
+      new ManualTurretCommand(shooterTurretSubsystem,
         () -> operatorController.getLeftX() * 0.3
       )
     );

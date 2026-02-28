@@ -18,7 +18,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.commands.TurretCommand;
+import frc.robot.commands.SetTurretAngleCommand;
 import frc.robot.Constants.ShooterStates;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {
@@ -60,10 +60,9 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader.set(flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedRPM));
     }
 
-    public void setState(double ShooterState) {
-        if (this.state != ShooterState) {
-            flywheelPidController.reset();
-            this.state = ShooterState;
+    public void setState(double shooterState) {
+        if (this.state != shooterState) {
+            this.state = shooterState;
         }
     }
 
