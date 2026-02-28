@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -52,7 +53,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public double getAngle() {
-        return turretMotor.getEncoder().getPosition()*TurretConstants.turretPositionInDegreesRatio;
+        return Units.rotationsToDegrees(turretMotor.getEncoder().getPosition()*TurretConstants.turretGearRatio);
     }
     
     public boolean didReachAngle() {

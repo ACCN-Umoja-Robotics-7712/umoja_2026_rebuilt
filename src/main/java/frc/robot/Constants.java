@@ -156,20 +156,11 @@ public final class Constants {
         public static final int forwardOffset = 0; // m forward
         public static final int sideOffset = 0; // m to the right
 
-        public static final double turretMotorEncoderToRotationRatio = 1.0/42.0; // encoder is 42 ticks per rotation
-        public static final double turretGearRatio = 1.0; // 1:1 gear ratio (update if you change the gear ratio)
-        public static final double turretPositionInRotationsRatio = turretMotorEncoderToRotationRatio * turretGearRatio; // rotations the turret turns per encoder rotation
-        public static final double turretPositionInDegreesRatio = 360.0 * turretMotorEncoderToRotationRatio; // degrees the turret turns per encoder rotation
+        // public static final double turretMotorEncoderToRotationRatio = 1.0/42.0; // encoder is 42 ticks per rotation
+        public static final double turretGearRatio = 1/(16.0*1); // 16:1 16 motor rotations = 1 shaft rotation, x shaft rotations = 1 turret rotation
         public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
         public static final double turretCenterFromRobotCenterForwardLength = -0.3; // meters (negative cause turret is behind the robot center) 
         public static final double turretCenterFromRobotCenterSideLength = -0.3; // meters (positive cause turret is to the right of the robot center)
-    }
-
-    public static final class IntakeArmConstants { // Update Id's and limits
-        public static final double leftMotorID = 0;
-        public static final double rightMotorID = 1;
-        
-        public static final double armExtendLimit = 152.0; 
     }
 
     public static final class IntakeArmStates {
