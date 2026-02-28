@@ -201,13 +201,24 @@ public class SwerveSubsystem extends SubsystemBase {
     public double getHeading(){
         double yaw = gyro.getYaw().getValueAsDouble();
 
-        // TODO: Gyro turning right when turning left, might be swapping diagonal motors or just switching heading direction
-        // double check heading is between 0-360, no negatives
-
         // if red flip
         if (!DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue)) {
             yaw += 180;
         }
+
+        //Changes the -180->0 to 180->360 (0 to 180 stays the same)
+        double heading = Math.IEEEremainder(yaw, 360);
+        // double heading = (-gyro.getYaw() + 360)%180;
+        if(heading < 0){
+            heading = 180 + (180+heading);
+        }
+        SmartDashboard.putNumber("HEADING", heading);
+        return heading;
+    }
+
+    // This is the same as getHeading but does not apply the alliance flip. Use this when you need the actual gyro reading rather than the field-relative heading
+    public double getGlobalHeading() {
+        double yaw = gyro.getYaw().getValueAsDouble();
 
         //Changes the -180->0 to 180->360 (0 to 180 stays the same)
         double heading = Math.IEEEremainder(yaw, 360);
@@ -386,9 +397,9 @@ public class SwerveSubsystem extends SubsystemBase {
     // TODO: Move to vision subsystem
     public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
         Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
-        double angleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);
+        double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        return new double[] {Math.toDegrees(angleToTarget) + 180 - RobotContainer.swerveSubsystem.getHeading(), distanceToTarget}; // add 180 to move turret to face front of robot, subtract robot heading to get turret angle relative to robot
+        return new double[] { Math.toDegrees(turretAngleToTarget - RobotContainer.swerveSubsystem.getGlobalHeading()), distanceToTarget };// subtract robot heading to get turret angle relative to robot forward
     }
 
     public double getTurretToTargetAngle() {
