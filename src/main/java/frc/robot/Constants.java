@@ -89,10 +89,10 @@ public final class Constants {
         public static final int kFrontRightDriveAbsoluteEncoderPort = 27;
         public static final int kBackRightDriveAbsoluteEncoderPort = 17;
 
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = true;
-        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = true;
-        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
-        public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
+        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = true;
+        public static final boolean kBackRightDriveAbsoluteEncoderReversed = true;
 
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetDegree = 0;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetDegree = 0;
@@ -192,7 +192,7 @@ public final class Constants {
         public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
-        public static final int intakeArmZeroLimitSwitchID = 1;
+        public static final int intakeArmZeroLimitSwitchID = 0;
 
         public static final double rollerkP = 0.01;
         public static final double armkP = 0.01;
@@ -249,7 +249,7 @@ public final class Constants {
         // public static final double kIThetaController = 0.2;
         public static final double kPXController = 4.8;// 1.5
         public static final double kPYController = 4.8; // 1.5
-        public static final double kPThetaController = 2.5; // 2.5
+        public static final double kPThetaController = 1; // 2.5
 
         public static final double kIXController = 0.01; //0.01 
         public static final double kIYController = 0.01; // 0.01

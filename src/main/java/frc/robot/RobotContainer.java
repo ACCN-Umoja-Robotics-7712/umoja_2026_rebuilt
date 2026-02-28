@@ -47,7 +47,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  
 public class RobotContainer {
   // The robot's subsystems and commands are defined here
-  public final static Autos autos = new Autos();
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   public final static IntakeRollerSubsystem intakeRollerSubsystem = new IntakeRollerSubsystem();
   public final static IntakeArmSubsystem intakeArmSubsystem = new IntakeArmSubsystem();
@@ -56,9 +55,9 @@ public class RobotContainer {
   public final static IndexerSubsystem indexerSubsystem = new IndexerSubsystem();
   public final static ShooterTurretSubsystem ShooterTurretSubsystem = new ShooterTurretSubsystem();
   public final static ClimbSubsystem climbSubsystem = new ClimbSubsystem();
-
-
-
+  
+  // Make sure after swerve because swerve configures
+  // public final static Autos autos = new Autos();
 
   public final static CommandXboxController driverController = new CommandXboxController(USB.DRIVER_CONTROLLER);
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
@@ -95,9 +94,9 @@ public class RobotContainer {
     RobotContainer.swerveSubsystem.setDefaultCommand(
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,
-            () -> RobotContainer.driverController.getLeftY(),
-            () -> RobotContainer.driverController.getLeftX(),
-            () -> RobotContainer.driverController.getRightX()
+            () -> -RobotContainer.driverController.getLeftY(),
+            () -> -RobotContainer.driverController.getLeftX(),
+            () -> -RobotContainer.driverController.getRightX()
         )
     );
 
@@ -106,8 +105,8 @@ public class RobotContainer {
     RobotContainer.driverController.y().whileTrue(
       new AlignWithTrench(
         RobotContainer.swerveSubsystem,
-        () -> RobotContainer.driverController.getLeftY(),
-        () -> RobotContainer.driverController.getLeftX(),
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getLeftX(),
         0
       )
     );
@@ -115,15 +114,15 @@ public class RobotContainer {
     RobotContainer.driverController.a().whileTrue(
       new AlignWithTrench(
         RobotContainer.swerveSubsystem,
-        () -> RobotContainer.driverController.getLeftY(),
-        () -> RobotContainer.driverController.getLeftX(),
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getLeftX(),
         180
       )
     );
 
     //Manual Commands (Just for Now)
     // Intake Roller
-    driverController.leftBumper().whileTrue(
+    driverController.rightTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
         () -> -0.30
       )
@@ -193,18 +192,18 @@ public class RobotContainer {
       )
     );
 
-    //Intake Arm Motor
-    driverController.rightTrigger().whileTrue(
-      new ManualIntakeArmCommand(intakeArmSubsystem,
-        () -> 0.19*driverController.getRawAxis(XBoxConstants.RT)
-      )
-    );
+    // //Intake Arm Motor
+    // driverController.rightTrigger().whileTrue(
+    //   new ManualIntakeArmCommand(intakeArmSubsystem,
+    //     () -> 0.19*driverController.getRawAxis(XBoxConstants.RT)
+    //   )
+    // );
 
-    driverController.leftTrigger().whileTrue(
-      new ManualIntakeArmCommand(intakeArmSubsystem, 
-        () -> -0.1
-      )
-    );
+    // driverController.leftTrigger().whileTrue(
+    //   new ManualIntakeArmCommand(intakeArmSubsystem, 
+    //     () -> -0.1
+    //   )
+    // );
 
    // Climber
     operatorController.x()
@@ -248,7 +247,7 @@ public class RobotContainer {
           diff = diff * -1;
         }
       }
-      return diff;
+      return -diff;
     } else {
       return 0;
     }

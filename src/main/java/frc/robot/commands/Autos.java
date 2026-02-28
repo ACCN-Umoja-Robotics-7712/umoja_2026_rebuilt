@@ -28,8 +28,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.IntakeRollerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class Autos {
@@ -55,6 +57,8 @@ public class Autos {
     }
     private SendableChooser<AUTO> chooser;
     private SendableChooser<Command> ppChooser;
+    
+    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("Auto end pose", Pose2d.struct).publish();
     
     public Autos(){
 
@@ -128,12 +132,23 @@ public class Autos {
     // }
 
   public Command getSimpleAuto() {
-    // stationPosePublisher.set(endPose);
+    // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 60);
+
+    Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
+    Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
+    posePublisher.set(endPose);
 
     edu.wpi.first.math.trajectory.Trajectory traj = TrajectoryGenerator.generateTrajectory(
       swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
       List.of(),
-      swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 1, 0),
+      endPose,
+      trajectoryConfig);
+      
+
+    edu.wpi.first.math.trajectory.Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+      endPose,
+      List.of(),
+      pickUpPose,
       trajectoryConfig);
 
     // 4. Construct command to follow trajectory 
@@ -146,6 +161,21 @@ public class Autos {
         thetaController,
         swerveSubsystem::setModuleStates,
         swerveSubsystem);
-        return swerveControllerCommand;
+
+    SwerveControllerCommand swerveControllerCommand2 = new SwerveControllerCommand(
+        traj2,
+        swerveSubsystem::getPose, 
+        DriveConstants.kDriveKinematics,
+        xController,
+        yController,
+        thetaController,
+        swerveSubsystem::setModuleStates,
+        swerveSubsystem);
+    return swerveControllerCommand.andThen(
+        new ParallelCommandGroup(
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.30),
+            swerveControllerCommand2
+            )
+    );
   }
 }

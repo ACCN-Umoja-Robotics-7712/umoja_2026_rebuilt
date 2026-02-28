@@ -30,7 +30,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public void runIndexer(double speed) { // Can change the speed for each motor independently
         indexerMotor.set(speed*0.30); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75%
-        kickerMotor.set(speed);
+        kickerMotor.set(speed); 
     }
 
     @Override

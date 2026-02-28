@@ -78,6 +78,6 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
             setShooterVelocity(state);
         }
 
-        SmartDashboard.putNumber("Flywheel Velocity: ", flywheelMotorLeader.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Flywheel Velocity", flywheelMotorLeader.getEncoder().getVelocity());
     }
 }

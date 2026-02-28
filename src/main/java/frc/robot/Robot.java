@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.GameConstants;
+import frc.robot.commands.Autos;
 import frc.robot.commands.SwerveJoystick;
 
 /**
@@ -111,8 +112,10 @@ public class Robot extends TimedRobot {
     // Reset and start the timer when the autonomous period begins
     timer.restart();
     
-    m_autonomousCommand = RobotContainer.autos.getSimpleAuto();
-    // m_autonomousCommand = null;
+    // m_autonomousCommand = RobotContainer.autos.getSimpleAuto();
+    m_autonomousCommand = null;
+    Autos auto = new Autos();
+    m_autonomousCommand = auto.getSimpleAuto();
 
     // // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
