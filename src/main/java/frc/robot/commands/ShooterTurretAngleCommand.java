@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterStates;
 import frc.robot.subsystems.ShooterTurretSubsystem;
 
-public class SetTurretAngleCommand extends Command {
+public class ShooterTurretAngleCommand extends Command {
     ShooterTurretSubsystem turret;
     Supplier<Double> wantedTurretAngle;
 
-    public SetTurretAngleCommand(ShooterTurretSubsystem turret, Supplier<Double> wantedTurretAngle){
+    public ShooterTurretAngleCommand(ShooterTurretSubsystem turret, Supplier<Double> wantedTurretAngle){
         this.turret = turret;
         this.wantedTurretAngle = wantedTurretAngle;
 

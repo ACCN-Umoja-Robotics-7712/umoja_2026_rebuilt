@@ -18,7 +18,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.commands.SetTurretAngleCommand;
+import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.Constants.ShooterStates;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {

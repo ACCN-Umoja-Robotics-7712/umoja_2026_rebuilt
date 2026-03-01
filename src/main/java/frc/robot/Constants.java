@@ -4,14 +4,18 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.util.Color;
 
 /**
@@ -35,8 +39,22 @@ public final class Constants {
         public static final int OPERATOR_LT = 2;
     }
 
+    public final class RobotConstants {
+        public static final double kRobotWeightKG = Units.lbsToKilograms(120);
+        public static final double kBumperWeightKG = Units.lbsToKilograms(8);
+        public static final double kBatteryWeightKG = Units.lbsToKilograms(14);
+        public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
+        public static final double kRobotMOI = 6.883; // kg*m^2, moment of inertia about the center of mass
+    }
+
     public final class ModuleConstants{
+        // For RobotConfig + robot setup
         public static final double kWheelDiameterMeters = 0.1143; // 4.5 inches
+        public static final double kWheelCOF = 1.200; // wheel COF inches
+        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(1);
+        public static final int kDriveMotorCurrentLimit = 60;
+        public static final int kNumMotorsPerModule = 1;
+
         // gear ratio from thrifty swerve https://thethriftybot.com/products/thrify-swerve gear ratio options (pinion size 12 + second stage gear 16t? (only confirmed pinion))
         public static final double kDriveMotorGearRatio = 1/6.0;
         public static final double kTurningMotorGearRatio = 1 / 21.42857142857143;//(12*14)/(72*50) based on #of teeth
@@ -57,7 +75,7 @@ public final class Constants {
 
         public static final double kRobotRadius = Math.sqrt(Math.pow(kTrackWidth, 2) + Math.pow(kWheelBase, 2)) / 2;
 
-        //TODO: Update to positive left positive forward FL, Fr, BL, BR
+        //TODO: Update to positive left positive forward FL, FR, BL, BR
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
@@ -359,5 +377,8 @@ public final class Constants {
         public static final Pose2d BLUE_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
     }
 
+    // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
+    public static final ModuleConfig moduleConfig = new ModuleConfig(ModuleConstants.kWheelDiameterMeters/2, AutoConstants.kMaxSpeedMetersPerSecond, ModuleConstants.kWheelCOF, ModuleConstants.kDriveMotor, ModuleConstants.kDriveMotorCurrentLimit, ModuleConstants.kNumMotorsPerModule);
+    public static final RobotConfig robotConfig = new RobotConfig(RobotConstants.kRobotTotalWeightKG, RobotConstants.kRobotMOI, moduleConfig, DriveConstants.kDriveKinematics.getModules());
     public static final PathConstraints pathConstraints = new PathConstraints(4.8, 1.3, 540, 720);
 }
