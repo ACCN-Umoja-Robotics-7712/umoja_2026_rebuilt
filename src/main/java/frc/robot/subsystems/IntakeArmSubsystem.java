@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -31,6 +32,14 @@ public class IntakeArmSubsystem extends SubsystemBase {
         CANBus rio = new CANBus("rio"); // TODO: Default Coast when disabled, and Brake when enabled
         intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, rio);
         intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, rio);
+        CurrentLimitsConfigs armCurrentLimits = new CurrentLimitsConfigs();
+        armCurrentLimits.StatorCurrentLimit = 80;
+        armCurrentLimits.StatorCurrentLimitEnable = true;
+        armCurrentLimits.SupplyCurrentLimit = 30;
+        armCurrentLimits.SupplyCurrentLimitEnable = true;
+        intakeArmMotorLeader.getConfigurator().apply(armCurrentLimits);
+        intakeArmMotorFollower.getConfigurator().apply(armCurrentLimits);
+
 
         intakeArmMotorFollower.setControl(new Follower(intakeArmMotorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
 

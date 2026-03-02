@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -41,7 +42,21 @@ public class SwerveModule {
         this.absoluteEncoderDegreeOffset = absoluteEncoderOffset;
 
         driveMotor = new TalonFX(driveMotorId, CANivoreBus);
+
+        CurrentLimitsConfigs driveCurrentLimits = new CurrentLimitsConfigs();
+        driveCurrentLimits.StatorCurrentLimit = 120;
+        driveCurrentLimits.StatorCurrentLimitEnable = true;
+        driveCurrentLimits.SupplyCurrentLimit = 70;
+        driveCurrentLimits.SupplyCurrentLimitEnable = true;
+        driveMotor.getConfigurator().apply(driveCurrentLimits);
+
+
         turnMotor = new TalonFX(turnMotorId, CANivoreBus);
+        
+        CurrentLimitsConfigs turnCurrentLimit = new CurrentLimitsConfigs();
+        turnCurrentLimit.StatorCurrentLimit = 60;
+        turnCurrentLimit.StatorCurrentLimitEnable = true;
+        turnMotor.getConfigurator().apply(turnCurrentLimit);
         // turnMotor = new SparkMax(turnMotorId, MotorType.kBrushless);
 
         // SparkMaxConfig driveConfig = new SparkMaxConfig();

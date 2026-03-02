@@ -44,6 +44,11 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     public ShooterHoodSubsystem() {
         CANBus rio = new CANBus("rio");
         hoodMotor = new TalonFX(TurretConstants.hoodMotorID, rio);
+        CurrentLimitsConfigs hoodCurrentLimits = new CurrentLimitsConfigs();
+        hoodCurrentLimits.StatorCurrentLimit = 20;
+        hoodCurrentLimits.StatorCurrentLimitEnable = true;
+        hoodMotor.getConfigurator().apply(hoodCurrentLimits);
+
         hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
     }

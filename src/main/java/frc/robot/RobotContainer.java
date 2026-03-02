@@ -111,12 +111,30 @@ public class RobotContainer {
       )
     );
 
+    RobotContainer.driverController.x().whileTrue(
+      new AlignWithTrench(
+        RobotContainer.swerveSubsystem,
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getLeftX(),
+        90
+      )
+    );
+
     RobotContainer.driverController.a().whileTrue(
       new AlignWithTrench(
         RobotContainer.swerveSubsystem,
         () -> -RobotContainer.driverController.getLeftY(),
         () -> -RobotContainer.driverController.getLeftX(),
         180
+      )
+    );
+
+    RobotContainer.driverController.b().whileTrue(
+      new AlignWithTrench(
+        RobotContainer.swerveSubsystem,
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getLeftX(),
+        270
       )
     );
 
@@ -135,31 +153,24 @@ public class RobotContainer {
       )
     );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 1.0);
-    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> -0.1);
-
-    // operatorController.rightTrigger()
-    // .and(operatorController.a())
-    // .whileTrue(
-    //   Commands.parallel(
-    //     new SetShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -2300.0),
-    //     new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
-    //   )
-    // );
-
     operatorController.rightTrigger()
     .and(operatorController.a())
     .whileTrue(
       new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> 0.8
+        () -> -0.7
 
       )
     );
+
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 1.0);
+    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
+
     operatorController.rightTrigger()
-    .and(operatorController.y())
+    .and(operatorController.a())
     .whileTrue(
-      new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> 1.0
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3000.0),
+        new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
       )
     );
 
@@ -206,7 +217,7 @@ public class RobotContainer {
     // );
 
    // Climber
-    driverController.x()
+    driverController.leftStick()
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
         () -> 1.0
@@ -214,7 +225,7 @@ public class RobotContainer {
     );
 
     // Climber (Other way)
-    driverController.b()
+    driverController.rightStick()
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
         () -> -1.0
