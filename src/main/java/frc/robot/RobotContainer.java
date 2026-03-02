@@ -131,7 +131,7 @@ public class RobotContainer {
     //Flywheel Motor
     operatorController.rightTrigger().whileTrue(
       new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> 0.4
+        () -> -0.45 // Check if it is the right direction (negative is good for now). 45% is good
       )
     );
 
@@ -164,7 +164,7 @@ public class RobotContainer {
     );
 
     // Hood Motor
-    operatorController.rightStick().whileTrue(
+    operatorController.rightBumper().whileTrue(
       new ManualShooterHoodCommand(shooterHoodSubsystem,
         () -> operatorController.getRightY() * 0.1
       )
@@ -206,7 +206,7 @@ public class RobotContainer {
     // );
 
    // Climber
-    operatorController.x()
+    driverController.x()
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
         () -> 1.0
@@ -214,7 +214,7 @@ public class RobotContainer {
     );
 
     // Climber (Other way)
-    operatorController.b()
+    driverController.b()
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
         () -> -1.0

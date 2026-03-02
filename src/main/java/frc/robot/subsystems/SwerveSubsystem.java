@@ -329,6 +329,37 @@ public class SwerveSubsystem extends SubsystemBase {
                     turretMT2.timestampSeconds);
             }
         }
+        
+        LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.gamePieceName, LimelightConstants.gamePieceForward, LimelightConstants.gamePieceSide, LimelightConstants.gamePieceHeight, 0, LimelightConstants.gamePieceAngle, 0);
+        LimelightHelpers.PoseEstimate gpMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.gamePieceName);
+
+        boolean rejectGPUpdate = false;
+
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+            rejectGPUpdate = true;
+        }
+
+        double visionTrustGPValue = 0.1;
+        if (RobotContainer.gameState == GameConstants.Disabled) {
+            visionTrustGPValue = 0;
+        }
+        if (gpMT2 != null) {
+            if (gpMT2.tagCount == 0) {
+                rejectGPUpdate = true;
+            } else if (gpMT2.tagCount == 1) {
+                visionTrustGPValue = 1;
+            }
+            
+            if (!rejectGPUpdate)
+            {
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustGPValue,visionTrustGPValue,9999999));
+                poseEstimator.addVisionMeasurement(
+                    gpMT2.pose,
+                    gpMT2.timestampSeconds);
+            }
+        }
+
         posePublisher.set(getPose());
         
         double[] angleDistance = updateTurretAngleDistanceToTarget(Constants.SHOOTING_POSES.RED_HUB_POSE);

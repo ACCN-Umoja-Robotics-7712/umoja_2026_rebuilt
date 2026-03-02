@@ -15,7 +15,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.wpilibj.util.Color;
 
 /**
@@ -40,7 +39,9 @@ public final class Constants {
     }
 
     public final class RobotConstants {
-        public static final double kRobotWeightKG = Units.lbsToKilograms(120);
+        public static final double robotWidth = 28;
+        public static final double robotLength = 26;
+        public static final double kRobotWeightKG = Units.lbsToKilograms(110);
         public static final double kBumperWeightKG = Units.lbsToKilograms(8);
         public static final double kBatteryWeightKG = Units.lbsToKilograms(14);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
@@ -49,11 +50,11 @@ public final class Constants {
 
     public final class ModuleConstants{
         // For RobotConfig + robot setup
-        public static final double kWheelDiameterMeters = 0.1143; // 4.5 inches
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(4.5); // 4.5 inches
         public static final double kWheelCOF = 1.200; // wheel COF inches
         public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(1);
         public static final int kDriveMotorCurrentLimit = 60;
-        public static final int kNumMotorsPerModule = 1;
+        public static final int kNumMotorsPerModule = 1; // number of drive motors per module (not including turning motors)
 
         // gear ratio from thrifty swerve https://thethriftybot.com/products/thrify-swerve gear ratio options (pinion size 12 + second stage gear 16t? (only confirmed pinion))
         public static final double kDriveMotorGearRatio = 1/6.0;
@@ -68,9 +69,9 @@ public final class Constants {
     }
 
     public static final class DriveConstants {
-        public static final double kTrackWidth = Units.inchesToMeters(28-2.5); // 28 width (motor center 2.5 inches from edge)
+        public static final double kTrackWidth = Units.inchesToMeters(RobotConstants.robotWidth-2.5); // 28 width (motor center 2.5 inches from edge)
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(26-2.5); // 26 length
+        public static final double kWheelBase = Units.inchesToMeters(RobotConstants.robotLength-2.5); // 26 length
         // Distance between front and back wheels
 
         public static final double kRobotRadius = Math.sqrt(Math.pow(kTrackWidth, 2) + Math.pow(kWheelBase, 2)) / 2;
@@ -213,8 +214,9 @@ public final class Constants {
     };
 
     public static final class IndexerConstants {
-        public static final int indexerMotorID = 3;
+        public static final int indexerMotorLeaderID = 3;
         public static final int kickerMotorID = 5;
+        public static final int indexerMotorFollowerID = 34;
     }
 
     public static final class ClimbConstants {
@@ -344,7 +346,17 @@ public final class Constants {
         public static final int Estimate_Distance = 20;
         public static final int aprilTagPipeline = 0;
         public static final int gamePiecePipeline = 1;
+
+        // Camera center about 19.5 inches up from the ground
+        public static final double gamePieceHeight = Units.inchesToMeters(19.5);
+        // Camera center is from 8 inches from back + 1.5 inch forward
+        public static final double gamePieceForward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 1.5);
+        // Camera center is from right of robot + 2 * 1 inch in + 3.75 inch camera mount - 0.088583 to center of mounting hole - 2.835 distance between holes
+        public static final double gamePieceSide = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 3.75 + 0.088583 + 2.835);
+        
+        public static final double gamePieceAngle = -10; // degrees, angle of the camera relative to horizontal, positive is looking up
     }
+    
 
     public static final class Colors {
         public static final Color red = Color.kRed;

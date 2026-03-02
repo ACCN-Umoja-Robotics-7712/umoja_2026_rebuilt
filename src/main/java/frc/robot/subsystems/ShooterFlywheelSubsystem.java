@@ -46,6 +46,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         
         flywheelPidController.setTolerance(5, 5); // 5 RPM tolerance and 5 RPM/s velocity tolerance
     }
+    
     public void runShooter(double speed) {
         flywheelMotorLeader.set(speed);
     }
