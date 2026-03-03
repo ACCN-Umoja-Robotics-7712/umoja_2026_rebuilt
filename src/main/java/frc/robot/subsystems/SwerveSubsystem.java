@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -253,6 +254,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
+    StructPublisher<Pose2d> turretPublisher = NetworkTableInstance.getDefault().getStructTopic("TurretPose", Pose2d.struct).publish();
     StructArrayPublisher<Pose2d> allPointsPublisher = NetworkTableInstance.getDefault()
 .getStructArrayTopic("AllPosesArray", Pose2d.struct).publish();
 
@@ -262,8 +264,42 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void publishRobotPositions() {
         ArrayList<Pose2d> allPoints = new ArrayList<>();
-        allPoints.add(new Pose2d(3.568, 7.602, new Rotation2d(0)));
-        allPoints.add(new Pose2d(3.568, 7.602, new Rotation2d(0)));
+        // allPoints.add(new Pose2d(3.568, 7.602, new Rotation2d(0)));
+        // allPoints.add(new Pose2d(3.568, 7.602, new Rotation2d(0)));
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_DEPOT_CENTER);
+
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_DEPOT_CORNER);
+
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_HALF_LEFT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_HALF_RIGHT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_TRENCH_LEFT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_TRENCH_RIGHT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_HUB_CENTER);
+        
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_OUTPOST_CENTER);
+        
+        allPoints.add(Constants.SHOOTING_POSES.BLUE_TOWER_CENTER);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_DEPOT_CENTER);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_DEPOT_CORNER);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_HALF_LEFT);
+
+        allPoints.add(Constants.SHOOTING_POSES.RED_HALF_RIGHT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_HUB_CENTER);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_LEFT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_RIGHT);
+        
+        allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_RIGHT);
+        
         allPointsPublisher.set(allPoints.toArray(new Pose2d[0]));
     }
 
@@ -296,12 +332,15 @@ public class SwerveSubsystem extends SubsystemBase {
        
         LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, getHeading(), 0, 0, 0, 0, 0);
         double up = Constants.TurretConstants.upOffset;
-        double yaw =  RobotContainer.shooterTurretSubsystem.getAngle()+180; // add 180 to switch from turret angle to camera angle
+        double yaw =  RobotContainer.shooterTurretSubsystem.getAngle();
         double pitch = Constants.TurretConstants.pitchOffset;
         double roll = Constants.TurretConstants.rollOffset;
-        double forward = Constants.TurretConstants.turretCenterToCameraCentreLength * Math.cos(Math.toRadians(yaw)) + TurretConstants.turretCenterFromRobotCenterForwardLength;
-        double side = Constants.TurretConstants.turretCenterToCameraCentreLength * Math.sin(Math.toRadians(yaw)) + TurretConstants.turretCenterFromRobotCenterSideLength;
-        LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.turretName, forward, side, up, pitch, yaw, roll);
+        double forward = Constants.TurretConstants.turretCenterToCameraCentreLength + Math.sin(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterForwardLength;
+        double side = Constants.TurretConstants.turretCenterToCameraCentreLength + -Math.cos(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterSideLength;
+        LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.turretName, forward, side, up, pitch, yaw + 180, roll);
+        Pose3d turretCameraPose3d = LimelightHelpers.getCameraPose3d_RobotSpace(LimelightConstants.turretName);
+        Pose2d turretCameraRobotPose = turretCameraPose3d.toPose2d();
+
         LimelightHelpers.PoseEstimate turretMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.turretName);
 
         boolean rejectTurretUpdate = false;
@@ -360,6 +399,10 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
 
+        
+        Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(getPose().getTranslation());
+        Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation());
+        turretPublisher.set(turretCameraFieldPose);
         posePublisher.set(getPose());
         
         double[] angleDistance = updateTurretAngleDistanceToTarget(Constants.SHOOTING_POSES.RED_HUB_POSE);
