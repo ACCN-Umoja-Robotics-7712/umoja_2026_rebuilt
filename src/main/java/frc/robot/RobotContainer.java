@@ -67,6 +67,7 @@ public class RobotContainer {
   public static int gameState = GameConstants.Disabled;
   public static Trajectory currentTrajectory = null;
   public static Pose2d goalPose = null;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -142,14 +143,14 @@ public class RobotContainer {
     // Intake Roller
     driverController.rightTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -0.30
+        () -> -0.30 // Try 40%? 30 is minimum needed to intake smoothly
       )
     );
 
     //Flywheel Motor
     operatorController.rightTrigger().whileTrue(
       new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.45 // Check if it is the right direction (negative is good for now). 45% is good
+        () -> -0.3 // Check if it is the right direction (negative is good for now). 45% is good
       )
     );
 

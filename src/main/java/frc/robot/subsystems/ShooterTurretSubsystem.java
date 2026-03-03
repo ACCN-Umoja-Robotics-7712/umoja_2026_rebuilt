@@ -61,7 +61,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
-        turretMotor.set(turretPidController.calculate(getAngle(), wantedTurretAngleInDegrees));
+        double limitTo360 = wantedTurretAngleInDegrees % 360;
+        turretMotor.set(turretPidController.calculate(getAngle(), limitTo360)); // SHOULD TURN ANY NEGTIVE VALUE TO A POSITIVE (-90 TO 270)
     }
 
     public void setState(double state) {

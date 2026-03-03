@@ -21,7 +21,7 @@ public class ClimbSubsystem extends SubsystemBase {
     SparkMax climbMotor;
     private double state = Constants.ClimbStates.NONE; 
     PIDController climbPID = new PIDController(ClimbConstants.kP, ClimbConstants.kI, 0);
-    private final DigitalInput climbLimitSwitch = new DigitalInput(2);
+    private final DigitalInput climbLimitSwitch = new DigitalInput(ClimbConstants.climbLimitSwitchID);
     
     public ClimbSubsystem(){
 

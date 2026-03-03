@@ -430,7 +430,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        return new double[] { Math.toDegrees(turretAngleToTarget - RobotContainer.swerveSubsystem.getGlobalHeading()), distanceToTarget };// subtract robot heading to get turret angle relative to robot forward
+        return new double[] { Math.toDegrees(turretAngleToTarget - RobotContainer.swerveSubsystem.getGlobalHeading()), distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
 
     public double getTurretToTargetAngle() {

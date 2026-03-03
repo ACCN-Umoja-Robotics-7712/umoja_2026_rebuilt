@@ -221,7 +221,7 @@ public final class Constants {
 
     public static final class ClimbConstants {
         public static final int climbMotorID = 61; // Update it on the REV Hardware (Do it for all other motor IDs and Encoder IDs)
-
+        public static final int climbLimitSwitchID = 2;
         public static final int kP = 0;
         public static final int kI = 0;
     }
@@ -385,8 +385,42 @@ public final class Constants {
     }
 
     public static final class SHOOTING_POSES {
-        public static final Pose2d RED_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
+
+        // BLUE SIDE
         public static final Pose2d BLUE_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
+        
+        public static final Pose2d BLUE_HUB_CENTER = new Pose2d(3.439, 3.987, new Rotation2d(0));
+        public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
+        public static final Pose2d BLUE_TOWER_CENTER = new Pose2d(1.567, 3.739, new Rotation2d(0));
+        public static final Pose2d BLUE_DEPOT_CENTER = new Pose2d(1.212, 5.923, new Rotation2d(0));
+        public static final Pose2d BLUE_DEPOT_CORNER = new Pose2d(0.491, 7.074, new Rotation2d(270));
+        
+        public static final Pose2d BLUE_NEUTRAL_LEFT = new Pose2d(7.775, 6.902, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d BLUE_NEUTRAL_RIGHT = new Pose2d(7.775, 0.877, new Rotation2d(0)); // Check if intake is facing fuel
+        public static final Pose2d BLUE_TRENCH_LEFT = new Pose2d(3.504, 7.559, new Rotation2d(0)); // Check if intake is facing neutral zone
+        public static final Pose2d BLUE_TRENCH_RIGHT = new Pose2d(3.504, 0.436, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
+        
+        public static final Pose2d BLUE_HALF_LEFT = new Pose2d(2.159, 5.988, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(2.159, 2.168, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
+
+        //RED SIDE
+        public static final Pose2d RED_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
+
+        public static final Pose2d RED_HUB_CENTER = new Pose2d(13.112, 4.062, new Rotation2d(0));
+        public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
+        public static final Pose2d RED_TOWER_CENTER = new Pose2d(14.887, 4.352, new Rotation2d(0));
+        public static final Pose2d RED_DEPOT_CENTER = new Pose2d(15.296, 2.114, new Rotation2d(0));
+        public static final Pose2d RED_DEPOT_CORNER = new Pose2d(15.920, 0.963, new Rotation2d(90));
+        
+        public static final Pose2d RED_NEUTRAL_LEFT = new Pose2d(8.905, 1.114, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_RIGHT = new Pose2d(8.905, 7.096, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_LEFT_PICKUP = new Pose2d(8.905, 4.740, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_RIGHT_PICKUP = new Pose2d(8.905, 2.695, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_TRENCH_LEFT = new Pose2d(12.993, 0.619, new Rotation2d(180)); // Check if intake is facing neutral zone
+        public static final Pose2d RED_TRENCH_RIGHT = new Pose2d(12.993, 7.408, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
+        
+        public static final Pose2d RED_HALF_LEFT = new Pose2d(14.241, 1.835, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d RED_HALF_RIGHT = new Pose2d(14.241, 5.719, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
     }
 
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
