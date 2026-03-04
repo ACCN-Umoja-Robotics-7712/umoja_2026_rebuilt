@@ -44,7 +44,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, 0);
         FFController = new SimpleMotorFeedforward(TurretConstants.kSfly, TurretConstants.kVfly,0);
         
-        flywheelPidController.setTolerance(5, 5); // 5 RPM tolerance and 5 RPM/s velocity tolerance
+        flywheelPidController.setTolerance(50, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
     }
     
     public void runShooter(double speed) {

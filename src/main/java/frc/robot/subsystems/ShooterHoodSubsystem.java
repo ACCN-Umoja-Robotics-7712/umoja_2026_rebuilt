@@ -40,6 +40,10 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     private double state = ShooterStates.NONE;
 
+    // upperlimit is actually down and lowerlimit is up
+    private double upperLimit = 0.955;
+    private double lowerLimit = 0.61;
+
 
     public ShooterHoodSubsystem() {
         CANBus rio = new CANBus("rio");
@@ -66,11 +70,24 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     }
 
     public void runHood(double speed) {
+        // going down and passing encoder
+        
+        boolean lowerLimitHit = hoodAbsoluteDutyCycleEncoder.get() <= lowerLimit;
+        boolean upperLimitHit = hoodAbsoluteDutyCycleEncoder.get() >= upperLimit;
+
+        if (lowerLimitHit && speed > 0) {
+            System.out.println("Lower Limit Hit! hood hit top" + lowerLimitHit);
+            speed = 0;
+        }
+        if (upperLimitHit && speed < 0) {
+            System.out.println("Upper Limit Hit! hood hit bottom" + upperLimitHit);
+            speed = 0;
+        }
         hoodMotor.set(speed);
     }
     
     public void setHoodValue(double wantedHoodValue) {
-        hoodMotor.set(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValue));
+        runHood(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValue));
     }
 
     @Override

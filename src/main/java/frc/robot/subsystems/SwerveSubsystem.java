@@ -399,7 +399,6 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
 
-        
         Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(getPose().getTranslation());
         Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation());
         turretPublisher.set(turretCameraFieldPose);
@@ -468,7 +467,6 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStatesFromSpeeds(speeds);
     }
     
-    // TODO: Move to vision subsystem
     public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
         Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);

@@ -55,7 +55,7 @@ public class Autos {
     
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("Auto end pose", Pose2d.struct).publish();
     
-    public Autos(){
+    public Autos(){ // ALWAYS ENSURE ARM LOWERS THE MOMENT GAME STARTS PARALLEL TO SHOOTING (~2 balls must be shot by the time the arm is down)
 
     try {
         // simple_auto = PathPlannerPath/

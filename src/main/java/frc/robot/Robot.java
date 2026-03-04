@@ -94,6 +94,8 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     RobotContainer.gameState = GameConstants.Disabled;
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Coast);
+    RobotContainer.shooterFlywheelSubsystem.setShooterSpeed(0);
+    RobotContainer.shooterFlywheelSubsystem.setState(Constants.ShooterStates.NONE);
   }
 
   @Override

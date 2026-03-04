@@ -148,18 +148,10 @@ public class RobotContainer {
     );
 
     //Flywheel Motor
-    operatorController.rightTrigger().whileTrue(
+    operatorController.rightTrigger()
+    .and(operatorController.a()).whileTrue(
       new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
         () -> -0.3 // Check if it is the right direction (negative is good for now). 45% is good
-      )
-    );
-
-    operatorController.rightTrigger()
-    .and(operatorController.a())
-    .whileTrue(
-      new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.7
-
       )
     );
 
@@ -167,13 +159,30 @@ public class RobotContainer {
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
-    .and(operatorController.a())
     .whileTrue(
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3000.0),
         new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
       )
     );
+    
+    // operatorController.rightTrigger()
+    // .and(operatorController.y())
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3500.0)
+    //     // new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
+    //   )
+    // );
+    
+    // operatorController.rightTrigger()
+    // .and(operatorController.b())
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4000.0)
+    //     // new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
+    //   )
+    // );
 
     // Hood Motor
     operatorController.rightBumper().whileTrue(
@@ -190,7 +199,8 @@ public class RobotContainer {
     );
 
     // Indexer Motor
-    operatorController.leftTrigger().whileTrue(
+    operatorController.leftTrigger()
+    .and(operatorController.a()).whileTrue(
       new ManualIndexerCommand(indexerSubsystem,
         () -> 1.0
       )

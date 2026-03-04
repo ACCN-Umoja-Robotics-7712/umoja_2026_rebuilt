@@ -152,9 +152,9 @@ public final class Constants {
         public static final int flywheelMotorLeaderID = 2;
         public static final int flywheelMotorFollowerID = 1;
         public static final boolean flywheelMotorReversed = false;
-        public static final double kSfly = 0.1;
+        public static final double kSfly = 0.13;
         public static final double kVfly = 0.0018;
-        public static final double kPfly = 0;
+        public static final double kPfly = 0.0001;
         public static final double kIfly = 0; 
 
         public static final int hoodMotorID = 60;
@@ -173,7 +173,7 @@ public final class Constants {
         public static final int rollOffset = 0; // 0 degrees to the right
         public static final double upOffset = Units.inchesToMeters(18); // m up
         public static final double forwardOffset = 0; // m forward
-        public static final double sideOffset = Units.inchesToMeters(-6); // m to the right
+        public static final double sideOffset = Units.inchesToMeters(6); // m to the right
 
         // public static final double turretMotorEncoderToRotationRatio = 1.0/42.0; // encoder is 42 ticks per rotation
         public static final double turretGearRatio = 1/(16.0*1); // 16:1 16 motor rotations = 1 shaft rotation, x shaft rotations = 1 turret rotation
