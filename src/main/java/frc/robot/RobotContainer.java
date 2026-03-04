@@ -32,6 +32,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -163,6 +164,11 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3000.0),
         new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
+      )
+    ).whileFalse(
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> 0.0),
+        stopIndexer
       )
     );
     
