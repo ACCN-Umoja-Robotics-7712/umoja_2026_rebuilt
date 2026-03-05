@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -55,6 +56,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     public double getAngle() {
         return Units.rotationsToDegrees(turretMotor.getEncoder().getPosition()*TurretConstants.turretGearRatio);
     }
+
+    public double getVelocity() {
+        return turretMotor.getEncoder().getVelocity();
+    }
     
     public boolean didReachAngle() {
         return turretPidController.atSetpoint();
@@ -81,5 +86,6 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getTurretToTargetAngle());
         }
+        SmartDashboard.putNumber("turret encoder", turretMotor.getEncoder().getPosition());
     }
 }

@@ -145,7 +145,7 @@ public class SwerveJoystick extends Command {
           swerveSubsystem.setModuleStates(moduleStates);
 
           if(j.getRawButtonPressed(XBoxConstants.PAGE)){
-            swerveSubsystem.zeroHeading();
+            swerveSubsystem.setHeading(0);
           }
           if(j.getRawButtonPressed(XBoxConstants.MENU)){
             RobotContainer.shouldAutoFixDrift += 1;

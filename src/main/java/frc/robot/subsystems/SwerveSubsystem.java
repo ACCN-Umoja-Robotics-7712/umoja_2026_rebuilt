@@ -89,9 +89,12 @@ public class SwerveSubsystem extends SubsystemBase {
     public HolonomicDriveController holonomicDriveController;
     public TrajectoryConfig trajectoryConfig;
     public final Timer timer = new Timer();
+    // turretToTargetAngle current robot, assume turret is 0;
     private double turretToTargetAngle = 0;
     private double turretToTargetHoodValue = 0;
     private double turretToTargetRPMValue = 0;
+
+    private double headingOffset = 0;
     
     public final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics, new Rotation2d(),
@@ -110,7 +113,7 @@ public class SwerveSubsystem extends SubsystemBase {
             try {
                 Thread.sleep(1000);
 
-                zeroHeading();
+                setHeading(0);
                 resetEncoders();
                 // frontRight.driveMotor.setIdleMode(com.revrobotics.CANSparkBase.IdleMode.kCoast);
                 // frontRight.turnMotor.setIdleMode(com.revrobotics.CANSparkBase.IdleMode.kCoast);
@@ -193,9 +196,10 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.resetEncoders();
     }
 
-    public void zeroHeading(){
+    public void setHeading(double offset){
         RobotContainer.wantedAngle = -1;
         gyro.reset();
+        gyro.setYaw(offset);
         System.out.println("Gyro Reset");
     }
 
@@ -330,9 +334,9 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         );
        
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, getHeading(), 0, 0, 0, 0, 0);
         double up = Constants.TurretConstants.upOffset;
-        double yaw =  RobotContainer.shooterTurretSubsystem.getAngle();
+        // double yaw =  RobotContainer.shooterTurretSubsystem.getAngle();
+        double yaw = 0;
         double pitch = Constants.TurretConstants.pitchOffset;
         double roll = Constants.TurretConstants.rollOffset;
         double forward = Constants.TurretConstants.turretCenterToCameraCentreLength + Math.sin(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterForwardLength;
@@ -341,11 +345,13 @@ public class SwerveSubsystem extends SubsystemBase {
         Pose3d turretCameraPose3d = LimelightHelpers.getCameraPose3d_RobotSpace(LimelightConstants.turretName);
         Pose2d turretCameraRobotPose = turretCameraPose3d.toPose2d();
 
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, getHeading(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate turretMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.turretName);
 
+        SmartDashboard.putNumber("TURRET ANGLE", yaw);
         boolean rejectTurretUpdate = false;
 
-        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 720 || RobotContainer.shooterTurretSubsystem.getVelocity() > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
             rejectTurretUpdate = true;
         }
@@ -357,7 +363,11 @@ public class SwerveSubsystem extends SubsystemBase {
             if (turretMT2.tagCount == 0) {
                 rejectTurretUpdate = true;
             } else if (turretMT2.tagCount == 1) {
+                visionTrustValue = 2;
+            } else if (turretMT2.tagCount == 2) {
                 visionTrustValue = 1;
+            } else if (turretMT2.tagCount > 2) {
+                visionTrustValue = 0.1;
             }
             
             if (!rejectTurretUpdate)
@@ -404,7 +414,7 @@ public class SwerveSubsystem extends SubsystemBase {
         turretPublisher.set(turretCameraFieldPose);
         posePublisher.set(getPose());
         
-        double[] angleDistance = updateTurretAngleDistanceToTarget(Constants.SHOOTING_POSES.RED_HUB_POSE);
+        double[] angleDistance = updateRobotAngleDistanceToTarget(Constants.SHOOTING_POSES.RED_HUB_POSE);
         this.turretToTargetAngle = angleDistance[0];
         double distanceToTarget = angleDistance[1];
         double[] rpmHoodValues = updateRPMHoodValues(distanceToTarget);
@@ -467,12 +477,20 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStatesFromSpeeds(speeds);
     }
     
-    public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
+    public double[] updateRobotAngleDistanceToTarget(Pose2d targetPose) {
         Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        return new double[] { Math.toDegrees(turretAngleToTarget - RobotContainer.swerveSubsystem.getGlobalHeading()), distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
+        return new double[] { Math.toDegrees(turretAngleToTarget), distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
+
+    public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
+        double[] angleDistance = updateRobotAngleDistanceToTarget(targetPose);
+        double angle = angleDistance[0];
+        double distance = angleDistance[1];
+        return new double[] {angle - RobotContainer.swerveSubsystem.getGlobalHeading(), distance};
+    }
+    
 
     public double getTurretToTargetAngle() {
         return turretToTargetAngle;

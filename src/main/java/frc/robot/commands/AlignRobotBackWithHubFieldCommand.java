@@ -16,7 +16,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.RobotContainer;
 
-public class AlignWithTrench extends Command{
+public class AlignRobotBackWithHubFieldCommand extends Command{
     SwerveSubsystem swerveSubsystem;
   private final Supplier<Double> xSpdFunction, ySpdFunction;
   private final SlewRateLimiter xLimiter, yLimiter;
@@ -27,7 +27,7 @@ public class AlignWithTrench extends Command{
   
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
-    public AlignWithTrench(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, double angle){
+    public AlignRobotBackWithHubFieldCommand(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction){
         this.swerveSubsystem = swerveSubsystem;
 
         this.xSpdFunction = xSpdFunction;
@@ -36,7 +36,7 @@ public class AlignWithTrench extends Command{
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
 
-        this.wantedAngle = angle;
+        this.wantedAngle = (RobotContainer.swerveSubsystem.getTurretToTargetAngle() + 180) % 360;
 
         addRequirements(swerveSubsystem);
     }
@@ -77,17 +77,10 @@ public class AlignWithTrench extends Command{
         //     swerveSubsystem.alignWithTag(target_x, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
         // } else {
           ChassisSpeeds chassisSpeeds;
-          boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-          int flipAlliance = isBlue ? 1 : -1;
-          int flipDirection = wantedAngle == 0 ? 1 : -1;
-          if (!isBlue) {
-            // flip wantedAngle for redside
-            wantedAngle = (wantedAngle + 180) % 360;
-          }
           
           // xSpeedPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
 
-          chassisSpeeds = new ChassisSpeeds(flipAlliance*flipDirection*xSpeed, flipAlliance*flipDirection*ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
+          chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
           SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
           swerveSubsystem.setModuleStates(moduleStates);
         // }

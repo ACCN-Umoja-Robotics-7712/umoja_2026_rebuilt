@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // autoStartTimer = Timer.getTimestamp();
 
-    RobotContainer.swerveSubsystem.zeroHeading();
+    RobotContainer.swerveSubsystem.setHeading(0);
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Brake);
 
     // Reset and start the timer when the autonomous period begins

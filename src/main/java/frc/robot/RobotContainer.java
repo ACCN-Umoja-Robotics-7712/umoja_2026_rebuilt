@@ -15,8 +15,10 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.USB;
 import frc.robot.Constants.XBoxConstants;
+import frc.robot.commands.AlignRobotBackWithHubFieldCommand;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
+import frc.robot.commands.IntakeWhileMoving;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.SwerveJoystick;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
@@ -32,7 +34,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -102,7 +103,6 @@ public class RobotContainer {
         )
     );
 
-
     // Align with trench
     RobotContainer.driverController.y().whileTrue(
       new AlignWithTrench(
@@ -142,11 +142,28 @@ public class RobotContainer {
 
     //Manual Commands (Just for Now)
     // Intake Roller
-    driverController.rightTrigger().whileTrue(
+    driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
         () -> -0.30 // Try 40%? 30 is minimum needed to intake smoothly
       )
     );
+
+    //Manual Commands (Just for Now)
+    // Intake Roller
+    driverController.rightBumper().whileTrue(
+      new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
+        () -> -0.30,
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getRightX()
+      )
+    );
+
+    // driverController.leftBumper().whileTrue(
+    //   new AlignRobotBackWithHubFieldCommand(swerveSubsystem, 
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> -RobotContainer.driverController.getRightX()
+    //   )
+    // );
 
     //Flywheel Motor
     operatorController.rightTrigger()
@@ -162,13 +179,13 @@ public class RobotContainer {
     operatorController.rightTrigger()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3000.0),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4000.0),
         new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
       )
     ).whileFalse(
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> 0.0),
-        stopIndexer
+        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
     
@@ -220,18 +237,18 @@ public class RobotContainer {
       )
     );
 
-    // //Intake Arm Motor
-    // driverController.rightTrigger().whileTrue(
-    //   new ManualIntakeArmCommand(intakeArmSubsystem,
-    //     () -> 0.19*driverController.getRawAxis(XBoxConstants.RT)
-    //   )
-    // );
+    //Intake Arm Motor
+    driverController.rightTrigger().whileTrue(
+      new ManualIntakeArmCommand(intakeArmSubsystem,
+        () -> 0.19*driverController.getRawAxis(XBoxConstants.RT) // Arm down
+      )
+    );
 
-    // driverController.leftTrigger().whileTrue(
-    //   new ManualIntakeArmCommand(intakeArmSubsystem, 
-    //     () -> -0.1
-    //   )
-    // );
+    driverController.leftBumper().whileTrue(
+      new ManualIntakeArmCommand(intakeArmSubsystem, 
+        () -> -0.1 // Arm up
+      )
+    );
 
    // Climber
     driverController.leftStick()
