@@ -6,11 +6,14 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +26,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private final TalonFX intakeArmMotorLeader;
     private final TalonFX intakeArmMotorFollower;
     private final DigitalInput intakeArmZeroLimitSwitch;
+    private final ArmFeedforward intakeArmFeedforward;
     private final PIDController intakeArmPidController;
     private final Trigger intakeArmTrigger;
 
@@ -39,15 +43,22 @@ public class IntakeArmSubsystem extends SubsystemBase {
         armCurrentLimits.SupplyCurrentLimitEnable = true;
         intakeArmMotorLeader.getConfigurator().apply(armCurrentLimits);
         intakeArmMotorFollower.getConfigurator().apply(armCurrentLimits);
-
-
+        
+        // TalonFXConfiguration armConfig = new TalonFXConfiguration();
+        // armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        // intakeArmMotorLeader.getConfigurator().apply(armConfig);
         intakeArmMotorFollower.setControl(new Follower(intakeArmMotorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
 
         intakeArmZeroLimitSwitch = new DigitalInput(IntakeConstants.intakeArmZeroLimitSwitchID);
         intakeArmPidController = new PIDController(IntakeConstants.armkP, 0, 0);
+        intakeArmFeedforward = new ArmFeedforward(0, IntakeConstants.armkG, IntakeConstants.armkV, 0);
 
         intakeArmTrigger = new Trigger(intakeArmZeroLimitSwitch::get);
         setBrakeMode(NeutralModeValue.Coast);
+    }
+
+    public void zeroIntakeArm() {
+        runIntakeArm(state);
     }
 
     public void setBrakeMode(NeutralModeValue mode) {

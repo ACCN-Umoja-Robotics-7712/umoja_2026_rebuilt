@@ -113,12 +113,19 @@ public class RobotContainer {
       )
     );
 
+    // RobotContainer.driverController.x().whileTrue(
+    //   new AlignWithTrench(
+    //     RobotContainer.swerveSubsystem,
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> -RobotContainer.driverController.getLeftX(),
+    //     90
+    //   )
+    // );
+
     RobotContainer.driverController.x().whileTrue(
-      new AlignWithTrench(
-        RobotContainer.swerveSubsystem,
+      new AlignRobotBackWithHubFieldCommand(swerveSubsystem,
         () -> -RobotContainer.driverController.getLeftY(),
-        () -> -RobotContainer.driverController.getLeftX(),
-        90
+        () -> -RobotContainer.driverController.getLeftX()
       )
     );
 
@@ -144,7 +151,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -0.30 // Try 40%? 30 is minimum needed to intake smoothly
+        () -> -0.40 // Try 40%? 30 is minimum needed to intake smoothly
       )
     );
 
@@ -152,7 +159,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.rightBumper().whileTrue(
       new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
-        () -> -0.30,
+        () -> -0.40,
         () -> -RobotContainer.driverController.getLeftY(),
         () -> -RobotContainer.driverController.getRightX()
       )
@@ -169,17 +176,17 @@ public class RobotContainer {
     operatorController.rightTrigger()
     .and(operatorController.a()).whileTrue(
       new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.3 // Check if it is the right direction (negative is good for now). 45% is good
+        () -> -0.4 // Check if it is the right direction (negative is good for now). 45% is good
       )
     );
 
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 1.0);
-    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
+    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> -0.1);
 
     operatorController.rightTrigger()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4000.0),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
       )
     ).whileFalse(
@@ -240,13 +247,13 @@ public class RobotContainer {
     //Intake Arm Motor
     driverController.rightTrigger().whileTrue(
       new ManualIntakeArmCommand(intakeArmSubsystem,
-        () -> 0.19*driverController.getRawAxis(XBoxConstants.RT) // Arm down
+        () -> -0.19*driverController.getRawAxis(XBoxConstants.RT) // Arm down
       )
     );
 
     driverController.leftBumper().whileTrue(
       new ManualIntakeArmCommand(intakeArmSubsystem, 
-        () -> -0.1 // Arm up
+        () -> 0.1 // Arm up
       )
     );
 
@@ -276,6 +283,37 @@ public class RobotContainer {
     if (wantedAngle != swerveSubsystem.getHeading()) {
       // > 180 we want to go towards 0 but from negative to account for closest angle
       double currentAngle = swerveSubsystem.getHeading();
+      double diff = Math.abs(currentAngle - wantedAngle);
+      if (diff > 180) {
+        diff = 360 - diff;
+        // since diff is > 180, it passes the 360-0 range
+        // if we have 359 and want 1, we go positive, so no change
+        // if we have 1 and want 359, we go negative, so multiple -1
+        if (wantedAngle > 180) {
+          diff = diff * -1;
+        }
+      } else {
+        // if going from 5 to 10, do nothing
+        // if going from 10 to 5, we go negative so multiple -1
+        if (currentAngle > wantedAngle) {
+          diff = diff * -1;
+        }
+      }
+      return -diff;
+    } else {
+      return 0;
+    }
+  }
+
+  public static double diffFromWantedAngleField(double wantedAngle) {
+    if (wantedAngle < 0) {
+      wantedAngle += 360;
+    }
+    // fix drift
+    // if drifting
+    if (wantedAngle != swerveSubsystem.getGlobalHeading()) {
+      // > 180 we want to go towards 0 but from negative to account for closest angle
+      double currentAngle = swerveSubsystem.getGlobalHeading();
       double diff = Math.abs(currentAngle - wantedAngle);
       if (diff > 180) {
         diff = 360 - diff;

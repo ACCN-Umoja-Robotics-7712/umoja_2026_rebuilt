@@ -19,16 +19,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.commands.ShooterTurretAngleCommand;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ShooterStates;
 
 public class ShooterFlywheelSubsystem extends SubsystemBase {
     private final SparkFlex flywheelMotorLeader;
     private final SparkFlex flywheelMotorFollower;
+    private SparkFlex kickerMotor;
 
     private final PIDController flywheelPidController;
-    private final SimpleMotorFeedforward FFController;
+    private final SimpleMotorFeedforward flywheelFFController;
+    private final PIDController kickerPidController;
+    private final SimpleMotorFeedforward kickerFFController;
 
     private double state = ShooterStates.NONE;
+    private double wantedShooterRPM = 0;
+    private double wantedKickerRPM = 0;
 
     public ShooterFlywheelSubsystem() {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
@@ -41,20 +47,39 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower is opposite of leader
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, 0);
-        FFController = new SimpleMotorFeedforward(TurretConstants.kSfly, TurretConstants.kVfly,0);
+        flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, TurretConstants.kDfly);
+        flywheelFFController = new SimpleMotorFeedforward(TurretConstants.kSfly, TurretConstants.kVfly,0);
+        kickerPidController = new PIDController(TurretConstants.kPkicker, TurretConstants.kIkicker, 0);
+        kickerFFController = new SimpleMotorFeedforward(TurretConstants.kSkicker, TurretConstants.kVkicker,0);
+        
+        kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
+        SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex (Current Limit is 80) 
+        kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
         flywheelPidController.setTolerance(50, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
+        kickerPidController.setTolerance(50, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
     }
     
     public void runShooter(double speed) {
         flywheelMotorLeader.set(speed);
+        kickerMotor.set(Math.min(speed*1.5, 0.75));
     }
 
     public void setShooterVelocity(double wantedVelocity) {
-        double feedforward = FFController.calculate(wantedVelocity);
-        double pid = flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedVelocity);
-        flywheelMotorLeader.setVoltage(feedforward + pid);
+        double feedforwardFly = flywheelFFController.calculate(wantedVelocity);
+        double pidFly = flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedVelocity);
+        flywheelMotorLeader.setVoltage(feedforwardFly + pidFly);
+
+        // kicker
+        double wantedKickerVelocity = wantedVelocity*-1.5;
+        wantedKickerVelocity = Math.min(wantedKickerVelocity, 5000); // limit to 5000 RPM to prevent the motor from burning out
+
+        double feedforwardKicker = kickerFFController.calculate(wantedKickerVelocity);
+        double pidKicker = kickerPidController.calculate(kickerMotor.getEncoder().getVelocity(), wantedKickerVelocity);
+        kickerMotor.setVoltage(feedforwardKicker + pidKicker);
+        
+        wantedShooterRPM = wantedVelocity;
+        wantedKickerRPM = wantedKickerVelocity;
     }
     
     public void setShooterSpeed(double wantedRPM) {
@@ -67,8 +92,17 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         }
     }
 
-      public boolean didReachVelocity() {
-        return flywheelPidController.atSetpoint();
+    public boolean didReachVelocity() {
+        // return flywheelPidController.atSetpoint() && kickerPidController.atSetpoint();
+        boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity()) - wantedKickerRPM <= 50;
+        boolean shooterAtRPM = Math.abs(flywheelMotorLeader.getEncoder().getVelocity()) - wantedShooterRPM <= 50;
+        return kickerAtRPM && shooterAtRPM;
+    }
+
+    public double getDashboardVelocity() {
+        double velocity = SmartDashboard.getNumber("Custom flywheel velocity", -3000);
+        SmartDashboard.putNumber("Custom flywheel velocity", velocity);
+        return velocity;
     }
     
     @Override
@@ -79,5 +113,21 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Flywheel Velocity", flywheelMotorLeader.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Kicker Velocity", kickerMotor.getEncoder().getVelocity());
+
+        double kSkicker = SmartDashboard.getNumber("kS Kicker", TurretConstants.kSkicker);
+        double kVkicker = SmartDashboard.getNumber("kV Kicker", TurretConstants.kVkicker);
+        double kPkicker = SmartDashboard.getNumber("kP Kicker", TurretConstants.kPkicker);
+
+        SmartDashboard.putNumber("kS Kicker", kSkicker);
+        SmartDashboard.putNumber("kV Kicker", kVkicker);
+        SmartDashboard.putNumber("kP Kicker", kPkicker);
+        if (SmartDashboard.getNumber("kS Kicker", TurretConstants.kSkicker) != kickerFFController.getKs() || SmartDashboard.getNumber("kV Kicker", TurretConstants.kVkicker) != kickerFFController.getKv() || SmartDashboard.getNumber("kP Kicker", TurretConstants.kPkicker) != kickerPidController.getP()) {
+
+            kickerFFController.setKs(kSkicker);
+            kickerFFController.setKv(kVkicker);
+            kickerPidController.setP(kPkicker);
+            System.out.println("Updated Kicker PID and FF values: kS = " + kSkicker + ", kV = " + kVkicker + ", kP = " + kPkicker);
+        }
     }
 }

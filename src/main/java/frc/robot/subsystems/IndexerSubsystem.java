@@ -17,7 +17,6 @@ import frc.robot.Constants.TurretConstants;
 public class IndexerSubsystem extends SubsystemBase {
     private SparkFlex indexerMotorLeader;
     private SparkFlex indexerMotorFollower;
-    private SparkFlex kickerMotor;
     
     public IndexerSubsystem() {
         indexerMotorLeader = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
@@ -28,15 +27,10 @@ public class IndexerSubsystem extends SubsystemBase {
         SparkBaseConfig indexerFollowConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
         indexerFollowConfig.follow(IndexerConstants.indexerMotorLeaderID, true);
         indexerMotorFollower.configure(indexerFollowConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
-        SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex (Current Limit is 80) 
-        kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void runIndexer(double speed) { // Can change the speed for each motor independently
         indexerMotorLeader.set(speed*0.30); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75% (UPDATE: 50% is the most optimal as it worked really well)
-        kickerMotor.set(speed*70); 
     }
 
     @Override

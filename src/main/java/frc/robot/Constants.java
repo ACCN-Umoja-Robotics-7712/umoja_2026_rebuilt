@@ -130,8 +130,8 @@ public final class Constants {
 
         public static final double kSlowButtonDriveModifier = 0.5;
         public static final double kSlowButtonTurnModifier = 0.50;
-        public static final double teleSpeed = 0.6;
-        public static final double teleTurnSpeed = 0.5;
+        public static final double teleSpeed = 0.7;
+        public static final double teleTurnSpeed = 0.55;
 
         public static final double kPDrive = 1.5;
         public static final double kIDrive = 0.01; // Test again after robot gets wired, was 0.06 before test
@@ -139,7 +139,7 @@ public final class Constants {
         public static final double kPTurning = 5;
         public static final double kITurning = 0.05;
 
-        public static final double kPDrift = 0.045;
+        public static final double kPDrift = 0.06;
         public static final double kIDrift = 0.0065; //Changed before test
         
         public static final double kPAlignTrench = 0.06;
@@ -153,7 +153,12 @@ public final class Constants {
         public static final double kSfly = 0.13;
         public static final double kVfly = 0.0018;
         public static final double kPfly = 0.0001;
-        public static final double kIfly = 0; 
+        public static final double kIfly = 0;
+        public static final double kDfly = 0;
+        public static final double kSkicker = 0;
+        public static final double kVkicker = 0.0019;
+        public static final double kPkicker = 0.0001;
+        public static final double kIkicker = 0;
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
@@ -202,7 +207,9 @@ public final class Constants {
         public static final int intakeArmZeroLimitSwitchID = 0;
 
         public static final double rollerkP = 0.01;
-        public static final double armkP = 0.01;
+        public static final double armkP = 0.00;
+        public static final double armkG = 0.00;
+        public static final double armkV = 0.00;
     }
 
     public static final class IntakeRollerStates {
@@ -340,7 +347,7 @@ public final class Constants {
     public static final class LimelightConstants {
         public static final String turretName = "limelight";
         public static final String gamePieceName = "limelight-gp";
-        public static final String climbName = "limelight-climb";
+        public static final String climbName = "limelight-driver";
         public static final int Estimate_Distance = 20;
         public static final int aprilTagPipeline = 0;
         public static final int gamePiecePipeline = 1;
@@ -352,7 +359,12 @@ public final class Constants {
         // Camera center is from right of robot + 2 * 1 inch in + 3.75 inch camera mount - 0.088583 to center of mounting hole - 2.835 distance between holes
         public static final double gamePieceSide = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 3.75 + 0.088583 + 2.835);
         
-        public static final double gamePieceAngle = -10; // degrees, angle of the camera relative to horizontal, positive is looking up
+        public static final double gamePieceAngle = 30; // degrees, angle of the camera relative to horizontal, positive is looking up
+
+        public static final int[] RED_HUB_CENTER_APRIL_TAG_IDS = new int[]{2,4,5,10};
+        public static final int[] BLUE_HUB_CENTER_APRIL_TAG_IDS = new int[]{18,20,21,26};
+        public static final int RED_HUB_FRONT_CENTER_APRIL_TAG_ID = 10;
+        public static final int BLUE_HUB_FRONT_CENTER_APRIL_TAG_ID = 26;
     }
     
 
@@ -385,7 +397,9 @@ public final class Constants {
     public static final class SHOOTING_POSES {
 
         // BLUE SIDE
-        public static final Pose2d BLUE_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
+        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
+        public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(2.25, 6, new Rotation2d(0));
+        public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(2.25, 2, new Rotation2d(0));
         
         public static final Pose2d BLUE_HUB_CENTER = new Pose2d(3.439, 3.987, new Rotation2d(0));
         public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
@@ -402,7 +416,9 @@ public final class Constants {
         public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(2.159, 2.168, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
 
         //RED SIDE
-        public static final Pose2d RED_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
+        public static final Pose2d RED_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
+        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
+        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 2, new Rotation2d(0));
 
         public static final Pose2d RED_HUB_CENTER = new Pose2d(13.112, 4.062, new Rotation2d(0));
         public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost

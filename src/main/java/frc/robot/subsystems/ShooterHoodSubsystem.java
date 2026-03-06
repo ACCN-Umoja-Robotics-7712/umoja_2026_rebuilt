@@ -41,7 +41,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     private double state = ShooterStates.NONE;
 
     // upperlimit is actually down and lowerlimit is up
-    private double upperLimit = 0.955;
+    private double maxMovement = 0.955 - 0.61;
     private double lowerLimit = 0.61;
 
 
@@ -95,6 +95,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         absoluteEncodPublisher.set(hoodAbsoluteDutyCycleEncoder.get());
         SmartDashboard.putNumber("hood absolute encoder smart dashboard", hoodAbsoluteDutyCycleEncoder.get());
         SmartDashboard.putNumber("hood encoder", hoodMotor.getPosition().getValueAsDouble());
+        
         if (state != ShooterStates.NONE) {
             setHoodValue(RobotContainer.swerveSubsystem.getTurretToTargetHoodValue());
         }
