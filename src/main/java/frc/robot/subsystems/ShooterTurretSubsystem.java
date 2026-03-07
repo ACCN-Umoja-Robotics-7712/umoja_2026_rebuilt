@@ -33,7 +33,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private final PIDController turretPidController;
 
     private double state = ShooterStates.NONE;
-    private double wantedAngle = 0;
+    private boolean isZeroed = false;
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
@@ -46,15 +46,15 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public void runTurret(double speed) {
         // if limit switch is pressed, and going same direction as limit switch, STOP
-        // if (turretZeroLimitSwitch.get() && speed < 0) {
-        //     speed = 0;
-        // }
+        if (turretZeroLimitSwitch.get() && speed < 0) {
+            speed = 0;
+        }
         
         turretMotor.set(speed);
     }
 
     public double getAngle() {
-        return Units.rotationsToDegrees(turretMotor.getEncoder().getPosition()*TurretConstants.turretGearRatio);
+        return Units.rotationsToDegrees(turretMotor.getEncoder().getPosition()*TurretConstants.motorToTurretRatio);
     }
 
     public double getVelocity() {
@@ -80,9 +80,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // if (turretZeroLimitSwitch.get()) {
-        //     turretMotor.getEncoder().setPosition(0);
-        // }
+        if (turretZeroLimitSwitch.get() && !isZeroed) {
+            turretMotor.getEncoder().setPosition(0);
+            isZeroed = true;
+        }
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getTurretToTargetAngle());
         }

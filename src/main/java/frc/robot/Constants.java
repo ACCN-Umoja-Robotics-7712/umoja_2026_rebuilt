@@ -132,6 +132,8 @@ public final class Constants {
         public static final double kSlowButtonTurnModifier = 0.50;
         public static final double teleSpeed = 0.7;
         public static final double teleTurnSpeed = 0.55;
+        
+        public static final double shootingSpeedCap = 0.3; // 0.3m/s max speed when shooting, to improve accuracy
 
         public static final double kPDrive = 1.5;
         public static final double kIDrive = 0.01; // Test again after robot gets wired, was 0.06 before test
@@ -168,7 +170,7 @@ public final class Constants {
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
-        public static final int turretLimitSwitchID = 21;
+        public static final int turretLimitSwitchID = 0;
         public static final double kPturret = 0;
         // public static final double kIhood = 0; 
 
@@ -179,7 +181,9 @@ public final class Constants {
         public static final double sideOffset = Units.inchesToMeters(6); // m to the right
 
         // public static final double turretMotorEncoderToRotationRatio = 1.0/42.0; // encoder is 42 ticks per rotation
-        public static final double turretGearRatio = 1/(16.0*4); // 16:1 16 motor rotations = 1 shaft rotation, x shaft rotations = 1 turret rotation
+        // motor -> motor to shaft (motor * shaft/motor * turret/shaft) = turret, 16:1 gear ratio from motor to shaft
+        // motor -> shaft is 16:1, 16 motor rotations = 1 shaft rotation, and shaft -> turret is 125:35, 125 shaft rotation = 35 turret rotation, ~3.57:1
+        public static final double motorToTurretRatio = (1.0/16.0) * (35.0/125.0); // motor rotations to turret rotations
         public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
         public static final double turretCenterFromRobotCenterForwardLength = Units.inchesToMeters(-(RobotConstants.robotWidth/2) + 2 + (11.5/2)); // meters (negative cause turret is behind the robot center) 
         public static final double turretCenterFromRobotCenterSideLength = Units.inchesToMeters(-(RobotConstants.robotLength/2) + 2 + (11.5/2)); // meters (positive cause turret is to the right of the robot center)

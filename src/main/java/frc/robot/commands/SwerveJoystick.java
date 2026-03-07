@@ -108,6 +108,11 @@ public class SwerveJoystick extends Command {
             ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.teleSpeed;
             turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.teleTurnSpeed; 
           }
+
+          if (RobotContainer.shooterFlywheelSubsystem.isShooting()) {
+            xSpeed = xLimiter.calculate(Math.min(xSpeed, DriveConstants.shootingSpeedCap)) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+            ySpeed = yLimiter.calculate(Math.min(ySpeed, DriveConstants.shootingSpeedCap)) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+          }
       
           // set current angle
           if (RobotContainer.wantedAngle == -1) {

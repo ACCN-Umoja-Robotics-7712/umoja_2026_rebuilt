@@ -104,6 +104,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Custom flywheel velocity", velocity);
         return velocity;
     }
+
+    public boolean isShooting() {
+        return Math.abs(flywheelMotorLeader.getEncoder().getVelocity()) > 100; // if the flywheel is spinning faster than 100 RPM, we consider it shooting
+    }
     
     @Override
     public void periodic() {
