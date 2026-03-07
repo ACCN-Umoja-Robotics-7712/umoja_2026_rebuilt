@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
 
     for (int port = 5800; port <= 5809; port++) {
       PortForwarder.add(port, Constants.LimelightConstants.turretName + ".local", port);
-      PortForwarder.add(port+10, Constants.LimelightConstants.gamePieceName + ".local", port);
+      PortForwarder.add(port+10, Constants.LimelightConstants.limelight4 + ".local", port);
       // PortForwarder.add(port+20, Constants.LimelightConstants.driverName + ".local", port);
     }
   }
@@ -100,12 +100,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-
+    // In disabledPeriodic or before match starts
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.limelight4, 1); // Seed internal IMU
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.limelight4, 4); // Use internal IMU + external IMU
     // autoStartTimer = Timer.getTimestamp();
 
     RobotContainer.swerveSubsystem.setHeading(0);
@@ -146,6 +148,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.limelight4, 4); // Use internal IMU + external IMU
     RobotContainer.gameState = GameConstants.TeleOp;
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Brake);
     // This makes sure that the autonomous stops running when

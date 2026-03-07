@@ -68,7 +68,7 @@ public class AlginRobotBackWithHubCameraTxCommand extends Command{
 
           ChassisSpeeds chassisSpeeds;
           boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue);
-          String limelightName = Constants.LimelightConstants.gamePieceName;
+          String limelightName = Constants.LimelightConstants.limelight4;
           if (isBlue) {
             LimelightHelpers.SetFiducialIDFiltersOverride(limelightName, Constants.LimelightConstants.BLUE_HUB_CENTER_APRIL_TAG_IDS);
             LimelightHelpers.setPriorityTagID(limelightName, Constants.LimelightConstants.BLUE_HUB_FRONT_CENTER_APRIL_TAG_ID);

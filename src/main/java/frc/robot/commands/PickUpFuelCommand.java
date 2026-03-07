@@ -44,7 +44,7 @@ public class PickUpFuelCommand extends Command{
     @Override
     public void initialize(){
         System.out.println("Align with tag Initialized");
-        LimelightHelpers.setPipelineIndex(LimelightConstants.gamePieceName, LimelightConstants.gamePiecePipeline);
+        LimelightHelpers.setPipelineIndex(LimelightConstants.limelight4, LimelightConstants.gamePiecePipeline);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class PickUpFuelCommand extends Command{
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Align with tag end is interrupted:" + isInterrupted);
-        LimelightHelpers.setPipelineIndex(LimelightConstants.gamePieceName, LimelightConstants.aprilTagPipeline);
+        LimelightHelpers.setPipelineIndex(LimelightConstants.limelight4, LimelightConstants.aprilTagPipeline);
     }
 
     @Override

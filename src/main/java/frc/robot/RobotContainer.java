@@ -31,6 +31,7 @@ import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -69,6 +70,7 @@ public class RobotContainer {
   public static int gameState = GameConstants.Disabled;
   public static Trajectory currentTrajectory = null;
   public static Pose2d goalPose = null;
+  public static boolean isBlue = true;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -160,10 +162,22 @@ public class RobotContainer {
     driverController.rightBumper().whileTrue(
       new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
         () -> -0.40,
+        () -> RobotContainer.driverController.getLeftX(),
         () -> -RobotContainer.driverController.getLeftY(),
-        () -> -RobotContainer.driverController.getRightX()
+        () -> -RobotContainer.driverController.getRightY()
       )
     );
+
+
+
+
+    // driverController.getl
+
+
+
+
+
+
 
     // driverController.leftBumper().whileTrue(
     //   new AlignRobotBackWithHubFieldCommand(swerveSubsystem, 

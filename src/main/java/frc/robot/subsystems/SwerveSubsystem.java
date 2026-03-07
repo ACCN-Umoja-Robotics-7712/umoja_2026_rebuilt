@@ -377,10 +377,10 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
         
-        String limelightName = LimelightConstants.climbName;
+        String limelightName = LimelightConstants.limelight2;
         LimelightHelpers.SetRobotOrientation(limelightName, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.setCameraPose_RobotSpace(limelightName, LimelightConstants.gamePieceForward, LimelightConstants.gamePieceSide, LimelightConstants.gamePieceHeight, 0, LimelightConstants.gamePieceAngle, 180);
-        LimelightHelpers.PoseEstimate gpMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.gamePieceName);
+        LimelightHelpers.setCameraPose_RobotSpace(limelightName, LimelightConstants.limelight2ForwardOld, LimelightConstants.limelight2SideOld, LimelightConstants.limelight2HeightOld, 0, LimelightConstants.limelight2AngleOld, 180);
+        LimelightHelpers.PoseEstimate gpMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.limelight4);
 
         boolean rejectGPUpdate = false;
 
@@ -405,7 +405,38 @@ public class SwerveSubsystem extends SubsystemBase {
                 poseEstimator.addVisionMeasurement(
                     gpMT2.pose,
                     gpMT2.timestampSeconds);
-                System.out.println("UPDATING POSE");
+            }
+        }
+        
+        
+        String limelight4 = LimelightConstants.limelight4;
+        LimelightHelpers.SetRobotOrientation(limelight4, getHeading(), 0, 0, 0, 0, 0);
+        // LimelightHelpers.setCameraPose_RobotSpace(limelight4, LimelightConstants.gamePieceForward, LimelightConstants.gamePieceSide, LimelightConstants.gamePieceHeight, 0, LimelightConstants.gamePieceAngle, 180);
+        LimelightHelpers.PoseEstimate LL4MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.limelight4);
+
+        boolean rejectLL4Update = false;
+
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+            rejectLL4Update = true;
+        }
+
+        double visionTrustLL4Value = 0.7;
+        if (RobotContainer.gameState == GameConstants.Disabled) {
+            visionTrustLL4Value = 0;
+        }
+        if (LL4MT2 != null) {
+            if (LL4MT2.tagCount == 0) {
+                rejectLL4Update = true;
+            } else if (LL4MT2.tagCount == 1) {
+                visionTrustLL4Value += 2;
+            }
+            if (!rejectLL4Update)
+            {
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLL4Value,visionTrustLL4Value,9999999));
+                poseEstimator.addVisionMeasurement(
+                    LL4MT2.pose,
+                    LL4MT2.timestampSeconds);
             }
         }
 
@@ -415,8 +446,40 @@ public class SwerveSubsystem extends SubsystemBase {
         Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation().plus(currentPose.getRotation()));
         turretPublisher.set(turretCameraFieldPose);
         posePublisher.set(currentPose);
+
+        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue);
+
+        Pose2d target = Constants.SHOOTING_POSES.BLUE_HUB_POSE;
+
+        if (isBlue) {
+            // one meter past blue hub into neutral zone
+            if (getPose().getX() >= Constants.SHOOTING_POSES.BLUE_HUB_POSE.getX() + 1) {
+                // want to pass
+                // Greater than hub Y, on blue depot side
+                if (getPose().getY() >= Constants.SHOOTING_POSES.BLUE_HUB_POSE.getY()) {
+                    target = Constants.SHOOTING_POSES.BLUE_PASS_DEPOT_POSE;
+                } else {
+                    target = Constants.SHOOTING_POSES.BLUE_PASS_OUTPOST_POSE;
+                }
+            } else {
+                target = Constants.SHOOTING_POSES.BLUE_HUB_POSE;
+            }
+        } else {
+            // one meter past red hub into neutral zone
+            if (getPose().getX() <= Constants.SHOOTING_POSES.RED_HUB_POSE.getX() - 1) {
+                // want to pass
+                // Greater than hub Y, on outpost side
+                if (getPose().getY() >= Constants.SHOOTING_POSES.RED_HUB_POSE.getY()) {
+                    target = Constants.SHOOTING_POSES.RED_PASS_OUTPOST_POSE;
+                } else {
+                    target = Constants.SHOOTING_POSES.RED_PASS_DEPOT_POSE;
+                }
+            } else {
+                target = Constants.SHOOTING_POSES.RED_HUB_POSE;
+            }
+        }
         
-        double[] angleDistance = updateRobotAngleDistanceToTarget(Constants.SHOOTING_POSES.BLUE_HUB_POSE);
+        double[] angleDistance = updateRobotAngleDistanceToTarget(target);
         this.turretToTargetAngle = angleDistance[0];
         SmartDashboard.putNumber("WANTED TARGET ANGLE", turretToTargetAngle);
         double distanceToTarget = angleDistance[1];

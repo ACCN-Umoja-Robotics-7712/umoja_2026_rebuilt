@@ -346,20 +346,37 @@ public final class Constants {
 
     public static final class LimelightConstants {
         public static final String turretName = "limelight";
-        public static final String gamePieceName = "limelight-gp";
-        public static final String climbName = "limelight-driver";
+        public static final String limelight4 = "limelight-4";
+        public static final String limelight2 = "limelight-driver";
         public static final int Estimate_Distance = 20;
         public static final int aprilTagPipeline = 0;
         public static final int gamePiecePipeline = 1;
 
         // Camera center about 19.5 inches up from the ground
-        public static final double gamePieceHeight = Units.inchesToMeters(19.5);
+        public static final double limelight2HeightOld = Units.inchesToMeters(19.5);
         // Camera center is from 8 inches from back + 1.5 inch forward
-        public static final double gamePieceForward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 1.5);
+        public static final double limelight2ForwardOld = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 1.5);
         // Camera center is from right of robot + 2 * 1 inch in + 3.75 inch camera mount - 0.088583 to center of mounting hole - 2.835 distance between holes
-        public static final double gamePieceSide = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 3.75 + 0.088583 + 2.835);
-        
-        public static final double gamePieceAngle = 30; // degrees, angle of the camera relative to horizontal, positive is looking up
+        public static final double limelight2SideOld = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 3.75 + 0.088583 + 2.835);
+    
+        public static final double limelight2AngleOld = 30; // degrees, angle of the camera relative to horizontal, positive is looking up
+
+        // new angles + locations for triple mount
+        public static final double limelight4Height = Units.inchesToMeters(19.5);
+        public static final double limelight4Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 0.5);
+        public static final double limelight4Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 + 0.5);
+        public static final double limelight4Angle = 15; // degrees pitch
+
+        public static final double limelight3Height = Units.inchesToMeters(19.5);
+        public static final double limelight3Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 0.5);
+        // edge - bar - center ll - center current ll
+        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 4 - 1);
+        public static final double limelight3Angle = 15; // degrees pitch
+
+        public static final double limelight2Height = Units.inchesToMeters(19.5);
+        public static final double limelight2Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8);
+        public static final double limelight2Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 3.75);
+        public static final double limelight2Angle = -10; // degrees pitch
 
         public static final int[] RED_HUB_CENTER_APRIL_TAG_IDS = new int[]{2,4,5,10};
         public static final int[] BLUE_HUB_CENTER_APRIL_TAG_IDS = new int[]{18,20,21,26};
