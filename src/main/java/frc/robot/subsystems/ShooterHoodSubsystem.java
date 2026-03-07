@@ -42,7 +42,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     // upperlimit is actually down and lowerlimit is up
     private double maxMovement = 0.955 - 0.61;
-    private double lowerLimit = 0.61;
+    private double zeroLimit = 0.61;
+    private boolean finishedZeroing = true;
 
 
     public ShooterHoodSubsystem() {
@@ -55,6 +56,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
         hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
+        hoodPidController.enableContinuousInput(0, 1);
     }
 
     public void setState(double state) {
@@ -65,6 +67,29 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         }
     }
 
+    public void zeroHood() {
+        finishedZeroing = false;
+        hoodMotor.set(0.02);
+    }
+
+    public boolean finishedZeroing() {
+        if (hoodMotor.getVelocity().getValueAsDouble()  <= 0.002) {
+            zeroLimit = hoodAbsoluteDutyCycleEncoder.get();
+            hoodMotor.set(0);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public double getHoodValueFromZero() {
+        double actualHoodAngle = zeroLimit - hoodAbsoluteDutyCycleEncoder.get();
+        if (actualHoodAngle <= 0) {
+            actualHoodAngle += 1;
+        }
+        return actualHoodAngle;
+    }
+
     public boolean didReachValue() {
         return hoodPidController.atSetpoint();
     }
@@ -72,32 +97,47 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     public void runHood(double speed) {
         // going down and passing encoder
 
-        // boolean lowerLimitHit = hoodAbsoluteDutyCycleEncoder.get() <= lowerLimit;
-        // boolean upperLimitHit = hoodAbsoluteDutyCycleEncoder.get() >= upperLimit;
+        boolean lowerLimitHit = getHoodValueFromZero() <= 0;
+        boolean upperLimitHit = getHoodValueFromZero() >= maxMovement;
 
-        // if (lowerLimitHit && speed < 0) {
-        //     System.out.println("Lower Limit Hit! hood hit top" + lowerLimitHit);
-        //     speed = 0;
-        // }
-        // if (upperLimitHit && speed > 0) {
-        //     System.out.println("Upper Limit Hit! hood hit bottom" + upperLimitHit);
-        //     speed = 0;
-        // }
+        if (lowerLimitHit && speed > 0) {
+            System.out.println("Lower Limit Hit! hood hit zero" + lowerLimitHit);
+            speed = 0;
+        }
+        if (upperLimitHit && speed < 0) {
+            System.out.println("Upper Limit Hit! hood hit max" + upperLimitHit);
+            speed = 0;
+        }
         hoodMotor.set(speed);
     }
     
-    public void setHoodValue(double wantedHoodValue) {
-        runHood(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValue));
+    // wantedHoodValue should be encoder ticks above from 0
+    public void setHoodValue(double wantedHoodValueFromZero) {
+        // value is from how much increased from our zero value
+        double actualHoodAngle = hoodAbsoluteDutyCycleEncoder.get() - wantedHoodValueFromZero;
+        if (actualHoodAngle <= 0) {
+            actualHoodAngle += 1;
+        }
+        runHood(hoodPidController.calculate(hoodAbsoluteDutyCycleEncoder.get(), actualHoodAngle));
     }
 
     @Override
     public void periodic() {
         absoluteEncodPublisher.set(hoodAbsoluteDutyCycleEncoder.get());
-        SmartDashboard.putNumber("hood absolute encoder smart dashboard", hoodAbsoluteDutyCycleEncoder.get());
-        SmartDashboard.putNumber("hood encoder", hoodMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("hood absolute encoder dash", hoodAbsoluteDutyCycleEncoder.get());
+        SmartDashboard.putNumber("hood absolute encoder from zero", getHoodValueFromZero());
         
         if (state != ShooterStates.NONE) {
             setHoodValue(RobotContainer.swerveSubsystem.getTurretToTargetHoodValue());
+        }
+
+        // TODO: REMOVE FOR COMP
+        double kPHood = SmartDashboard.getNumber("kP hood", TurretConstants.kPhood);
+
+        SmartDashboard.putNumber("kP hood", kPHood);
+        if (SmartDashboard.getNumber("kP hood", TurretConstants.kPhood) != hoodPidController.getP()) {
+            hoodPidController.setP(kPHood);
+            System.out.println("Updated hood PID and FF values: kP = " + kPHood);
         }
     }
 }

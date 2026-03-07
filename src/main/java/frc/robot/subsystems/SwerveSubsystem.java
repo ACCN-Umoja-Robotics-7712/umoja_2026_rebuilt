@@ -409,10 +409,12 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
 
-        Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(getPose().getTranslation());
-        Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation());
+        Pose2d currentPose = getPose();
+
+        Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(currentPose.getTranslation());
+        Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation().plus(currentPose.getRotation()));
         turretPublisher.set(turretCameraFieldPose);
-        posePublisher.set(getPose());
+        posePublisher.set(currentPose);
         
         double[] angleDistance = updateRobotAngleDistanceToTarget(Constants.SHOOTING_POSES.BLUE_HUB_POSE);
         this.turretToTargetAngle = angleDistance[0];

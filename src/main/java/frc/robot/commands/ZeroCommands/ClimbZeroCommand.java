@@ -15,7 +15,7 @@ public class ClimbZeroCommand extends Command {
 
     @Override
     public void initialize(){
-        System.out.println("Intake zero'd");
+        System.out.println("Climb zero'd");
     }
 
     @Override

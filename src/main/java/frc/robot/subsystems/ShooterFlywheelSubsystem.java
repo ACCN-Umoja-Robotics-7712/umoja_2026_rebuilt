@@ -115,6 +115,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Velocity", flywheelMotorLeader.getEncoder().getVelocity());
         SmartDashboard.putNumber("Kicker Velocity", kickerMotor.getEncoder().getVelocity());
 
+        // TODO: REMOVE FOR COMP
         double kSkicker = SmartDashboard.getNumber("kS Kicker", TurretConstants.kSkicker);
         double kVkicker = SmartDashboard.getNumber("kV Kicker", TurretConstants.kVkicker);
         double kPkicker = SmartDashboard.getNumber("kP Kicker", TurretConstants.kPkicker);
