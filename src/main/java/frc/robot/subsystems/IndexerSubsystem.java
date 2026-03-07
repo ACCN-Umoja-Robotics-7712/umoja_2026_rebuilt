@@ -15,27 +15,27 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.TurretConstants;
 
 public class IndexerSubsystem extends SubsystemBase {
-    private SparkFlex indexerMotorLeader;
-    private SparkFlex indexerMotorFollower;
+    private SparkFlex indexerMotorOriginal;
+    private SparkFlex indexerMotorGearedDown;
     
     public IndexerSubsystem() {
-        indexerMotorLeader = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
-        SparkBaseConfig indexerLeadConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
-        indexerMotorLeader.configure(indexerLeadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        indexerMotorOriginal = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
+        SparkBaseConfig indexerOriginalConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
+        indexerMotorOriginal.configure(indexerOriginalConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        indexerMotorFollower = new SparkFlex(IndexerConstants.indexerMotorFollowerID, MotorType.kBrushless);
+        indexerMotorGearedDown = new SparkFlex(IndexerConstants.indexerMotorFollowerID, MotorType.kBrushless);
         SparkBaseConfig indexerFollowConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
-        indexerFollowConfig.follow(IndexerConstants.indexerMotorLeaderID, true);
-        indexerMotorFollower.configure(indexerFollowConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        indexerMotorGearedDown.configure(indexerFollowConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void runIndexer(double speed) { // Can change the speed for each motor independently
-        indexerMotorLeader.set(speed*0.30); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75% (UPDATE: 50% is the most optimal as it worked really well)
+    public void runIndexerAtVoltage(double voltage) { // Can change the speed for each motor independently
+        indexerMotorOriginal.setVoltage(voltage/9.0);
+        indexerMotorGearedDown.setVoltage(voltage); // 30% was to weak to get the fuel out, 60% was okay, but the motor started jittering and sill needed some power. Will try 75% (UPDATE: 50% is the most optimal as it worked really well)
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Indexer velocity", indexerMotorLeader.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Indexer velocity", indexerMotorOriginal.getEncoder().getVelocity());
     }
 
 }

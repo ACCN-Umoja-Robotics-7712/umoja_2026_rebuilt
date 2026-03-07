@@ -436,6 +436,9 @@ public final class Constants {
         public static final Pose2d BLUE_HALF_LEFT = new Pose2d(2.159, 5.988, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
         public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(2.159, 2.168, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
 
+        public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
+        public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
+
         //RED SIDE
         public static final Pose2d RED_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
         public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 6, new Rotation2d(0));

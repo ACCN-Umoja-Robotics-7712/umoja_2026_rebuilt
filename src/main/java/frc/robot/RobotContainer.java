@@ -194,8 +194,8 @@ public class RobotContainer {
       )
     );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 1.0);
-    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> -0.1);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 12.0);
+    Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
     .whileTrue(

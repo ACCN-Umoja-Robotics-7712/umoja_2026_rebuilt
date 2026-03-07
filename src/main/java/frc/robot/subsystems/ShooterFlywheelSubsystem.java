@@ -96,7 +96,9 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         // return flywheelPidController.atSetpoint() && kickerPidController.atSetpoint();
         boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity()) - wantedKickerRPM <= 50;
         boolean shooterAtRPM = Math.abs(flywheelMotorLeader.getEncoder().getVelocity()) - wantedShooterRPM <= 50;
-        return kickerAtRPM && shooterAtRPM;
+        boolean kickerRPMChange = kickerPidController.atSetpoint();
+        boolean shooterRPMChange = flywheelPidController.atSetpoint();
+        return kickerAtRPM && shooterAtRPM && kickerRPMChange && shooterRPMChange;
     }
 
     public double getDashboardVelocity() {

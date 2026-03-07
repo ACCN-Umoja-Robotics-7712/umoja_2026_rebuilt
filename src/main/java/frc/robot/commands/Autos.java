@@ -19,15 +19,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SHOOTING_POSES;
 import frc.robot.RobotContainer;
+import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
+import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+
+// ---------------------------------------------------------- AUTO COMMANDS -------------------------------------------------- //
 
 public class Autos {
     private final SwerveSubsystem swerveSubsystem = RobotContainer.swerveSubsystem;
@@ -46,9 +53,9 @@ public class Autos {
     PathPlannerPath depot_trench_to_neutral;
     
     public enum AUTO {
-        BLUE_TRENCH_LEFT_NEUTRAL, BLUE_CENTER_TOWER, BLUE_TRENCH_RIGHT_NEUTRAL,
-        RED_TRENCH_LEFT_NEUTRAL, RED_CENTER_TOWER, RED_TRENCH_RIGHT_NEUTRAL,
-        PRACTICE_FIELD, SIMPLE_AUTO, TUNE_AUTO
+        BLUE_TRENCH_LEFT_NEUTRAL, BLUE_CENTER_TOWER, BLUE_TRENCH_RIGHT_OUTPOST, BLUE_TRENCH_RIGHT_NEUTRAL,
+        RED_TRENCH_LEFT_NEUTRAL, RED_CENTER_TOWER, RED_TRENCH_RIGHT_NEUTRAL, RED_TRENCH_RIGHT_OUTPOST,
+        PRACTICE_FIELD, SIMPLE_AUTO, TUNE_AUTO, BLUE_RIGHT_AUTO_FULL_1, BLUE_RIGHT_AUTO_FULL_2
     }
     private SendableChooser<AUTO> chooser;
     private SendableChooser<Command> ppChooser;
@@ -74,7 +81,8 @@ public class Autos {
         chooser.addOption("Red Trench Left to Neutral", AUTO.RED_TRENCH_LEFT_NEUTRAL);
         chooser.addOption("Red Center to Tower", AUTO.RED_CENTER_TOWER);
         chooser.addOption("Red Right Trench to Neutral", AUTO.RED_TRENCH_RIGHT_NEUTRAL);
-        chooser.addOption("Practice field center", AUTO.PRACTICE_FIELD);
+        chooser.addOption("Blue Right Trench to Outpost", AUTO.BLUE_TRENCH_RIGHT_OUTPOST);
+        chooser.addOption("Blue Right Auto Full 1", AUTO.BLUE_RIGHT_AUTO_FULL_1); // Go to neutral, intake, go to trench, shoot, go back to neutral, intake, go to outpost, shoot
         chooser.addOption("simple", AUTO.SIMPLE_AUTO);
         chooser.addOption("tune", AUTO.TUNE_AUTO);
         chooser.setDefaultOption("Default", null);
@@ -101,6 +109,8 @@ public class Autos {
             return new InstantCommand();
         }
 
+// -------------------------------------------------------- AUTO SELECTOR --------------------------------------- ----------------- //
+
         return switch (auto) {
             case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
             // case BLUE_CENTER_TOWER -> getBlueCenter();
@@ -108,12 +118,17 @@ public class Autos {
             case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
             case RED_CENTER_TOWER -> getRedTower();
             case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
-            // case PRACTICE_FIELD -> getPracticeField();
+            case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
+            case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
+            case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
             case SIMPLE_AUTO -> getSimpleAuto();
             case TUNE_AUTO -> getTuneAuto();
             default -> new InstantCommand();
         };
     }
+
+// ------------------------------------------------------------------------ // ----------------------------- AUTOS ---------------------------------- //
+
 
     public Command getTuneAuto() {
         // drive forward/side 1 meter, turn 60 degrees
@@ -228,8 +243,8 @@ public class Autos {
         List.of(),
         endPose2d,
         trajectoryConfig);
-        
 
+ 
         Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
         endPose2d,
         List.of(),
@@ -245,38 +260,314 @@ public class Autos {
                 path2
                 )
         );
-
     }
 
     public Command getBlueTrenchRightNeutral() {
-        Pose2d endPose2d = SHOOTING_POSES.BLUE_NEUTRAL_RIGHT;
-        Pose2d pickUpPose = SHOOTING_POSES.BLUE_TRENCH_RIGHT;
+        Pose2d endPose2d = SHOOTING_POSES.BLUE_OUTPOST_CENTER;
         posePublisher.set(endPose2d);
 
-        Trajectory traj = TrajectoryGenerator.generateTrajectory(
-        swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
-        List.of(),
-        endPose2d,
-        trajectoryConfig);
+        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
+        // List.of(),
+        // endPose2d,
+        // trajectoryConfig);
         
 
-        Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
-        endPose2d,
-        List.of(),
-        pickUpPose,
-        trajectoryConfig);
+        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+        // endPose2d,
+        // List.of(),
+        // pickUpPose,
+        // trajectoryConfig);
+
+        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
+        // pickUpPose,
+        // List.of(),
+        // returnPose,
+        // trajectoryConfig);
+
+        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
+        // returnPose,
+        // List.of(),
+        // finalPose,
+        // trajectoryConfig);
+
+        Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
+
+        return new ParallelRaceGroup(
+                new ParallelCommandGroup(
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
+                ),
+                path1
+            ).andThen(
+                new ParallelCommandGroup(
+                    new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
+                )
+            );
+    }
+
+    
+    public Command getBlueTrenchRightOutpost() {
+        Pose2d endPose2d = SHOOTING_POSES.BLUE_NEUTRAL_RIGHT;
+        Pose2d pickUpPose = SHOOTING_POSES.BLUE_HALF_RIGHT;
+        Pose2d returnPose = SHOOTING_POSES.BLUE_TRENCH_OUTPOST_AUTO_RETURN;
+        Pose2d finalPose = SHOOTING_POSES.BLUE_TRENCH_RIGHT;
+        posePublisher.set(endPose2d);
+
+        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
+        // List.of(),
+        // endPose2d,
+        // trajectoryConfig);
+        
+
+        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+        // endPose2d,
+        // List.of(),
+        // pickUpPose,
+        // trajectoryConfig);
+
+        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
+        // pickUpPose,
+        // List.of(),
+        // returnPose,
+        // trajectoryConfig);
+
+        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
+        // returnPose,
+        // List.of(),
+        // finalPose,
+        // trajectoryConfig);
 
         Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
         Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+        Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
         
-        return path1.andThen(
-            new ParallelCommandGroup(
-                new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.40),
-                path2
+        return new ParallelRaceGroup(
+                new ParallelCommandGroup(
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
+                ),
+                path1.andThen(path2.andThen(path3.andThen(path4)))
+            ).andThen(
+                new ParallelCommandGroup(
+                    new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
                 )
-        );
-
+            );
     }
+    
+    public Command getBlueRightFull1() {
+        Pose2d endPose2d = SHOOTING_POSES.BLUE_NEUTRAL_RIGHT;
+        Pose2d pickUpPose = SHOOTING_POSES.BLUE_HALF_RIGHT;
+        Pose2d returnPose = SHOOTING_POSES.BLUE_TRENCH_OUTPOST_AUTO_RETURN;
+        Pose2d finalPose = SHOOTING_POSES.BLUE_OUTPOST_CENTER;
+        posePublisher.set(endPose2d);
+
+        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
+        // List.of(),
+        // endPose2d,
+        // trajectoryConfig);
+        
+
+        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+        // endPose2d,
+        // List.of(),
+        // pickUpPose,
+        // trajectoryConfig);
+
+        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
+        // pickUpPose,
+        // List.of(),
+        // returnPose,
+        // trajectoryConfig);
+
+        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
+        // returnPose,
+        // List.of(),
+        // finalPose,
+        // trajectoryConfig);
+
+        Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
+        Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+        Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
+        
+        return new ParallelRaceGroup(
+                new ParallelCommandGroup(
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
+                ),
+                path1.andThen(path2.andThen(path3.andThen(path1)))
+            ).andThen(
+                new ParallelCommandGroup(
+                    path4,
+                    new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
+                )
+            );
+    }
+
+
+// ------------------------------------------------------------------------------ // ---------- RED AUTOS ----------- // ------------------------------------------------------------------------------ //
+    
+    public Command getRedTrenchRightOutpost() {
+        Pose2d endPose2d = SHOOTING_POSES.RED_NEUTRAL_RIGHT;
+        Pose2d pickUpPose = SHOOTING_POSES.RED_HALF_RIGHT;
+        Pose2d returnPose = SHOOTING_POSES.RED_TRENCH_OUTPOST_AUTO_RETURN;
+        // Pose2d finalPose = SHOOTING_POSESS.OUPOST;
+        posePublisher.set(endPose2d);
+
+        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
+        // List.of(),
+        // endPose2d,
+        // trajectoryConfig);
+        
+
+        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+        // endPose2d,
+        // List.of(),
+        // pickUpPose,
+        // trajectoryConfig);
+
+        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
+        // pickUpPose,
+        // List.of(),
+        // returnPose,
+        // trajectoryConfig);
+
+        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
+        // returnPose,
+        // List.of(),
+        // finalPose,
+        // trajectoryConfig);
+
+        Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
+        Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+        Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
+        
+        return new ParallelRaceGroup(
+                new ParallelCommandGroup(
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
+                ),
+                path1.andThen(path2.andThen(path3.andThen(path4)))
+            ).andThen(
+                new ParallelCommandGroup(
+                    new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
+                )
+            );
+    }
+
+    public Command getRedTrenchRight() {
+        Pose2d endPose2d = SHOOTING_POSES.RED_NEUTRAL_RIGHT;
+        Pose2d pickUpPose = SHOOTING_POSES.RED_HALF_RIGHT;
+        Pose2d returnPose = SHOOTING_POSES.RED_TRENCH_OUTPOST_AUTO_RETURN;
+        Pose2d finalPose = SHOOTING_POSES.RED_TRENCH_RIGHT;
+        posePublisher.set(endPose2d);
+
+        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
+        // List.of(),
+        // endPose2d,
+        // trajectoryConfig);
+        
+
+        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+        // endPose2d,
+        // List.of(),
+        // pickUpPose,
+        // trajectoryConfig);
+
+        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
+        // pickUpPose,
+        // List.of(),
+        // returnPose,
+        // trajectoryConfig);
+
+        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
+        // returnPose,
+        // List.of(),
+        // finalPose,
+        // trajectoryConfig);
+
+        Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
+        Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+        Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
+        
+        return new ParallelRaceGroup(
+                new ParallelCommandGroup(
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
+                ),
+                path1.andThen(path2.andThen(path3.andThen(path4)))
+            ).andThen(
+                new ParallelCommandGroup(
+                    new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
+                )
+            );
+    }
+    
+    public Command getRedRightFull1() {
+        Pose2d endPose2d = SHOOTING_POSES.RED_NEUTRAL_RIGHT;
+        Pose2d pickUpPose = SHOOTING_POSES.RED_HALF_RIGHT;
+        Pose2d returnPose = SHOOTING_POSES.RED_TRENCH_OUTPOST_AUTO_RETURN;
+        Pose2d finalPose = SHOOTING_POSES.RED_OUTPOST_CENTER;
+        posePublisher.set(endPose2d);
+
+        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
+        // List.of(),
+        // endPose2d,
+        // trajectoryConfig);
+        
+
+        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+        // endPose2d,
+        // List.of(),
+        // pickUpPose,
+        // trajectoryConfig);
+
+        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
+        // pickUpPose,
+        // List.of(),
+        // returnPose,
+        // trajectoryConfig);
+
+        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
+        // returnPose,
+        // List.of(),
+        // finalPose,
+        // trajectoryConfig);
+
+        Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
+        Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+        Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
+        
+        return new ParallelRaceGroup(
+                new ParallelCommandGroup(
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
+                ),
+                path1.andThen(path2.andThen(path3.andThen(path1)))
+            ).andThen(
+                new ParallelCommandGroup(
+                    path4,
+                    new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
+                )
+            );
+    }
+
 
   public Command getSimpleAuto() {
 
