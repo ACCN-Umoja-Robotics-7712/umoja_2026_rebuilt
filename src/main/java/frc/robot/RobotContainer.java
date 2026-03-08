@@ -194,11 +194,12 @@ public class RobotContainer {
       )
     );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 12.0);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 10.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
     .whileTrue(
+      // runIndexer
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)

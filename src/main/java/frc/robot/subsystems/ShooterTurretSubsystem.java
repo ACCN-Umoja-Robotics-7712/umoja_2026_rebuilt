@@ -46,9 +46,9 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public void runTurret(double speed) {
         // if limit switch is pressed, and going same direction as limit switch, STOP
-        if (turretZeroLimitSwitch.get() && speed < 0) {
-            speed = 0;
-        }
+        // if (turretZeroLimitSwitch.get() && speed < 0) {
+        //     speed = 0;
+        // }
         
         turretMotor.set(speed);
     }
@@ -80,13 +80,14 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (turretZeroLimitSwitch.get() && !isZeroed) {
-            turretMotor.getEncoder().setPosition(0);
-            isZeroed = true;
-        }
+        // if (turretZeroLimitSwitch.get() && !isZeroed) {
+        //     turretMotor.getEncoder().setPosition(0);
+        //     isZeroed = true;
+        // }
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getTurretToTargetAngle());
         }
         SmartDashboard.putNumber("turret encoder", turretMotor.getEncoder().getPosition());
+        SmartDashboard.putBoolean("turret limit switch hit", turretZeroLimitSwitch.get());
     }
 }

@@ -449,14 +449,14 @@ public class Autos {
         Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
         Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
         Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
-        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
+        // Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
         
         return new ParallelRaceGroup(
                 new ParallelCommandGroup(
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
                     new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
-                ),
-                path1.andThen(path2.andThen(path3.andThen(path4)))
+                )
+                // path1.andThen(path2.andThen(path3.andThen(path4)))
             ).andThen(
                 new ParallelCommandGroup(
                     new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),

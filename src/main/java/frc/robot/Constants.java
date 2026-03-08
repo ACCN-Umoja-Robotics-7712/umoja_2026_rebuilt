@@ -208,7 +208,7 @@ public final class Constants {
         public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
-        public static final int intakeArmZeroLimitSwitchID = 0;
+        public static final int intakeArmZeroLimitSwitchID = 5;
 
         public static final double rollerkP = 0.01;
         public static final double armkP = 0.00;
@@ -438,6 +438,8 @@ public final class Constants {
 
         public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
         public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
+        public static final Pose2d RED_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(10.841, 7.300, new Rotation2d(180));
+        public static final Pose2d RED_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(10.841, 0.716, new Rotation2d(90));
 
         //RED SIDE
         public static final Pose2d RED_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
