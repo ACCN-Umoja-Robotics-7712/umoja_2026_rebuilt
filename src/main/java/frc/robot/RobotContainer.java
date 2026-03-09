@@ -203,7 +203,7 @@ public class RobotContainer {
     .whileTrue(
       // runIndexer
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
       )
     ).whileFalse(
@@ -213,14 +213,14 @@ public class RobotContainer {
       )
     );
     
-    // operatorController.rightTrigger()
-    // .and(operatorController.y())
-    // .whileTrue(
-    //   Commands.parallel(
-    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3500.0)
-    //     // new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
-    //   )
-    // );
+    operatorController.rightTrigger()
+    .and(operatorController.y())
+    .whileTrue(
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity)
+        // new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
+      )
+    );
     
     // operatorController.rightTrigger()
     // .and(operatorController.b())
@@ -237,6 +237,10 @@ public class RobotContainer {
         () -> operatorController.getRightY() * 0.1
       )
     ); 
+
+    operatorController.button(XBoxConstants.MENU).onTrue(
+      new ZeroHoodCommand(shooterHoodSubsystem)
+    );
 
     // Turret Motor
     operatorController.leftBumper().whileTrue(

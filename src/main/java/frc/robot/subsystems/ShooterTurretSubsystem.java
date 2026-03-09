@@ -80,12 +80,12 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
-        double limitTo360 = wantedTurretAngleInDegrees % 360;
+        double limitToRange = wantedTurretAngleInDegrees % 360;
         if (wantedTurretAngleInDegrees <= minAngle) { // 55
-            limitTo360 = minAngle;
+            limitToRange = minAngle;
         }
-        if (wantedTurretAngleInDegrees >= maxAngle) { // 355
-            limitTo360 = maxAngle;
+        if (wantedTurretAngleInDegrees >= maxAngle) { // 335
+            limitToRange = maxAngle;
         }
         double currentAngle = getAngleDegrees();
         // within slack range
@@ -100,8 +100,9 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // //     pidToUse.reset();
         // // }
         // lastPIController = pidToUse;
-        SmartDashboard.putNumber("new angle that we want", limitTo360);
-        turretMotor.setVoltage(turretSlackPidController.calculate(getAngleDegrees(), limitTo360)); // SHOULD TURN ANY NEGTIVE VALUE TO A POSITIVE (-90 TO 270)
+        SmartDashboard.putNumber("new angle that we want", limitToRange);
+        wantedTurretAngle = limitToRange;
+        turretMotor.setVoltage(turretSlackPidController.calculate(getAngleDegrees(), limitToRange));
     }
 
     public void setState(double state) {

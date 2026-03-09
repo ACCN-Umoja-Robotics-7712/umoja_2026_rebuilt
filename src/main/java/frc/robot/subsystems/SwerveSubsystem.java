@@ -477,9 +477,13 @@ public class SwerveSubsystem extends SubsystemBase {
         
         Pose2d currentPose = getPose();
 
-        // Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(currentPose.getTranslation());
-        // Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation().plus(currentPose.getRotation()));
-        // turretPublisher.set(turretCameraFieldPose);
+        if (RobotContainer.gameState == GameConstants.Disabled) {
+            LimelightHelpers.SetThrottle(limelightLeft, 100);
+        } else {
+            LimelightHelpers.SetThrottle(limelightLeft, 0);
+        }
+        Pose2d turretFieldPose = currentPose.plus(new Transform2d(TurretConstants.turretCenterFromRobotCenterForwardLength, TurretConstants.turretCenterFromRobotCenterSideLength, new Rotation2d(Units.degreesToRadians(RobotContainer.shooterTurretSubsystem.getAngleDegrees()))));
+        turretPublisher.set(turretFieldPose);
         allPointsPublisher.set(limelightPoses.toArray(new Pose2d[0]));
         posePublisher.set(currentPose);
 
@@ -523,6 +527,8 @@ public class SwerveSubsystem extends SubsystemBase {
         double[] rpmHoodValues = updateRPMHoodValues(distanceToTarget);
         this.turretToTargetRPMValue = rpmHoodValues[0];
         this.turretToTargetHoodValue = rpmHoodValues[1];
+        SmartDashboard.putNumber("WANTED RPM FROM DISTANCE", turretToTargetRPMValue);
+        SmartDashboard.putNumber("WANTED HOOD FROM DISTANCE", turretToTargetHoodValue);
         // corner ~5.7m, tower ~3.1m, trench ~3.8m
     }
 
@@ -601,9 +607,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double[] updateRPMHoodValues(double distanceToTarget) {
-        // Example calculation for RPM and hood values based on distance
-        double rpm = 1000 + (distanceToTarget * 50); // Example formula
-        double hoodValue = 15 + (distanceToTarget * 0.1); // Example formula
+        // https://www.desmos.com/calculator/80g65lmlho
+        double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
+        double hoodValue = 0;
         return new double[] {rpm, hoodValue};
     }
 }
