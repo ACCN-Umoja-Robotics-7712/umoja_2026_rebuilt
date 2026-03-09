@@ -480,6 +480,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(currentPose.getTranslation());
         // Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation().plus(currentPose.getRotation()));
         // turretPublisher.set(turretCameraFieldPose);
+        allPointsPublisher.set(limelightPoses.toArray(new Pose2d[0]));
         posePublisher.set(currentPose);
 
         boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue);
