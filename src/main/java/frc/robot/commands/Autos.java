@@ -22,15 +22,18 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SHOOTING_POSES;
 import frc.robot.RobotContainer;
+import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -54,7 +57,7 @@ public class Autos {
     
     public enum AUTO {
         BLUE_TRENCH_LEFT_NEUTRAL, BLUE_CENTER_TOWER, BLUE_TRENCH_RIGHT_OUTPOST, BLUE_TRENCH_RIGHT_NEUTRAL,
-        RED_TRENCH_LEFT_NEUTRAL, RED_CENTER_TOWER, RED_TRENCH_RIGHT_NEUTRAL, RED_TRENCH_RIGHT_OUTPOST,
+        RED_TRENCH_LEFT_NEUTRAL, RED_CENTER_TOWER, RED_TRENCH_RIGHT_NEUTRAL, RED_TRENCH_RIGHT_OUTPOST, RED_CENTER_TOWER_R,
         PRACTICE_FIELD, SIMPLE_AUTO, TUNE_AUTO, BLUE_RIGHT_AUTO_FULL_1, BLUE_RIGHT_AUTO_FULL_2
     }
     private SendableChooser<AUTO> chooser;
@@ -79,9 +82,11 @@ public class Autos {
         chooser.addOption("Blue Center to Tower", AUTO.BLUE_CENTER_TOWER);
         chooser.addOption("Blue Right Trench to Neutral", AUTO.BLUE_TRENCH_RIGHT_NEUTRAL);
         chooser.addOption("Red Trench Left to Neutral", AUTO.RED_TRENCH_LEFT_NEUTRAL);
-        chooser.addOption("Red Center to Tower", AUTO.RED_CENTER_TOWER);
+        chooser.addOption("Red Trech to Neutral then Tower from Left", AUTO.RED_CENTER_TOWER);
+        chooser.addOption("Red Tower to Neutral then Tower from Right", AUTO.RED_CENTER_TOWER_R);
         chooser.addOption("Red Right Trench to Neutral", AUTO.RED_TRENCH_RIGHT_NEUTRAL);
         chooser.addOption("Blue Right Trench to Outpost", AUTO.BLUE_TRENCH_RIGHT_OUTPOST);
+        // chooser.addOption("Red Right Trench to Outpost", AUTO.BLUE_TRENCH_RIGHT_OUTPOST);
         chooser.addOption("Blue Right Auto Full 1", AUTO.BLUE_RIGHT_AUTO_FULL_1); // Go to neutral, intake, go to trench, shoot, go back to neutral, intake, go to outpost, shoot
         chooser.addOption("simple", AUTO.SIMPLE_AUTO);
         chooser.addOption("tune", AUTO.TUNE_AUTO);
@@ -116,7 +121,8 @@ public class Autos {
             // case BLUE_CENTER_TOWER -> getBlueCenter();
             case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
             case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
-            case RED_CENTER_TOWER -> getRedTower();
+            case RED_CENTER_TOWER -> getRedTowerFromLeft();
+            case RED_CENTER_TOWER_R -> getRedTowerFromRight();
             case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
             case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
             case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
@@ -233,9 +239,9 @@ public class Autos {
 
     }
 
-    public Command getRedTower() {
+    public Command getRedTowerFromLeft() {
         Pose2d endPose2d = SHOOTING_POSES.RED_TOWER_CENTER;
-        Pose2d pickUpPose = SHOOTING_POSES.RED_HUB_CENTER;
+        Pose2d pickUpPose = SHOOTING_POSES.RED_NEUTRAL_LEFT;
         posePublisher.set(endPose2d);
 
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
@@ -263,44 +269,25 @@ public class Autos {
     }
 
     public Command getBlueTrenchRightNeutral() {
-        Pose2d endPose2d = SHOOTING_POSES.BLUE_OUTPOST_CENTER;
+        Pose2d endPose2d = SHOOTING_POSES.BLUE_NEUTRAL_RIGHT;
+        Pose2d pickUpose2d = SHOOTING_POSES.BLUE_HALF_RIGHT;
+        Pose2d returnPose2d = SHOOTING_POSES.BLUE_TRENCH_OUTPOST_AUTO_RETURN;
+
         posePublisher.set(endPose2d);
 
-        // Trajectory traj = TrajectoryGenerator.generateTrajectory(
-        // swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
-        // List.of(),
-        // endPose2d,
-        // trajectoryConfig);
-        
-
-        // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
-        // endPose2d,
-        // List.of(),
-        // pickUpPose,
-        // trajectoryConfig);
-
-        // Trajectory traj3 = TrajectoryGenerator.generateTrajectory(
-        // pickUpPose,
-        // List.of(),
-        // returnPose,
-        // trajectoryConfig);
-
-        // Trajectory traj4 = TrajectoryGenerator.generateTrajectory(
-        // returnPose,
-        // List.of(),
-        // finalPose,
-        // trajectoryConfig);
-
         Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
+        Command path2 = AutoBuilder.pathfindToPose(pickUpose2d, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(returnPose2d, Constants.pathConstraints);
 
         return new ParallelRaceGroup(
                 new ParallelCommandGroup(
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
                     new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
                 ),
-                path1
+                path1.andThen(path2.andThen(path1))
             ).andThen(
                 new ParallelCommandGroup(
+                    path4,
                     new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
                 )
@@ -413,12 +400,42 @@ public class Autos {
 
 
 // ------------------------------------------------------------------------------ // ---------- RED AUTOS ----------- // ------------------------------------------------------------------------------ //
-    
+    public Command getRedTowerFromRight() {
+        Pose2d endPose2d = SHOOTING_POSES.RED_NEUTRAL_RIGHT;
+        Pose2d pickupPose2d = SHOOTING_POSES.RED_HALF_RIGHT;
+        Pose2d returnPose2d = SHOOTING_POSES.RED_TRENCH_OUTPOST_AUTO_RETURN;
+        Pose2d climbPose2d = SHOOTING_POSES.RED_TOWER_CENTER; // Change to the right position for us to actually climb
+
+        posePublisher.set(endPose2d);
+
+        Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints, 0);
+        Command path2 = AutoBuilder.pathfindToPose(pickupPose2d, Constants.pathConstraints, 0);
+        Command path3 = AutoBuilder.pathfindToPose(returnPose2d, Constants.pathConstraints, 0);
+        Command path4 = AutoBuilder.pathfindToPose(climbPose2d, Constants.pathConstraints, 0);
+        
+        return new ParallelRaceGroup(
+            new ParallelCommandGroup(
+                new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.2),
+                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.99)
+                ),
+                path1.andThen(path2)
+        ).andThen(
+            path3,
+            new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),
+            path1,
+            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> 0.99)
+        ).andThen(
+            path4,
+            new ManualClimbCommand(RobotContainer.climbSubsystem, () -> 0.3),
+            new WaitCommand(0.3),
+            new ManualClimbCommand(RobotContainer.climbSubsystem, () -> -1.0)
+        );
+    }
     public Command getRedTrenchRightOutpost() {
         Pose2d endPose2d = SHOOTING_POSES.RED_NEUTRAL_RIGHT;
         Pose2d pickUpPose = SHOOTING_POSES.RED_HALF_RIGHT;
         Pose2d returnPose = SHOOTING_POSES.RED_TRENCH_OUTPOST_AUTO_RETURN;
-        // Pose2d finalPose = SHOOTING_POSESS.OUPOST;
+        Pose2d finalPose = SHOOTING_POSES.RED_OUTPOST_CENTER;
         posePublisher.set(endPose2d);
 
         // Trajectory traj = TrajectoryGenerator.generateTrajectory(
@@ -449,14 +466,14 @@ public class Autos {
         Command path1 = AutoBuilder.pathfindToPose(endPose2d, Constants.pathConstraints);
         Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
         Command path3 = AutoBuilder.pathfindToPose(returnPose, Constants.pathConstraints);
-        // Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
+        Command path4 = AutoBuilder.pathfindToPose(finalPose, Constants.pathConstraints);
         
         return new ParallelRaceGroup(
                 new ParallelCommandGroup(
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.0),
                     new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.20)
-                )
-                // path1.andThen(path2.andThen(path3.andThen(path4)))
+                ),
+                path1.andThen(path2.andThen(path3.andThen(path4)))
             ).andThen(
                 new ParallelCommandGroup(
                     new AlignRobotBackWithHubFieldCommand(swerveSubsystem, () -> 0.0, () -> 0.0),

@@ -18,7 +18,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ShooterStates;
 
@@ -56,8 +55,8 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex (Current Limit is 80) 
         kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
-        flywheelPidController.setTolerance(50, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
-        kickerPidController.setTolerance(50, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
+        flywheelPidController.setTolerance(100, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
+        kickerPidController.setTolerance(100, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
     }
     
     public void runShooter(double speed) {
@@ -94,8 +93,8 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
     public boolean didReachVelocity() {
         // return flywheelPidController.atSetpoint() && kickerPidController.atSetpoint();
-        boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity()) - wantedKickerRPM <= 50;
-        boolean shooterAtRPM = Math.abs(flywheelMotorLeader.getEncoder().getVelocity()) - wantedShooterRPM <= 50;
+        boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity()) - wantedKickerRPM <= 100;
+        boolean shooterAtRPM = Math.abs(flywheelMotorLeader.getEncoder().getVelocity()) - wantedShooterRPM <= 100;
         boolean kickerRPMChange = kickerPidController.atSetpoint();
         boolean shooterRPMChange = flywheelPidController.atSetpoint();
         return kickerAtRPM && shooterAtRPM && kickerRPMChange && shooterRPMChange;

@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -13,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,16 +26,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.ShooterStates;
 
 public class ShooterTurretSubsystem extends SubsystemBase {
     private final SparkMax turretMotor;
     private final DigitalInput turretZeroLimitSwitch;
 
-    private final PIDController turretPidController;
+    private final PIDController turretSlackPidController;
+    private final PIDController turretSpringPidController;
 
     private double state = ShooterStates.NONE;
     private boolean isZeroed = false;
+
+    private double minAngle = 55;
+    private double maxAngle = 335;
+    private double wantedTurretAngle = 180;
+    private PIDController lastPIController = null;
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
@@ -41,7 +50,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
         
-        turretPidController = new PIDController(TurretConstants.kPturret, 0, 0);
+        turretSlackPidController = new PIDController(TurretConstants.kPturretSlack, TurretConstants.kIturretSlack, 0);
+        turretSpringPidController = new PIDController(TurretConstants.kPturretSpring, TurretConstants.kIturretSpring, 0);
     }
 
     public void runTurret(double speed) {
@@ -53,8 +63,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.set(speed);
     }
 
-    public double getAngle() {
-        return Units.rotationsToDegrees(turretMotor.getEncoder().getPosition()*TurretConstants.motorToTurretRatio);
+    public double getAngleDegrees() {
+        return Units.rotationsToDegrees(turretMotor.getEncoder().getPosition()*TurretConstants.motorToTurretRatio)+180;
     }
 
     public double getVelocity() {
@@ -62,12 +72,36 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
     
     public boolean didReachAngle() {
-        return turretPidController.atSetpoint();
+        return Math.abs(wantedTurretAngle - getAngleDegrees()) <= 1;
+    }
+
+    public void resetTurret() {
+        turretMotor.getEncoder().setPosition(0);  // Max angle is 335 and min is 55
     }
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
         double limitTo360 = wantedTurretAngleInDegrees % 360;
-        turretMotor.set(turretPidController.calculate(getAngle(), limitTo360)); // SHOULD TURN ANY NEGTIVE VALUE TO A POSITIVE (-90 TO 270)
+        if (wantedTurretAngleInDegrees <= minAngle) { // 55
+            limitTo360 = minAngle;
+        }
+        if (wantedTurretAngleInDegrees >= maxAngle) { // 355
+            limitTo360 = maxAngle;
+        }
+        double currentAngle = getAngleDegrees();
+        // within slack range
+        boolean withinSlackRange = currentAngle <= 255 && currentAngle >= 155; 
+        // PIDController pidToUse;
+        // if (withinSlackRange) {
+        //     pidToUse = turretSlackPidController;
+        // } else {
+        //     pidToUse = turretSpringPidController;
+        // }
+        // // if (lastPIController != pidToUse) {
+        // //     pidToUse.reset();
+        // // }
+        // lastPIController = pidToUse;
+        SmartDashboard.putNumber("new angle that we want", limitTo360);
+        turretMotor.setVoltage(turretSlackPidController.calculate(getAngleDegrees(), limitTo360)); // SHOULD TURN ANY NEGTIVE VALUE TO A POSITIVE (-90 TO 270)
     }
 
     public void setState(double state) {
@@ -76,6 +110,22 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         } else {
             this.state = ShooterStates.NONE;
         }
+    }
+    
+    public void setBrakeMode(IdleMode mode) {
+        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15);
+        turretConfig.idleMode(mode);
+        turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    public boolean isLimitSwitchHit() {
+        return !turretZeroLimitSwitch.get();
+    }
+    
+    public double getCustomAngle() {
+        double angle = SmartDashboard.getNumber("Custom turret angle", 180);
+        SmartDashboard.putNumber("Custom turret angle", angle);
+        return angle;
     }
 
     @Override
@@ -87,7 +137,35 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getTurretToTargetAngle());
         }
-        SmartDashboard.putNumber("turret encoder", turretMotor.getEncoder().getPosition());
+        if (isLimitSwitchHit()) {
+            resetTurret();
+        }
+        SmartDashboard.putNumber("turret encoder", getAngleDegrees());
         SmartDashboard.putBoolean("turret limit switch hit", turretZeroLimitSwitch.get());
+        
+        // TODO: REMOVE FOR COMP
+        double kPturretSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack);
+        double kPturretSpring = SmartDashboard.getNumber("kP Turret spring", TurretConstants.kPturretSpring);
+        double kIturretSlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack);
+        double kIturretSpring = SmartDashboard.getNumber("kI Turret spring", TurretConstants.kIturretSpring);
+
+        SmartDashboard.putNumber("kP Turret slack", kPturretSlack);
+        SmartDashboard.putNumber("kP Turret spring", kPturretSpring);
+
+        SmartDashboard.putNumber("kI Turret slack", kIturretSlack);
+        SmartDashboard.putNumber("kI Turret spring", kIturretSpring);
+
+        boolean kPSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack) != turretSlackPidController.getP();
+        boolean kPSpring = SmartDashboard.getNumber("kP Turret spring", TurretConstants.kPturretSpring) != turretSpringPidController.getP();
+        boolean kISlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack) != turretSlackPidController.getI();
+        boolean kISpring = SmartDashboard.getNumber("kI Turret spring", TurretConstants.kIturretSlack) != turretSpringPidController.getI();
+
+        if (kPSlack || kPSpring || kISlack || kISpring) {
+            turretSlackPidController.setP(kPturretSlack);
+            turretSpringPidController.setP(kPturretSpring);
+            turretSlackPidController.setI(kIturretSlack);
+            turretSpringPidController.setI(kIturretSpring);
+            System.out.println("Updated turret PID and FF values: kP slack = " + kPturretSlack + "kP spring = " + kPturretSpring + "kI slack " + kIturretSlack + "kI spring = " + kIturretSpring + kPSlack + kPSpring + kISlack + kISpring + turretSpringPidController.getP());
+        }
     }
 }

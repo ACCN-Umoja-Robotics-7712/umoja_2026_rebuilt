@@ -43,7 +43,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     // upperlimit is actually down and lowerlimit is up
     // private double maxMovement = 0.955 - 0.61;
     // private double zeroLimit = 0.375;
-    private double maxMovement = 100;
+    private double maxMovement = 5.0;
 
     public ShooterHoodSubsystem() {
         CANBus rio = new CANBus("rio");
@@ -55,7 +55,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
         hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
-        hoodPidController.enableContinuousInput(0, 1);
+        // hoodPidController.enableContinuousInput(0, 1);
     }
 
     public void setState(double state) {
@@ -126,7 +126,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("hood absolute encoder dash", hoodAbsoluteDutyCycleEncoder.get());
         // SmartDashboard.putNumber("hood absolute encoder from zero", getHoodValueFromZero());
         SmartDashboard.putNumber("hood motor position", hoodMotor.getPosition().getValueAsDouble());    
-        SmartDashboard.putNumber("hood motor velocity", hoodMotor.getVelocity().getValueAsDouble()); 
+        SmartDashboard.putNumber("hood motor velocity", hoodMotor.getVelocity().getValueAsDouble());     
+        SmartDashboard.putNumber("hood maxMovement", maxMovement);
 
         if (state != ShooterStates.NONE) {
             setHoodValue(RobotContainer.swerveSubsystem.getTurretToTargetHoodValue());

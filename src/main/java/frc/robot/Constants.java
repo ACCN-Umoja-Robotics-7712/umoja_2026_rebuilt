@@ -41,9 +41,9 @@ public final class Constants {
     public final class RobotConstants {
         public static final double robotWidth = 28;
         public static final double robotLength = 26;
-        public static final double kRobotWeightKG = Units.lbsToKilograms(110);
+        public static final double kRobotWeightKG = Units.lbsToKilograms(115);
         public static final double kBumperWeightKG = Units.lbsToKilograms(8);
-        public static final double kBatteryWeightKG = Units.lbsToKilograms(14);
+        public static final double kBatteryWeightKG = Units.lbsToKilograms(12);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
         public static final double kRobotMOI = 6.883; // kg*m^2, moment of inertia about the center of mass
     }
@@ -158,20 +158,23 @@ public final class Constants {
         public static final double kIfly = 0;
         public static final double kDfly = 0;
         public static final double kSkicker = 0;
-        public static final double kVkicker = 0.0019;
-        public static final double kPkicker = 0.0001;
+        public static final double kVkicker = 0.0018;
+        public static final double kPkicker = 0.00001;
         public static final double kIkicker = 0;
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
-        public static final int hoodAbsoluteEncoderID = 1;
+        public static final int hoodAbsoluteEncoderID = 0;
         public static final double kPhood = 0;
         // public static final double kIhood = 0; 
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
-        public static final int turretLimitSwitchID = 0;
-        public static final double kPturret = 0;
+        public static final int turretLimitSwitchID = 1;
+        public static final double kPturretSlack = 0;
+        public static final double kPturretSpring = 0;
+        public static final double kIturretSlack = 0;
+        public static final double kIturretSpring = 0;
         // public static final double kIhood = 0; 
 
         public static final int pitchOffset = 20; // 20 degrees up
@@ -349,9 +352,9 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-        public static final String turretName = "limelight";
-        public static final String limelight4 = "limelight-4";
-        public static final String limelight2 = "limelight-driver";
+        public static final String LIMELIGHT_LEFT = "limelight";
+        public static final String LIMELIGHT_RIGHT = "limelight-four";
+        public static final String LIMELIGHT_FORWARD = "limelight-driver";
         public static final int Estimate_Distance = 20;
         public static final int aprilTagPipeline = 0;
         public static final int gamePiecePipeline = 1;
@@ -366,20 +369,20 @@ public final class Constants {
         public static final double limelight2AngleOld = 30; // degrees, angle of the camera relative to horizontal, positive is looking up
 
         // new angles + locations for triple mount
-        public static final double limelight4Height = Units.inchesToMeters(19.5);
-        public static final double limelight4Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 0.5);
-        public static final double limelight4Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 + 0.5);
+        public static final double limelight4Height = Units.inchesToMeters(20.75);
+        public static final double limelight4Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8);
+        public static final double limelight4Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 1.5);
         public static final double limelight4Angle = 15; // degrees pitch
 
-        public static final double limelight3Height = Units.inchesToMeters(19.5);
-        public static final double limelight3Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 0.5);
+        public static final double limelight3Height = Units.inchesToMeters(20.75);
+        public static final double limelight3Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8);
         // edge - bar - center ll - center current ll
-        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 4 - 1);
+        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 5 - 1.4);
         public static final double limelight3Angle = 15; // degrees pitch
 
-        public static final double limelight2Height = Units.inchesToMeters(19.5);
-        public static final double limelight2Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8);
-        public static final double limelight2Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 3.75);
+        public static final double limelight2Height = Units.inchesToMeters(20.5);
+        public static final double limelight2Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8 + 0.5);
+        public static final double limelight2Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2 - 2.5);
         public static final double limelight2Angle = -10; // degrees pitch
 
         public static final int[] RED_HUB_CENTER_APRIL_TAG_IDS = new int[]{2,4,5,10};
@@ -438,6 +441,9 @@ public final class Constants {
 
         public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
         public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
+
+
+
         public static final Pose2d RED_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(10.841, 7.300, new Rotation2d(180));
         public static final Pose2d RED_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(10.841, 0.716, new Rotation2d(90));
 

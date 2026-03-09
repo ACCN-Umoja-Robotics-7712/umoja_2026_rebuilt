@@ -261,11 +261,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
     StructPublisher<Pose2d> turretPublisher = NetworkTableInstance.getDefault().getStructTopic("TurretPose", Pose2d.struct).publish();
-    StructArrayPublisher<Pose2d> allPointsPublisher = NetworkTableInstance.getDefault()
-.getStructArrayTopic("AllPosesArray", Pose2d.struct).publish();
+    StructArrayPublisher<Pose2d> limelightPublishers = NetworkTableInstance.getDefault().getStructArrayTopic("LimelightPoses", Pose2d.struct).publish();
+    StructArrayPublisher<Pose2d> allPointsPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("AllPosesArray", Pose2d.struct).publish();
 
-    StructArrayPublisher<SwerveModuleState> swerveStatePublisher = NetworkTableInstance.getDefault()
-.getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
+    StructArrayPublisher<SwerveModuleState> swerveStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
 
     public void publishRobotPositions() {
@@ -336,115 +335,151 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         );
        
-        double up = Constants.TurretConstants.upOffset;
+        // double up = Constants.TurretConstants.upOffset;
         // double yaw =  RobotContainer.shooterTurretSubsystem.getAngle();
-        double yaw = 0;
-        double pitch = Constants.TurretConstants.pitchOffset;
-        double roll = Constants.TurretConstants.rollOffset;
-        double forward = Constants.TurretConstants.turretCenterToCameraCentreLength + Math.sin(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterForwardLength;
-        double side = Constants.TurretConstants.turretCenterToCameraCentreLength + -Math.cos(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterSideLength;
-        LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.turretName, forward, side, up, roll, pitch, yaw + 180);
-        Pose3d turretCameraPose3d = LimelightHelpers.getCameraPose3d_RobotSpace(LimelightConstants.turretName);
-        Pose2d turretCameraRobotPose = turretCameraPose3d.toPose2d();
+        // double yaw = 0;
+        // double pitch = Constants.TurretConstants.pitchOffset;
+        // double roll = Constants.TurretConstants.rollOffset;
+        // double forward = Constants.TurretConstants.turretCenterToCameraCentreLength + Math.sin(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterForwardLength;
+        // double side = Constants.TurretConstants.turretCenterToCameraCentreLength + -Math.cos(Math.toRadians(yaw)) * TurretConstants.turretCenterFromRobotCenterSideLength;
+        // LimelightHelpers.setCameraPose_RobotSpace(LimelightConstants.turretName, forward, side, up, roll, pitch, yaw + 180);
+        // Pose3d turretCameraPose3d = LimelightHelpers.getCameraPose3d_RobotSpace(LimelightConstants.turretName);
+        // Pose2d turretCameraRobotPose = turretCameraPose3d.toPose2d();
 
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate turretMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.turretName);
+        // LimelightHelpers.SetRobotOrientation(LimelightConstants.turretName, getHeading(), 0, 0, 0, 0, 0);
+        // LimelightHelpers.PoseEstimate turretMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.turretName);
 
-        SmartDashboard.putNumber("TURRET ANGLE", yaw);
-        boolean rejectTurretUpdate = false;
+        // SmartDashboard.putNumber("TURRET ANGLE", yaw);
+        // boolean rejectTurretUpdate = false;
 
-        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360 || RobotContainer.shooterTurretSubsystem.getVelocity() > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-        {
-            rejectTurretUpdate = true;
-        }
-        double visionTrustValue = 0.7;
-        if (RobotContainer.gameState == GameConstants.Disabled) {
-            visionTrustValue = 0;
-        }
-        if (turretMT2 != null) {
-            if (turretMT2.tagCount == 0) {
-                rejectTurretUpdate = true;
-            } else if (turretMT2.tagCount == 1) {
-                visionTrustValue += 2;
-            }
+        // if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360 || RobotContainer.shooterTurretSubsystem.getVelocity() > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        // {
+        //     rejectTurretUpdate = true;
+        // }
+        // double visionTrustValue = 0.7;
+        // if (RobotContainer.gameState == GameConstants.Disabled) {
+        //     visionTrustValue = 0;
+        // }
+        // if (turretMT2 != null) {
+        //     if (turretMT2.tagCount == 0) {
+        //         rejectTurretUpdate = true;
+        //     } else if (turretMT2.tagCount == 1) {
+        //         visionTrustValue += 2;
+        //     }
 
-            if (!rejectTurretUpdate)
-            {
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
-                poseEstimator.addVisionMeasurement(
-                    turretMT2.pose,
-                    turretMT2.timestampSeconds);
-            }
-        }
+        //     if (!rejectTurretUpdate)
+        //     {
+        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
+        //         poseEstimator.addVisionMeasurement(
+        //             turretMT2.pose,
+        //             turretMT2.timestampSeconds);
+        //     }
+        // }
         
-        String limelightName = LimelightConstants.limelight2;
-        LimelightHelpers.SetRobotOrientation(limelightName, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.setCameraPose_RobotSpace(limelightName, LimelightConstants.limelight2ForwardOld, LimelightConstants.limelight2SideOld, LimelightConstants.limelight2HeightOld, 0, LimelightConstants.limelight2AngleOld, 180);
-        LimelightHelpers.PoseEstimate gpMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.limelight4);
+        ArrayList<Pose2d> limelightPoses = new ArrayList<>();
+        
+        String limelightRight = LimelightConstants.LIMELIGHT_RIGHT;
+        LimelightHelpers.SetRobotOrientation(limelightRight, getHeading(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetIMUMode(limelightRight, 4);
+        LimelightHelpers.setCameraPose_RobotSpace(limelightRight, LimelightConstants.limelight4Forward, LimelightConstants.limelight4Side, LimelightConstants.limelight4Height, 0, LimelightConstants.limelight4Angle, 270);
+        LimelightHelpers.PoseEstimate rightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightRight);
 
-        boolean rejectGPUpdate = false;
+        boolean rejectRightUpdate = false;
 
         if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
-            rejectGPUpdate = true;
+            rejectRightUpdate = true;
         }
 
-        double visionTrustGPValue = 0.7;
-        if (RobotContainer.gameState == GameConstants.Disabled) {
-            visionTrustGPValue = 0;
-        }
-        if (gpMT2 != null) {
-            if (gpMT2.tagCount == 0) {
-                rejectGPUpdate = true;
-            } else if (gpMT2.tagCount == 1) {
-                visionTrustGPValue += 2;
+        double visionTrustRightValue = 0.7;
+        if (rightMT2 != null) {
+            if (rightMT2.tagCount == 0) {
+                rejectRightUpdate = true;
+            } else if (rightMT2.tagCount == 1) {
+                visionTrustRightValue += 2;
             }
-            if (!rejectGPUpdate)
+            if (RobotContainer.gameState == GameConstants.Disabled) {
+                visionTrustRightValue = 0;
+            }
+            if (!rejectRightUpdate)
             {
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustGPValue,visionTrustGPValue,9999999));
+                limelightPoses.add(rightMT2.pose);
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustRightValue,visionTrustRightValue,9999999));
                 poseEstimator.addVisionMeasurement(
-                    gpMT2.pose,
-                    gpMT2.timestampSeconds);
+                    rightMT2.pose,
+                    rightMT2.timestampSeconds);
             }
         }
-        
-        
-        String limelight4 = LimelightConstants.limelight4;
-        LimelightHelpers.SetRobotOrientation(limelight4, getHeading(), 0, 0, 0, 0, 0);
-        // LimelightHelpers.setCameraPose_RobotSpace(limelight4, LimelightConstants.gamePieceForward, LimelightConstants.gamePieceSide, LimelightConstants.gamePieceHeight, 0, LimelightConstants.gamePieceAngle, 180);
-        LimelightHelpers.PoseEstimate LL4MT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LimelightConstants.limelight4);
 
-        boolean rejectLL4Update = false;
+        String limelightForward = LimelightConstants.LIMELIGHT_FORWARD;
+        LimelightHelpers.SetRobotOrientation(limelightForward, getHeading(), 0, 0, 0, 0, 0);
+        LimelightHelpers.setCameraPose_RobotSpace(limelightForward, LimelightConstants.limelight2Forward, LimelightConstants.limelight2Side, LimelightConstants.limelight2Height, 0, LimelightConstants.limelight2Angle, 0);
+        LimelightHelpers.PoseEstimate forwardMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightForward);
+
+        boolean rejectForwardUpdate = false;
 
         if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
-            rejectLL4Update = true;
+            rejectForwardUpdate = true;
         }
 
-        double visionTrustLL4Value = 0.7;
-        if (RobotContainer.gameState == GameConstants.Disabled) {
-            visionTrustLL4Value = 0;
-        }
-        if (LL4MT2 != null) {
-            if (LL4MT2.tagCount == 0) {
-                rejectLL4Update = true;
-            } else if (LL4MT2.tagCount == 1) {
-                visionTrustLL4Value += 2;
+        double visionTrustForwardValue = 0.7;
+        if (forwardMT2 != null) {
+            if (forwardMT2.tagCount == 0) {
+                rejectForwardUpdate = true;
+            } else if (forwardMT2.tagCount == 1) {
+                visionTrustForwardValue += 2;
             }
-            if (!rejectLL4Update)
+            if (RobotContainer.gameState == GameConstants.Disabled) {
+                visionTrustForwardValue = 0;
+            }
+            if (!rejectForwardUpdate)
             {
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLL4Value,visionTrustLL4Value,9999999));
+                limelightPoses.add(forwardMT2.pose);
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustForwardValue,visionTrustForwardValue,9999999));
                 poseEstimator.addVisionMeasurement(
-                    LL4MT2.pose,
-                    LL4MT2.timestampSeconds);
+                    forwardMT2.pose,
+                    forwardMT2.timestampSeconds);
             }
         }
+        
+        String limelightLeft = LimelightConstants.LIMELIGHT_LEFT;
+        LimelightHelpers.SetRobotOrientation(limelightLeft, getHeading(), 0, 0, 0, 0, 0);
+        LimelightHelpers.setCameraPose_RobotSpace(limelightLeft, LimelightConstants.limelight3Forward, LimelightConstants.limelight3Side, LimelightConstants.limelight3Height, 0, LimelightConstants.limelight3Angle, 90);
+        LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightLeft);
 
+        boolean rejectLeftUpdate = false;
+
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+            rejectLeftUpdate = true;
+        }
+
+        double visionTrustLeftValue = 0.7;
+        if (leftMT2 != null) {
+            if (leftMT2.tagCount == 0) {
+                rejectLeftUpdate = true;
+            } else if (leftMT2.tagCount == 1) {
+                visionTrustLeftValue += 2;
+            }
+            if (RobotContainer.gameState == GameConstants.Disabled) {
+                visionTrustLeftValue = 0;
+            }
+            if (!rejectLeftUpdate)
+            {
+                limelightPoses.add(leftMT2.pose);
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,9999999));
+                poseEstimator.addVisionMeasurement(
+                    leftMT2.pose,
+                    leftMT2.timestampSeconds);
+            }
+        }
+        
         Pose2d currentPose = getPose();
 
-        Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(currentPose.getTranslation());
-        Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation().plus(currentPose.getRotation()));
-        turretPublisher.set(turretCameraFieldPose);
+        // Translation2d turretCameraFieldTranslation = turretCameraRobotPose.getTranslation().plus(currentPose.getTranslation());
+        // Pose2d turretCameraFieldPose = new Pose2d(turretCameraFieldTranslation, turretCameraRobotPose.getRotation().plus(currentPose.getRotation()));
+        // turretPublisher.set(turretCameraFieldPose);
         posePublisher.set(currentPose);
 
         boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue);
@@ -479,7 +514,7 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }
         
-        double[] angleDistance = updateRobotAngleDistanceToTarget(target);
+        double[] angleDistance = updateTurretAngleDistanceToTarget(target);
         this.turretToTargetAngle = angleDistance[0];
         SmartDashboard.putNumber("WANTED TARGET ANGLE", turretToTargetAngle);
         double distanceToTarget = angleDistance[1];
@@ -545,20 +580,12 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStatesFromSpeeds(speeds);
     }
     
-    public double[] updateRobotAngleDistanceToTarget(Pose2d targetPose) {
+    public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
         Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
-        double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()) + Math.PI);
+        double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
         return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
-
-    public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
-        double[] angleDistance = updateRobotAngleDistanceToTarget(targetPose);
-        double angle = angleDistance[0];
-        double distance = angleDistance[1];
-        return new double[] {angle - RobotContainer.swerveSubsystem.getGlobalHeading(), distance};
-    }
-    
 
     public double getTurretToTargetAngle() {
         return turretToTargetAngle;

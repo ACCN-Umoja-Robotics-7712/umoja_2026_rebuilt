@@ -20,6 +20,7 @@ import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
 import frc.robot.commands.IntakeWhileMoving;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
+import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.commands.SwerveJoystick;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
@@ -29,12 +30,14 @@ import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
 import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
+import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -60,7 +63,7 @@ public class RobotContainer {
   public final static ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   
   // Make sure after swerve because swerve configures
-  // public final static Autos autos = new Autos();
+  public final static Autos autos = new Autos();
 
   public final static CommandXboxController driverController = new CommandXboxController(USB.DRIVER_CONTROLLER);
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
@@ -153,7 +156,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -0.40 // Try 40%? 30 is minimum needed to intake smoothly
+        () -> -0.80 // Geared down the intake roller so we double the speed
       )
     );
 
@@ -161,13 +164,12 @@ public class RobotContainer {
     // Intake Roller
     driverController.rightBumper().whileTrue(
       new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
-        () -> -0.40,
+        () -> -0.80,
         () -> RobotContainer.driverController.getLeftX(),
         () -> -RobotContainer.driverController.getLeftY(),
         () -> -RobotContainer.driverController.getRightY()
       )
     );
-
 
 
 
@@ -194,7 +196,7 @@ public class RobotContainer {
       )
     );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 10.0);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 6.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
@@ -239,7 +241,7 @@ public class RobotContainer {
     // Turret Motor
     operatorController.leftBumper().whileTrue(
       new ManualTurretCommand(shooterTurretSubsystem,
-        () -> operatorController.getLeftX() * 0.3
+        () -> operatorController.getLeftX() * 0.6
       )
     );
 
@@ -258,6 +260,23 @@ public class RobotContainer {
         () -> -1.0
       )
     );
+
+    operatorController.b().whileTrue(
+      new ShooterTurretAngleCommand(shooterTurretSubsystem, () -> shooterTurretSubsystem.getCustomAngle())
+    ).whileFalse(
+      new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
+    );
+
+    // operatorController.button(XBoxConstants.MENU).onTrue(
+    //   new InstantCommand() {
+    //   }
+    //   // new ZeroHoodCommand(shooterHoodSubsystem)
+    // );
+    
+
+    // operatorController.button(XBoxConstants.PAGE).onTrue(
+    //   new InstantCommand()
+    // );
 
     //Intake Arm Motor
     driverController.rightTrigger().whileTrue(

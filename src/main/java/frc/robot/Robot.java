@@ -29,11 +29,18 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
 
+  Timer garbageCollectionTimer = new Timer();
+
   private RobotContainer robotContainer;
   
   // private AutoChooser autoChooser;
 
   // private double autoStartTimer = 0;
+
+
+  public Robot() {
+    garbageCollectionTimer.start();
+  }
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,9 +72,9 @@ public class Robot extends TimedRobot {
 
 
     for (int port = 5800; port <= 5809; port++) {
-      PortForwarder.add(port, Constants.LimelightConstants.turretName + ".local", port);
-      PortForwarder.add(port+10, Constants.LimelightConstants.limelight4 + ".local", port);
-      // PortForwarder.add(port+20, Constants.LimelightConstants.driverName + ".local", port);
+      PortForwarder.add(port, Constants.LimelightConstants.LIMELIGHT_FORWARD + ".local", port);
+      PortForwarder.add(port+10, Constants.LimelightConstants.LIMELIGHT_RIGHT + ".local", port);
+      PortForwarder.add(port+20, Constants.LimelightConstants.LIMELIGHT_LEFT + ".local", port);
     }
   }
 
@@ -85,7 +92,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
+    if (garbageCollectionTimer.advanceIfElapsed(5)) {
+      System.gc();
+    }
     
   }
 
@@ -101,13 +110,13 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     // In disabledPeriodic or before match starts
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.limelight4, 1); // Seed internal IMU
+    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_RIGHT, RobotContainer.swerveSubsystem.getHeading(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1); // Seed internal IMU
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.limelight4, 4); // Use internal IMU + external IMU
     // autoStartTimer = Timer.getTimestamp();
 
     RobotContainer.swerveSubsystem.setHeading(0);
@@ -148,7 +157,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.limelight4, 4); // Use internal IMU + external IMU
     RobotContainer.gameState = GameConstants.TeleOp;
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Brake);
     // This makes sure that the autonomous stops running when
