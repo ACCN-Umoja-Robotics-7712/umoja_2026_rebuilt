@@ -29,7 +29,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public void runIndexerAtVoltage(double voltage) { // Can change the speed for each motor independently
-        indexerMotorOriginal.setVoltage(voltage); // indexer should be 5x slower than belt
+        indexerMotorOriginal.setVoltage(voltage);
         beltMotor.setVoltage(voltage/4.0);
     }
 

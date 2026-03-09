@@ -20,6 +20,7 @@ import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
 import frc.robot.commands.IntakeWhileMoving;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
+import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.commands.SwerveJoystick;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
@@ -34,6 +35,7 @@ import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -196,7 +198,7 @@ public class RobotContainer {
       )
     );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 6.0);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 7.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
@@ -204,7 +206,7 @@ public class RobotContainer {
       // runIndexer
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-        new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
+        new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
       )
     ).whileFalse(
       Commands.parallel(
@@ -218,8 +220,11 @@ public class RobotContainer {
     .whileTrue(
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity)
-        // new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
       )
+    );
+
+    operatorController.a().whileTrue(
+      new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
     );
     
     // operatorController.rightTrigger()
@@ -341,6 +346,21 @@ public class RobotContainer {
     } else {
       return 0;
     }
+  }
+
+  public static boolean isReadyToShoot() {
+    // manual override on a button
+    boolean override = operatorController.a().getAsBoolean();
+    if (override) {
+      return true;
+    }
+    boolean flywheelReady = shooterFlywheelSubsystem.didReachVelocity();
+    boolean turretReady = shooterTurretSubsystem.didReachAngle();
+    boolean hoodReady = shooterHoodSubsystem.didReachValue();
+    SmartDashboard.putBoolean("flywheel ready", flywheelReady);
+    SmartDashboard.putBoolean("turret ready", turretReady);
+    SmartDashboard.putBoolean("hood ready", hoodReady);
+    return flywheelReady && turretReady && hoodReady;
   }
 
   public static double diffFromWantedAngleField(double wantedAngle) {
