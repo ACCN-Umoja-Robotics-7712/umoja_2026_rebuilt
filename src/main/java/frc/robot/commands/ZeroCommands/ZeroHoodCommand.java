@@ -26,7 +26,7 @@ public class ZeroHoodCommand extends Command {
 
     @Override
     public void end(boolean isInterrupted){
-        System.out.println("Zeroing hood finished");
+        System.out.println("Zeroing hood finished inturrupted: " + isInterrupted);
         this.hoodSubsystem.runHood(0);
     }
 

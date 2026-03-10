@@ -24,11 +24,13 @@ public class ShooterHoodValueCommand extends Command {
 
     @Override
     public void execute(){
+        System.out.println(wantedHoodValue.get());
         hood.setHoodValue(wantedHoodValue.get());
     }
 
     @Override
     public void end(boolean isInterrupted){
+        hood.runHood(0);
         System.out.println("Hood end interrupted:" + isInterrupted);
     }
 

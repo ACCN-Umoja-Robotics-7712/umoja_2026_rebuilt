@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -42,6 +43,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double minAngle = 55;
     private double maxAngle = 335;
     private double wantedTurretAngle = 180;
+    private double lastDirection = 0;
     private PIDController lastPIController = null;
 
     public ShooterTurretSubsystem() {
@@ -88,22 +90,41 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         if (wantedTurretAngleInDegrees >= maxAngle) { // 335
             limitToRange = maxAngle;
         }
+        double fakeFeedForward = SmartDashboard.getNumber("Turret static friction", TurretConstants.turretFakeFeedForward);
+        double springResistance = SmartDashboard.getNumber("Turret spring resistance", TurretConstants.turretSpringResistance);
+        SmartDashboard.putNumber("Turret static friction", fakeFeedForward);
+        SmartDashboard.putNumber("Turret spring resistance", springResistance);
+
         double currentAngle = getAngleDegrees();
         // within slack range
-        boolean withinSlackRange = currentAngle <= 255 && currentAngle >= 155; 
-        // PIDController pidToUse;
-        // if (withinSlackRange) {
-        //     pidToUse = turretSlackPidController;
-        // } else {
-        //     pidToUse = turretSpringPidController;
-        // }
-        // // if (lastPIController != pidToUse) {
-        // //     pidToUse.reset();
-        // // }
-        // lastPIController = pidToUse;
+        double maxSlack = 215;
+        double minSlack = 110;
+        boolean withinSlackRange = currentAngle <= maxSlack && currentAngle >= minSlack; 
         SmartDashboard.putNumber("new angle that we want", limitToRange);
         wantedTurretAngle = limitToRange;
-        turretMotor.setVoltage(turretSlackPidController.calculate(getAngleDegrees(), limitToRange));
+        double pidVal = turretSlackPidController.calculate(getAngleDegrees(), limitToRange);
+        double diff = wantedTurretAngleInDegrees - currentAngle;
+        double direction = diff != 0 ? diff/Math.abs(diff) : 1;
+        if (direction != lastDirection) {
+            turretSlackPidController.reset();
+            lastDirection = direction;
+        }
+        // System.out.println(getAngleDegrees());
+        // System.out.println(limitToRange);
+        // System.out.println(pidVal + direction*fakeFeedForward);
+        double springFeedForward = 0;
+        if (!withinSlackRange) {
+            // within lower spring area and moving into spring
+            // if (currentAngle <= minSlack) {
+            if (currentAngle <= minSlack && direction < 1) {
+                springFeedForward = direction*springResistance;
+            } else if (currentAngle >= maxSlack && direction > 1) {
+            // } else if (currentAngle >= maxSlack) {
+            // within upper spring area and moving into spring
+                springFeedForward = direction*springResistance;
+            }
+        }
+        turretMotor.setVoltage(pidVal + direction*fakeFeedForward + springFeedForward);
     }
 
     public void setState(double state) {
@@ -120,6 +141,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
+    public void enableZero() {
+        isZeroed = false;
+    }
+
     public boolean isLimitSwitchHit() {
         return !turretZeroLimitSwitch.get();
     }
@@ -132,15 +157,12 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // if (turretZeroLimitSwitch.get() && !isZeroed) {
-        //     turretMotor.getEncoder().setPosition(0);
-        //     isZeroed = true;
-        // }
+        if (isLimitSwitchHit() && !isZeroed) {
+            resetTurret();
+            isZeroed = true;
+        }
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getRobotToTargetAngle());
-        }
-        if (isLimitSwitchHit()) {
-            resetTurret();
         }
         SmartDashboard.putNumber("turret encoder", getAngleDegrees());
         SmartDashboard.putBoolean("turret limit switch hit", turretZeroLimitSwitch.get());

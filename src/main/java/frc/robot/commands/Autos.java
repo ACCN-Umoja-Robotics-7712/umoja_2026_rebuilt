@@ -115,29 +115,30 @@ public class Autos {
         // return ppChooser.getSelected();
         AUTO auto = chooser.getSelected();
         System.out.println(auto);
-        return getSimpleAuto();
-//         if (auto == null) {
-//             System.out.println("auto is null");
-//             return new InstantCommand();
-//         }
+        System.out.println(chooser);
+        return new InstantCommand();
+        // if (auto == null) {
+        //     System.out.println("auto is null");
+        //     return new InstantCommand();
+        // }
 
 // // -------------------------------------------------------- AUTO SELECTOR --------------------------------------- ----------------- //
 
-//         return switch (auto) {
-//             case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
-//             // case BLUE_CENTER_TOWER -> getBlueCenter();
-//             case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
-//             case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
-//             case RED_CENTER_TOWER -> getRedTowerFromLeft();
-//             case RED_CENTER_TOWER_R -> getRedTowerFromRight();
-//             case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
-//             case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
-//             case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
-//             case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
-//             case SIMPLE_AUTO -> getSimpleAuto();
-//             case TUNE_AUTO -> getTuneAuto();
-//             default -> new InstantCommand();
-//         };
+        // return switch (auto) {
+        //     case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
+        //     // case BLUE_CENTER_TOWER -> getBlueCenter();
+        //     case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
+        //     case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
+        //     case RED_CENTER_TOWER -> getRedTowerFromLeft();
+        //     case RED_CENTER_TOWER_R -> getRedTowerFromRight();
+        //     case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
+        //     case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
+        //     case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
+        //     case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
+        //     case SIMPLE_AUTO -> getSimpleAuto();
+        //     case TUNE_AUTO -> getTuneAuto();
+        //     default -> new InstantCommand();
+        // };
     }
 
 // ------------------------------------------------------------------------ // ----------------------------- AUTOS ---------------------------------- //
@@ -599,44 +600,9 @@ public class Autos {
 
     // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
     // Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
-    posePublisher.set(endPose);
-
-    // Trajectory traj = TrajectoryGenerator.generateTrajectory(
-    //   swerveSubsystem.getPose(),
-    //   List.of(),
-    //   endPose,
-    //   trajectoryConfig);
-      
-
-    // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
-    //   endPose,
-    //   List.of(),
-    //   pickUpPose,
-    //   trajectoryConfig);
-
-    // 4. Construct command to follow trajectory 
-    // SwerveControllerCommand path1 = new SwerveControllerCommand(
-    //     traj,
-    //     swerveSubsystem::getPose, 
-    //     DriveConstants.kDriveKinematics,
-    //     xController,
-    //     yController,
-    //     thetaController,
-    //     swerveSubsystem::setModuleStates,
-    //     swerveSubsystem);
-
-    // SwerveControllerCommand path2 = new SwerveControllerCommand(
-    //     traj2,
-    //     swerveSubsystem::getPose, 
-    //     DriveConstants.kDriveKinematics,
-    //     xController,
-    //     yController,
-    //     thetaController,
-    //     swerveSubsystem::setModuleStates,
-    //     swerveSubsystem);
     
-    Command path1 = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
-    // Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+    Command path1 = getPathToPose(endPose);
+    // Command path2 = getPathToPose(pickUpPose);
     
     Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
     Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
@@ -657,5 +623,29 @@ public class Autos {
     //   );
     // return path1.andThen(aimAtHubCommand.withTimeout(5)).andThen(normalShoot.withTimeout(5).andThen(forceShoot));
     return path1;
+  }
+
+  public Command getPathToPose(Pose2d endPose) {
+    posePublisher.set(endPose);
+    Trajectory traj = TrajectoryGenerator.generateTrajectory(
+      swerveSubsystem.getPose(),
+      List.of(),
+      endPose,
+      trajectoryConfig);
+      
+
+    // 4. Construct command to follow trajectory 
+    SwerveControllerCommand trajectoryPath = new SwerveControllerCommand(
+        traj,
+        swerveSubsystem::getPose, 
+        DriveConstants.kDriveKinematics,
+        xController,
+        yController,
+        thetaController,
+        swerveSubsystem::setModuleStates,
+        swerveSubsystem);
+
+    Command pathPlannerPath = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
+    return trajectoryPath;
   }
 }

@@ -35,6 +35,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
     private final DutyCycleEncoder hoodAbsoluteDutyCycleEncoder;
     private final PIDController hoodPidController;
+    private double lastVelocity = 0;
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder network").publish();
 
@@ -55,7 +56,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
         hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
         hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
-        // hoodPidController.enableContinuousInput(0, 1);
+        hoodPidController.setTolerance(0.1);
     }
 
     public void setState(double state) {
@@ -66,17 +67,26 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         }
     }
 
+    public double getDashboardHoodValue() {
+        double hoodValue = SmartDashboard.getNumber("Custom hoodValue", 0);
+        SmartDashboard.putNumber("Custom hoodValue", hoodValue);
+        return hoodValue;
+    }
+
+
     public void zeroHood() {
-        hoodMotor.set(0.02);
+        hoodMotor.set(-0.1);
     }
 
     public boolean finishedZeroing() {
-        if (Math.abs(hoodMotor.getVelocity().getValueAsDouble())  <= 0.005) {
-            // zeroLimit = hoodAbsoluteDutyCycleEncoder.get();
-            hoodMotor.setPosition(0);
+        System.out.println(hoodMotor.getVelocity().getValueAsDouble());
+        
+        if (lastVelocity  >= 0.05) {
+            hoodMotor.setPosition(-0.2);
             hoodMotor.set(0);
             return true;
         } else {
+            lastVelocity = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
             return false;
         }
     }
@@ -122,8 +132,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        absoluteEncodPublisher.set(hoodAbsoluteDutyCycleEncoder.get());
-        SmartDashboard.putNumber("hood absolute encoder dash", hoodAbsoluteDutyCycleEncoder.get());
+        // absoluteEncodPublisher.set(hoodAbsoluteDutyCycleEncoder.get());
+        // SmartDashboard.putNumber("hood absolute encoder dash", hoodAbsoluteDutyCycleEncoder.get());
         // SmartDashboard.putNumber("hood absolute encoder from zero", getHoodValueFromZero());
         SmartDashboard.putNumber("hood motor position", hoodMotor.getPosition().getValueAsDouble());    
         SmartDashboard.putNumber("hood motor velocity", hoodMotor.getVelocity().getValueAsDouble());     
@@ -135,11 +145,15 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
         // TODO: REMOVE FOR COMP
         double kPHood = SmartDashboard.getNumber("kP hood", TurretConstants.kPhood);
+        double kIHood = SmartDashboard.getNumber("kI hood", TurretConstants.kIhood);
 
         SmartDashboard.putNumber("kP hood", kPHood);
-        if (SmartDashboard.getNumber("kP hood", TurretConstants.kPhood) != hoodPidController.getP()) {
+        SmartDashboard.putNumber("kI hood", kIHood);
+
+        if (SmartDashboard.getNumber("kP hood", kPHood) != hoodPidController.getP() || SmartDashboard.getNumber("kI hood", kIHood) != hoodPidController.getI()) {
             hoodPidController.setP(kPHood);
-            System.out.println("Updated hood PID and FF values: kP = " + kPHood);
+            hoodPidController.setI(kIHood);
+            System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kIHood);
         }
     }
 }

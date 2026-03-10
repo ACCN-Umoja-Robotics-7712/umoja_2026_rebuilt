@@ -10,6 +10,8 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -261,6 +263,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
     StructPublisher<Pose2d> turretPublisher = NetworkTableInstance.getDefault().getStructTopic("TurretPose", Pose2d.struct).publish();
+    StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault().getStructTopic("TargetPose", Pose2d.struct).publish();
     StructArrayPublisher<Pose2d> limelightPublishers = NetworkTableInstance.getDefault().getStructArrayTopic("LimelightPoses", Pose2d.struct).publish();
     StructArrayPublisher<Pose2d> allPointsPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("AllPosesArray", Pose2d.struct).publish();
 
@@ -423,7 +426,7 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectForwardUpdate = true;
         }
 
-        double visionTrustForwardValue = 1.7;
+        double visionTrustForwardValue = 2.7;
         if (forwardMT2 != null) {
             if (forwardMT2.tagCount == 0) {
                 rejectForwardUpdate = true;
@@ -432,6 +435,14 @@ public class SwerveSubsystem extends SubsystemBase {
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustForwardValue = 0;
+            } else {
+                // reject if > 1 m away
+                boolean isCloserThan1m = forwardMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // reject if outside arena 
+                boolean isOutsideField = forwardMT2.pose.getX()< 0 || forwardMT2.pose.getX() > 17 || forwardMT2.pose.getY() > 8 || forwardMT2.pose.getY() < 0;
+                if (isCloserThan1m || isOutsideField) {
+                    rejectForwardUpdate = true;
+                }
             }
             if (!rejectForwardUpdate)
             {
@@ -455,7 +466,7 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectLeftUpdate = true;
         }
 
-        double visionTrustLeftValue = 1.7;
+        double visionTrustLeftValue = 3.7;
         if (leftMT2 != null) {
             if (leftMT2.tagCount == 0) {
                 rejectLeftUpdate = true;
@@ -464,14 +475,22 @@ public class SwerveSubsystem extends SubsystemBase {
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustLeftValue = 0;
+            } else {
+                // reject if > 1 m away
+                boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // reject if outside arena
+                boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
+                if (isCloserThan1m || isOutsideField) {
+                    rejectLeftUpdate = true;
+                }
             }
             if (!rejectLeftUpdate)
             {
                 limelightPoses.add(leftMT2.pose);
-                // poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,9999999));
-                // poseEstimator.addVisionMeasurement(
-                //     leftMT2.pose,
-                //     leftMT2.timestampSeconds);
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,9999999));
+                poseEstimator.addVisionMeasurement(
+                    leftMT2.pose,
+                    leftMT2.timestampSeconds);
             }
         }
         
@@ -588,6 +607,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     
     public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
+        targetPosePublisher.set(targetPose);
         Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));

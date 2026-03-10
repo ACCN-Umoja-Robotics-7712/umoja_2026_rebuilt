@@ -158,24 +158,26 @@ public final class Constants {
         public static final double kIfly = 0;
         public static final double kDfly = 0;
         public static final double kSkicker = 0;
-        public static final double kVkicker = 0.0018;
+        public static final double kVkicker = 0.0019;
         public static final double kPkicker = 0.00001;
         public static final double kIkicker = 0;
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
-        public static final double kPhood = 0;
-        // public static final double kIhood = 0; 
+        public static final double kPhood = 0.9;
+        public static final double kIhood = 0.005; 
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 1;
-        public static final double kPturretSlack = 0.008;
+        public static final double kPturretSlack = 0.08;
         public static final double kPturretSpring = 0;
-        public static final double kIturretSlack = 0;
+        public static final double kIturretSlack = 0.02;
         public static final double kIturretSpring = 0;
         // public static final double kIhood = 0; 
+        public static final double turretFakeFeedForward = 0.45;
+        public static final double turretSpringResistance = 0.5;
 
         public static final int pitchOffset = 20; // 20 degrees up
         public static final int rollOffset = 0; // 0 degrees to the right
@@ -189,7 +191,7 @@ public final class Constants {
         public static final double motorToTurretRatio = (1.0/16.0) * (35.0/125.0); // motor rotations to turret rotations
         public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
         public static final double turretCenterFromRobotCenterForwardLength = Units.inchesToMeters(-(RobotConstants.robotWidth/2) + 2 + (11.5/2)); // meters (negative cause turret is behind the robot center) 
-        public static final double turretCenterFromRobotCenterSideLength = Units.inchesToMeters(-(RobotConstants.robotLength/2) + 2 + (11.5/2)); // meters (positive cause turret is to the right of the robot center)
+        public static final double turretCenterFromRobotCenterSideLength = Units.inchesToMeters(-(RobotConstants.robotLength/2) + 2 + (11.5/2)); // meters (positive cause turret is to the left of the robot center)
     }
 
     public static final class IntakeArmStates {
@@ -377,7 +379,7 @@ public final class Constants {
         public static final double limelight3Height = Units.inchesToMeters(20.75);
         public static final double limelight3Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8);
         // edge - bar - center ll - center current ll
-        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 5 - 1.4 - 2.5);
+        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 5 - 1.4);
         public static final double limelight3Angle = 15; // degrees pitch
 
         public static final double limelight2Height = Units.inchesToMeters(20.5);

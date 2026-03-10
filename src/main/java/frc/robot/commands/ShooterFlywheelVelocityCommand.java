@@ -32,6 +32,6 @@ public class ShooterFlywheelVelocityCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return flywheelMotorLeader.didReachVelocity();
+        return false;
     }
 }

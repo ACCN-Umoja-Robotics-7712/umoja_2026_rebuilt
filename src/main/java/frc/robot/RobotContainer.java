@@ -19,6 +19,7 @@ import frc.robot.commands.AlignRobotBackWithHubFieldCommand;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
 import frc.robot.commands.IntakeWhileMoving;
+import frc.robot.commands.SetShooterHoodStateCommand;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
@@ -31,6 +32,7 @@ import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
 import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
+import frc.robot.commands.ZeroCommands.EnableZeroTurretCommand;
 import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -102,12 +104,14 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
     RobotContainer.swerveSubsystem.setDefaultCommand(
+      Commands.parallel(
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,
             () -> -RobotContainer.driverController.getLeftY(),
             () -> -RobotContainer.driverController.getLeftX(),
             () -> -RobotContainer.driverController.getRightX()
         )
+      )
     );
 
     // Align with trench
@@ -158,7 +162,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -0.31 // Geared down the intake roller so we double the speed
+        () -> -0.31
       )
     );
 
@@ -201,21 +205,26 @@ public class RobotContainer {
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 7.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
-    operatorController.rightTrigger()
+    operatorController.rightTrigger().and(operatorController.a().negate())
     .whileTrue(
       // runIndexer
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+      ).withTimeout(0.5).andThen(
+        Commands.parallel(
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+        )
       )
     ).whileFalse(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> 0.0),
+        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
         new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
     
-    operatorController.a()
+    operatorController.a().and(operatorController.rightTrigger().negate())
     .whileTrue(
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
@@ -223,17 +232,28 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
+      ).withTimeout(0.5).andThen(
+        Commands.parallel(
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
+            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+        )
       )
     ).whileFalse(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> 0.0),
+        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
         new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
 
 
+    // operatorController.x().whileTrue(
+    //   new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getRobotToTargetAngle)
+    // ).whileFalse(
+    //   new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
+    // );
+
     operatorController.x().whileTrue(
-      new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getRobotToTargetAngle)
+      new ShooterTurretAngleCommand(shooterTurretSubsystem, shooterTurretSubsystem::getCustomAngle)
     ).whileFalse(
       new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     );
@@ -242,24 +262,18 @@ public class RobotContainer {
     //   new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
     // );
     
-    // operatorController.rightTrigger()
-    // .and(operatorController.b())
-    // .whileTrue(
-    //   Commands.parallel(
-    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4000.0)
-    //     // new ConditionalCommand(runIndexer, stopIndexer, shooterFlywheelSubsystem::didReachVelocity)
-    //   )
-    // );
+    operatorController.b()
+    .whileTrue(
+      Commands.parallel(
+        new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
+      )
+    );
 
     // Hood Motor
     operatorController.rightBumper().whileTrue(
       new ManualShooterHoodCommand(shooterHoodSubsystem,
-        () -> operatorController.getRightY() * 0.1
+        () -> -operatorController.getRightY() * 0.1
       )
-    ); 
-
-    operatorController.button(XBoxConstants.MENU).onTrue(
-      new ZeroHoodCommand(shooterHoodSubsystem)
     );
 
     // Turret Motor
@@ -285,16 +299,14 @@ public class RobotContainer {
       )
     );
 
-    // operatorController.button(XBoxConstants.MENU).onTrue(
-    //   new InstantCommand() {
-    //   }
-    //   // new ZeroHoodCommand(shooterHoodSubsystem)
-    // );
+    operatorController.button(XBoxConstants.MENU).onTrue(
+      new ZeroHoodCommand(shooterHoodSubsystem)
+    );
     
 
-    // operatorController.button(XBoxConstants.PAGE).onTrue(
-    //   new InstantCommand()
-    // );
+    operatorController.button(XBoxConstants.PAGE).onTrue(
+      new EnableZeroTurretCommand(shooterTurretSubsystem)
+    );
 
     //Intake Arm Motor
     driverController.rightTrigger().whileTrue(
@@ -358,11 +370,6 @@ public class RobotContainer {
   }
 
   public static boolean isReadyToShoot() {
-    // manual override on a button
-    boolean override = operatorController.b().getAsBoolean();
-    if (override) {
-      return true;
-    }
     boolean flywheelReady = shooterFlywheelSubsystem.didReachVelocity();
     boolean turretReady = shooterTurretSubsystem.didReachAngle();
     boolean hoodReady = shooterHoodSubsystem.didReachValue();

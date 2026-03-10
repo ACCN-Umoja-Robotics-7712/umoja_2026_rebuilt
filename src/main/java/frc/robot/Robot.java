@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     RobotContainer.gameState = GameConstants.Disabled;
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Coast);
-    RobotContainer.shooterFlywheelSubsystem.setShooterSpeed(0);
+    RobotContainer.shooterFlywheelSubsystem.runShooter(0);
     RobotContainer.shooterFlywheelSubsystem.setState(Constants.ShooterStates.NONE);
   }
 
@@ -125,10 +125,7 @@ public class Robot extends TimedRobot {
     // Reset and start the timer when the autonomous period begins
     timer.restart();
     
-    // m_autonomousCommand = RobotContainer.autos.getSimpleAuto();
-    m_autonomousCommand = null;
-    Autos auto = new Autos();
-    m_autonomousCommand = auto.getAuto();
+    m_autonomousCommand = RobotContainer.autos.getAuto();
 
     // // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
