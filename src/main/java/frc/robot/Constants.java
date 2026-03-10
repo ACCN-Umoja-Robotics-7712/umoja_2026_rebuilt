@@ -145,7 +145,7 @@ public final class Constants {
         public static final double kIDrift = 0.0065; //Changed before test
         
         public static final double kPAlignTrench = 0.06;
-        public static final double kIAlignTrench = 0.0;
+        public static final double kIAlignTrench = 0.0001;
     }
 
     public static final class TurretConstants {
@@ -171,7 +171,7 @@ public final class Constants {
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 1;
-        public static final double kPturretSlack = 0;
+        public static final double kPturretSlack = 0.008;
         public static final double kPturretSpring = 0;
         public static final double kIturretSlack = 0;
         public static final double kIturretSpring = 0;
@@ -259,7 +259,7 @@ public final class Constants {
     public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 2;
         public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
 
         // public static final double kPXController = 5;
@@ -377,7 +377,7 @@ public final class Constants {
         public static final double limelight3Height = Units.inchesToMeters(20.75);
         public static final double limelight3Forward = Units.inchesToMeters(-RobotConstants.robotLength/2 + 8);
         // edge - bar - center ll - center current ll
-        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 5 - 1.4);
+        public static final double limelight3Side = Units.inchesToMeters((RobotConstants.robotWidth/2) - 2  - 5 - 1.4 - 2.5);
         public static final double limelight3Angle = 15; // degrees pitch
 
         public static final double limelight2Height = Units.inchesToMeters(20.5);

@@ -396,7 +396,7 @@ public class SwerveSubsystem extends SubsystemBase {
             if (rightMT2.tagCount == 0) {
                 rejectRightUpdate = true;
             } else if (rightMT2.tagCount == 1) {
-                visionTrustRightValue += 2;
+                visionTrustRightValue += 1;
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustRightValue = 0;
@@ -423,7 +423,7 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectForwardUpdate = true;
         }
 
-        double visionTrustForwardValue = 0.7;
+        double visionTrustForwardValue = 1.7;
         if (forwardMT2 != null) {
             if (forwardMT2.tagCount == 0) {
                 rejectForwardUpdate = true;
@@ -455,7 +455,7 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectLeftUpdate = true;
         }
 
-        double visionTrustLeftValue = 0.7;
+        double visionTrustLeftValue = 1.7;
         if (leftMT2 != null) {
             if (leftMT2.tagCount == 0) {
                 rejectLeftUpdate = true;
@@ -468,10 +468,10 @@ public class SwerveSubsystem extends SubsystemBase {
             if (!rejectLeftUpdate)
             {
                 limelightPoses.add(leftMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,9999999));
-                poseEstimator.addVisionMeasurement(
-                    leftMT2.pose,
-                    leftMT2.timestampSeconds);
+                // poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,9999999));
+                // poseEstimator.addVisionMeasurement(
+                //     leftMT2.pose,
+                //     leftMT2.timestampSeconds);
             }
         }
         
@@ -484,7 +484,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         Pose2d turretFieldPose = currentPose.plus(new Transform2d(TurretConstants.turretCenterFromRobotCenterForwardLength, TurretConstants.turretCenterFromRobotCenterSideLength, new Rotation2d(Units.degreesToRadians(RobotContainer.shooterTurretSubsystem.getAngleDegrees()))));
         turretPublisher.set(turretFieldPose);
-        allPointsPublisher.set(limelightPoses.toArray(new Pose2d[0]));
+        limelightPublishers.set(limelightPoses.toArray(new Pose2d[0]));
         posePublisher.set(currentPose);
 
         boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Red).equals(Alliance.Blue);
@@ -492,8 +492,8 @@ public class SwerveSubsystem extends SubsystemBase {
         Pose2d target = Constants.SHOOTING_POSES.BLUE_HUB_POSE;
 
         if (isBlue) {
-            // one meter past blue hub into neutral zone
-            if (getPose().getX() >= Constants.SHOOTING_POSES.BLUE_HUB_POSE.getX() + 1) {
+            // .5 meter past blue hub into neutral zone
+            if (getPose().getX() >= Constants.SHOOTING_POSES.BLUE_HUB_POSE.getX() + 0.5) {
                 // want to pass
                 // Greater than hub Y, on blue depot side
                 if (getPose().getY() >= Constants.SHOOTING_POSES.BLUE_HUB_POSE.getY()) {
@@ -505,8 +505,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 target = Constants.SHOOTING_POSES.BLUE_HUB_POSE;
             }
         } else {
-            // one meter past red hub into neutral zone
-            if (getPose().getX() <= Constants.SHOOTING_POSES.RED_HUB_POSE.getX() - 1) {
+            // .5 meter past red hub into neutral zone
+            if (getPose().getX() <= Constants.SHOOTING_POSES.RED_HUB_POSE.getX() - 0.5) {
                 // want to pass
                 // Greater than hub Y, on outpost side
                 if (getPose().getY() >= Constants.SHOOTING_POSES.RED_HUB_POSE.getY()) {
@@ -594,8 +594,12 @@ public class SwerveSubsystem extends SubsystemBase {
         return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
 
-    public double getTurretToTargetAngle() {
+    public double getRobotToTargetAngle() {
         return turretToTargetAngle;
+    }
+    
+    public double getTurretToTargetAngle() {
+        return ((turretToTargetAngle - getHeading()) + 180) % 360;
     }
 
     public double getTurretToTargetRPMValue() {
@@ -610,6 +614,6 @@ public class SwerveSubsystem extends SubsystemBase {
         // https://www.desmos.com/calculator/80g65lmlho
         double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
         double hoodValue = 0;
-        return new double[] {rpm, hoodValue};
+        return new double[] {-rpm, hoodValue};
     }
 }

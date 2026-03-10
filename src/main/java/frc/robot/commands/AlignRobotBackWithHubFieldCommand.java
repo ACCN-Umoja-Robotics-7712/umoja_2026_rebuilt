@@ -77,7 +77,7 @@ public class AlignRobotBackWithHubFieldCommand extends Command {
         //     double target_x = LimelightHelpers.getTX(Constants.LimelightConstants.gamePieceName);
         //     swerveSubsystem.alignWithTag(target_x, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
         // } else {
-          double wantedAngle = RobotContainer.swerveSubsystem.getTurretToTargetAngle();
+          double wantedAngle = (RobotContainer.swerveSubsystem.getRobotToTargetAngle()+180)%360;
           ChassisSpeeds chassisSpeeds;
           boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
           int flipAlliance = isBlue ? 1 : -1;

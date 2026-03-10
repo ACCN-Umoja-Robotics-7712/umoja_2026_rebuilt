@@ -38,7 +38,7 @@ public class AlginRobotBackWithHubCameraTxCommand extends Command{
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
 
-        this.wantedAngle = (RobotContainer.swerveSubsystem.getTurretToTargetAngle() + 180) % 360;
+        this.wantedAngle = (RobotContainer.swerveSubsystem.getRobotToTargetAngle() + 180) % 360;
 
         addRequirements(swerveSubsystem);
     }

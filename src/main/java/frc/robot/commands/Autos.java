@@ -17,19 +17,24 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SHOOTING_POSES;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
+import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
@@ -109,28 +114,30 @@ public class Autos {
     public Command getAuto() {
         // return ppChooser.getSelected();
         AUTO auto = chooser.getSelected();
-        if (auto == null) {
-            System.out.println("auto is null");
-            return new InstantCommand();
-        }
+        System.out.println(auto);
+        return getSimpleAuto();
+//         if (auto == null) {
+//             System.out.println("auto is null");
+//             return new InstantCommand();
+//         }
 
-// -------------------------------------------------------- AUTO SELECTOR --------------------------------------- ----------------- //
+// // -------------------------------------------------------- AUTO SELECTOR --------------------------------------- ----------------- //
 
-        return switch (auto) {
-            case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
-            // case BLUE_CENTER_TOWER -> getBlueCenter();
-            case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
-            case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
-            case RED_CENTER_TOWER -> getRedTowerFromLeft();
-            case RED_CENTER_TOWER_R -> getRedTowerFromRight();
-            case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
-            case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
-            case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
-            case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
-            case SIMPLE_AUTO -> getSimpleAuto();
-            case TUNE_AUTO -> getTuneAuto();
-            default -> new InstantCommand();
-        };
+//         return switch (auto) {
+//             case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
+//             // case BLUE_CENTER_TOWER -> getBlueCenter();
+//             case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
+//             case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
+//             case RED_CENTER_TOWER -> getRedTowerFromLeft();
+//             case RED_CENTER_TOWER_R -> getRedTowerFromRight();
+//             case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
+//             case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
+//             case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
+//             case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
+//             case SIMPLE_AUTO -> getSimpleAuto();
+//             case TUNE_AUTO -> getTuneAuto();
+//             default -> new InstantCommand();
+//         };
     }
 
 // ------------------------------------------------------------------------ // ----------------------------- AUTOS ---------------------------------- //
@@ -586,24 +593,26 @@ public class Autos {
     }
 
 
-  public Command getSimpleAuto() {
 
-    Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
-    Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
+    public Command getSimpleAuto() {
+    Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0.0, 2, 180);
+
+    // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
+    // Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
     posePublisher.set(endPose);
 
-    Trajectory traj = TrajectoryGenerator.generateTrajectory(
-      swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 0, 0),
-      List.of(),
-      endPose,
-      trajectoryConfig);
+    // Trajectory traj = TrajectoryGenerator.generateTrajectory(
+    //   swerveSubsystem.getPose(),
+    //   List.of(),
+    //   endPose,
+    //   trajectoryConfig);
       
 
-    Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
-      endPose,
-      List.of(),
-      pickUpPose,
-      trajectoryConfig);
+    // Trajectory traj2 = TrajectoryGenerator.generateTrajectory(
+    //   endPose,
+    //   List.of(),
+    //   pickUpPose,
+    //   trajectoryConfig);
 
     // 4. Construct command to follow trajectory 
     // SwerveControllerCommand path1 = new SwerveControllerCommand(
@@ -627,13 +636,26 @@ public class Autos {
     //     swerveSubsystem);
     
     Command path1 = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
-    Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
+    // Command path2 = AutoBuilder.pathfindToPose(pickUpPose, Constants.pathConstraints);
     
-    return path1.andThen(
-        new ParallelCommandGroup(
-            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.30),
-            path2
-            )
+    Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
+    Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
+    Command normalShoot = Commands.parallel(
+        new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+        new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+      );
+      Command forceShoot = Commands.parallel(
+        new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
     );
+        
+      
+    // Command aimAtHubCommand = 
+    //   new AlignRobotBackWithHubFieldCommand(swerveSubsystem,
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> -RobotContainer.driverController.getLeftX()
+    //   );
+    // return path1.andThen(aimAtHubCommand.withTimeout(5)).andThen(normalShoot.withTimeout(5).andThen(forceShoot));
+    return path1;
   }
 }

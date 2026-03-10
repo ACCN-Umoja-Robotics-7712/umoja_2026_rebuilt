@@ -47,6 +47,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
         SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15);
+        turretConfig.inverted(true);
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
         
@@ -136,7 +137,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         //     isZeroed = true;
         // }
         if (state != ShooterStates.NONE) {
-            setTurretAngle(RobotContainer.swerveSubsystem.getTurretToTargetAngle());
+            setTurretAngle(RobotContainer.swerveSubsystem.getRobotToTargetAngle());
         }
         if (isLimitSwitchHit()) {
             resetTurret();

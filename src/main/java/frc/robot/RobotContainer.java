@@ -158,7 +158,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -0.80 // Geared down the intake roller so we double the speed
+        () -> -0.31 // Geared down the intake roller so we double the speed
       )
     );
 
@@ -166,7 +166,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.rightBumper().whileTrue(
       new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
-        () -> -0.80,
+        () -> -0.30,
         () -> RobotContainer.driverController.getLeftX(),
         () -> -RobotContainer.driverController.getLeftY(),
         () -> -RobotContainer.driverController.getRightY()
@@ -191,12 +191,12 @@ public class RobotContainer {
     // );
 
     //Flywheel Motor
-    operatorController.rightTrigger()
-    .and(operatorController.a()).whileTrue(
-      new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
-        () -> -0.4 // Check if it is the right direction (negative is good for now). 45% is good
-      )
-    );
+    // operatorController.rightTrigger()
+    // .and(operatorController.a()).whileTrue(
+    //   new ManualShooterFlywheelCommand(shooterFlywheelSubsystem,
+    //     () -> -0.4 // Check if it is the right direction (negative is good for now). 45% is good
+    //   )
+    // );
 
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 7.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
@@ -215,17 +215,32 @@ public class RobotContainer {
       )
     );
     
-    operatorController.rightTrigger()
-    .and(operatorController.y())
+    operatorController.a()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity)
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
+        new ConditionalCommand(
+          new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+          , RobotContainer::isReadyToShoot)
+      )
+    ).whileFalse(
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> 0.0),
+        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
 
-    operatorController.a().whileTrue(
-      new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+
+    operatorController.x().whileTrue(
+      new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getRobotToTargetAngle)
+    ).whileFalse(
+      new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     );
+
+    // operatorController.a().whileTrue(
+    //   new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+    // );
     
     // operatorController.rightTrigger()
     // .and(operatorController.b())
@@ -250,7 +265,7 @@ public class RobotContainer {
     // Turret Motor
     operatorController.leftBumper().whileTrue(
       new ManualTurretCommand(shooterTurretSubsystem,
-        () -> operatorController.getLeftX() * 0.6
+        () -> -operatorController.getLeftX() * 0.6
       )
     );
 
@@ -268,12 +283,6 @@ public class RobotContainer {
       new ManualIndexerCommand(indexerSubsystem,
         () -> -1.0
       )
-    );
-
-    operatorController.b().whileTrue(
-      new ShooterTurretAngleCommand(shooterTurretSubsystem, () -> shooterTurretSubsystem.getCustomAngle())
-    ).whileFalse(
-      new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     );
 
     // operatorController.button(XBoxConstants.MENU).onTrue(
@@ -350,7 +359,7 @@ public class RobotContainer {
 
   public static boolean isReadyToShoot() {
     // manual override on a button
-    boolean override = operatorController.a().getAsBoolean();
+    boolean override = operatorController.b().getAsBoolean();
     if (override) {
       return true;
     }
@@ -360,7 +369,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("flywheel ready", flywheelReady);
     SmartDashboard.putBoolean("turret ready", turretReady);
     SmartDashboard.putBoolean("hood ready", hoodReady);
-    return flywheelReady && turretReady && hoodReady;
+    return flywheelReady;
   }
 
   public static double diffFromWantedAngleField(double wantedAngle) {
