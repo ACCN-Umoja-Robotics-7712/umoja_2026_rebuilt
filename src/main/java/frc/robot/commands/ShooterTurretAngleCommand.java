@@ -29,6 +29,7 @@ public class ShooterTurretAngleCommand extends Command {
 
     @Override
     public void end(boolean isInterrupted){
+        turret.runTurret(0);
         System.out.println("Turret end interrupted:" + isInterrupted);
     }
 

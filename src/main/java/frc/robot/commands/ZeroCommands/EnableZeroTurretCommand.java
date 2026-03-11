@@ -14,11 +14,11 @@ public class EnableZeroTurretCommand extends Command {
     @Override
     public void initialize(){
         System.out.println("Starting zeroing hood");
+        this.turretSubsystem.enableZero();
     }
 
     @Override
     public void execute(){
-        this.turretSubsystem.enableZero();
     }
 
     @Override

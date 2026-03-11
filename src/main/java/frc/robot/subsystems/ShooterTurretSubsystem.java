@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.LimelightConstants;
@@ -124,7 +125,12 @@ public class ShooterTurretSubsystem extends SubsystemBase {
                 springFeedForward = direction*springResistance;
             }
         }
-        turretMotor.setVoltage(pidVal + direction*fakeFeedForward + springFeedForward);
+        // System.out.println(" " + pidVal + isZeroed);
+        if (isZeroed) {
+            turretMotor.setVoltage(pidVal + direction*fakeFeedForward);
+        } else {
+            turretMotor.set(0);
+        }
     }
 
     public void setState(double state) {
@@ -161,11 +167,17 @@ public class ShooterTurretSubsystem extends SubsystemBase {
             resetTurret();
             isZeroed = true;
         }
+        // blink limelight if turret not zeroed to indicate to setup
+        if (!isZeroed) {
+            LimelightHelpers.setLEDMode_ForceBlink(LimelightConstants.LIMELIGHT_FORWARD);
+        } else {
+            LimelightHelpers.setLEDMode_ForceOff(LimelightConstants.LIMELIGHT_FORWARD);
+        }
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getRobotToTargetAngle());
         }
         SmartDashboard.putNumber("turret encoder", getAngleDegrees());
-        SmartDashboard.putBoolean("turret limit switch hit", turretZeroLimitSwitch.get());
+        SmartDashboard.putBoolean("turret limit switch hit", isLimitSwitchHit());
         
         // TODO: REMOVE FOR COMP
         double kPturretSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack);

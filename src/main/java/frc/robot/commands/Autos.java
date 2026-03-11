@@ -114,31 +114,28 @@ public class Autos {
     public Command getAuto() {
         // return ppChooser.getSelected();
         AUTO auto = chooser.getSelected();
-        System.out.println(auto);
-        System.out.println(chooser);
-        return new InstantCommand();
-        // if (auto == null) {
-        //     System.out.println("auto is null");
-        //     return new InstantCommand();
-        // }
+        if (auto == null) {
+            System.out.println("auto is null");
+            return new InstantCommand();
+        }
 
-// // -------------------------------------------------------- AUTO SELECTOR --------------------------------------- ----------------- //
+// -------------------------------------------------------- AUTO SELECTOR --------------------------------------- ----------------- //
 
-        // return switch (auto) {
-        //     case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
-        //     // case BLUE_CENTER_TOWER -> getBlueCenter();
-        //     case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
-        //     case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
-        //     case RED_CENTER_TOWER -> getRedTowerFromLeft();
-        //     case RED_CENTER_TOWER_R -> getRedTowerFromRight();
-        //     case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
-        //     case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
-        //     case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
-        //     case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
-        //     case SIMPLE_AUTO -> getSimpleAuto();
-        //     case TUNE_AUTO -> getTuneAuto();
-        //     default -> new InstantCommand();
-        // };
+        return switch (auto) {
+            case BLUE_TRENCH_LEFT_NEUTRAL -> getBlueTrenchLeftNeutral();
+            // case BLUE_CENTER_TOWER -> getBlueCenter();
+            case BLUE_TRENCH_RIGHT_NEUTRAL -> getBlueTrenchRightNeutral();
+            case RED_TRENCH_LEFT_NEUTRAL -> getRedTrenchLeftNeutral();
+            case RED_CENTER_TOWER -> getRedTowerFromLeft();
+            case RED_CENTER_TOWER_R -> getRedTowerFromRight();
+            case RED_TRENCH_RIGHT_NEUTRAL -> getRedTrenchRightNeutral();
+            case RED_TRENCH_RIGHT_OUTPOST -> getRedTrenchRightOutpost();
+            case BLUE_TRENCH_RIGHT_OUTPOST -> getBlueTrenchRightOutpost();
+            case BLUE_RIGHT_AUTO_FULL_1 -> getBlueRightFull1();
+            case SIMPLE_AUTO -> getSimpleAuto();
+            case TUNE_AUTO -> getTuneAuto();
+            default -> new InstantCommand();
+        };
     }
 
 // ------------------------------------------------------------------------ // ----------------------------- AUTOS ---------------------------------- //

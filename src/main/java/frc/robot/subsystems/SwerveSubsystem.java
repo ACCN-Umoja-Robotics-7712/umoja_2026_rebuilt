@@ -541,6 +541,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double[] angleDistance = updateTurretAngleDistanceToTarget(target);
         this.turretToTargetAngle = angleDistance[0];
         SmartDashboard.putNumber("WANTED TARGET ANGLE", turretToTargetAngle);
+        SmartDashboard.putNumber("WANTED TURRET ANGLE", getTurretToTargetAngle());
         double distanceToTarget = angleDistance[1];
         SmartDashboard.putNumber("WANTED TARGET DISTANCE", distanceToTarget);
         double[] rpmHoodValues = updateRPMHoodValues(distanceToTarget);
@@ -548,7 +549,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.turretToTargetHoodValue = rpmHoodValues[1];
         SmartDashboard.putNumber("WANTED RPM FROM DISTANCE", turretToTargetRPMValue);
         SmartDashboard.putNumber("WANTED HOOD FROM DISTANCE", turretToTargetHoodValue);
-        // corner ~5.7m, tower ~3.1m, trench ~3.8m
+        // corner ~5.5 to 5.7m, tower ~2.9 to 3.1m, trench ~3.8m
     }
 
     public void stopModules() {
@@ -619,7 +620,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     
     public double getTurretToTargetAngle() {
-        return ((turretToTargetAngle - getHeading()) + 180) % 360;
+        return (((turretToTargetAngle - getHeading())) + 360) % 360;
     }
 
     public double getTurretToTargetRPMValue() {

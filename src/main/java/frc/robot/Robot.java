@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.GameConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.SwerveJoystick;
+import frc.robot.commands.ManualCommands.ManualTurretCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
     RobotContainer.gameState = GameConstants.Disabled;
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Coast);
     RobotContainer.shooterFlywheelSubsystem.runShooter(0);
+    RobotContainer.shooterTurretSubsystem.runTurret(0);
     RobotContainer.shooterFlywheelSubsystem.setState(Constants.ShooterStates.NONE);
   }
 

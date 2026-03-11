@@ -224,17 +224,39 @@ public class RobotContainer {
       )
     );
     
-    operatorController.a().and(operatorController.rightTrigger().negate())
+    operatorController.a()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
         new ConditionalCommand(
           new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.5).andThen(
         Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+        )
+      )
+    ).whileFalse(
+      Commands.parallel(
+        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
+        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+      )
+    );
+    
+    
+    operatorController.b()
+    .whileTrue(
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
+        new ConditionalCommand(
+          new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+          , RobotContainer::isReadyToShoot)
+      ).withTimeout(0.5).andThen(
+        Commands.parallel(
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
             new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
         )
       )
@@ -246,28 +268,28 @@ public class RobotContainer {
     );
 
 
-    // operatorController.x().whileTrue(
-    //   new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getRobotToTargetAngle)
-    // ).whileFalse(
-    //   new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
-    // );
-
     operatorController.x().whileTrue(
-      new ShooterTurretAngleCommand(shooterTurretSubsystem, shooterTurretSubsystem::getCustomAngle)
+      new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
     ).whileFalse(
       new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     );
+
+    // operatorController.x().whileTrue(
+    //   new ShooterTurretAngleCommand(shooterTurretSubsystem, shooterTurretSubsystem::getCustomAngle)
+    // ).whileFalse(
+    //   new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
+    // );
 
     // operatorController.a().whileTrue(
     //   new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
     // );
     
-    operatorController.b()
-    .whileTrue(
-      Commands.parallel(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
-      )
-    );
+    // operatorController.b()
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
+    //   )
+    // );
 
     // Hood Motor
     operatorController.rightBumper().whileTrue(
@@ -287,7 +309,7 @@ public class RobotContainer {
     operatorController.leftTrigger()
     .and(operatorController.a()).whileTrue(
       new ManualIndexerCommand(indexerSubsystem,
-        () -> 1.0
+        () -> 10.0
       )
     );
     // Indexer Motor (Reverse)
@@ -295,7 +317,7 @@ public class RobotContainer {
     .and(operatorController.y())
     .whileTrue(
       new ManualIndexerCommand(indexerSubsystem,
-        () -> -1.0
+        () -> -10.0
       )
     );
 
