@@ -169,7 +169,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         }
         // blink limelight if turret not zeroed to indicate to setup
         if (!isZeroed) {
-            LimelightHelpers.setLEDMode_ForceBlink(LimelightConstants.LIMELIGHT_FORWARD);
+            LimelightHelpers.setLEDMode_ForceOn(LimelightConstants.LIMELIGHT_FORWARD);
         } else {
             LimelightHelpers.setLEDMode_ForceOff(LimelightConstants.LIMELIGHT_FORWARD);
         }

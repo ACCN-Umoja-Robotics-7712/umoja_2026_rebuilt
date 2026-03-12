@@ -38,6 +38,7 @@ import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
+import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -593,34 +594,70 @@ public class Autos {
 
 
     public Command getSimpleAuto() {
-    Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0.0, 2, 180);
+    // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0.0, 2, 180);
 
     // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
     // Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
     
-    Command path1 = getPathToPose(endPose);
+    // Command path1 = getPathToPose(endPose);
     // Command path2 = getPathToPose(pickUpPose);
     
     Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
     Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
-    Command normalShoot = Commands.parallel(
+    Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
+
+    Command lowerArm = Commands.parallel(
+        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
+        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
+    ).withTimeout(0.5);
+    Command shoot = Commands.parallel(
         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
-      );
-      Command forceShoot = Commands.parallel(
+      ).withTimeout(0.75).andThen(Commands.parallel(
         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
+        )
+      );
+      
+    Command alignTurret = 
+      Commands.parallel(
+        new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
+        new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+      );
+    return Commands.parallel(
+        zeroHood.withTimeout(1).alongWith(lowerArm).andThen(alignTurret),
+        new WaitCommand(5).andThen(shoot)
     );
+  }
+//     public Command getSimpleAuto() {
+//     // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0.0, 2, 180);
+
+//     // Pose2d endPose = swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), -0.25, 5.5, -90);
+//     // Pose2d pickUpPose = swerveSubsystem.offsetPoint(endPose, 0, 4,  0);
+    
+//     // Command path1 = getPathToPose(endPose);
+//     // Command path2 = getPathToPose(pickUpPose);
+    
+//     Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
+//     Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
+//     Command lowerArm = new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.19).withTimeout(0.5);
+//     Command normalShoot = Commands.parallel(
+//         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+//         new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+//       );
+//       Command forceShoot = Commands.parallel(
+//         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+//         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
+//     );
         
       
-    // Command aimAtHubCommand = 
-    //   new AlignRobotBackWithHubFieldCommand(swerveSubsystem,
-    //     () -> -RobotContainer.driverController.getLeftY(),
-    //     () -> -RobotContainer.driverController.getLeftX()
-    //   );
-    // return path1.andThen(aimAtHubCommand.withTimeout(5)).andThen(normalShoot.withTimeout(5).andThen(forceShoot));
-    return path1;
-  }
+//     Command aimAtHubCommand = 
+//       new AlignRobotBackWithHubFieldCommand(swerveSubsystem,
+//         () -> -RobotContainer.driverController.getLeftY(),
+//         () -> -RobotContainer.driverController.getLeftX()
+//       );
+//     return path1.andThen(aimAtHubCommand.withTimeout(5)).andThen(normalShoot.withTimeout(5).andThen(forceShoot));
+//   }
 
   public Command getPathToPose(Pose2d endPose) {
     posePublisher.set(endPose);

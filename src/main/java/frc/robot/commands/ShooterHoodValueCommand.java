@@ -24,7 +24,6 @@ public class ShooterHoodValueCommand extends Command {
 
     @Override
     public void execute(){
-        System.out.println(wantedHoodValue.get());
         hood.setHoodValue(wantedHoodValue.get());
     }
 

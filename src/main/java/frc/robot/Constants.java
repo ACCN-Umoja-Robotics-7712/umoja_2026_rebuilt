@@ -8,9 +8,13 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.InterpolatingMatrixTreeMap;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -166,7 +170,9 @@ public final class Constants {
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
         public static final double kPhood = 0.1;
+        public static final double kShood = 0.2295;
         public static final double kIhood = 0.0; 
+        public static final double kDhood = 0.0;
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
@@ -391,6 +397,10 @@ public final class Constants {
         public static final int[] BLUE_HUB_CENTER_APRIL_TAG_IDS = new int[]{18,20,21,26};
         public static final int RED_HUB_FRONT_CENTER_APRIL_TAG_ID = 10;
         public static final int BLUE_HUB_FRONT_CENTER_APRIL_TAG_ID = 26;
+        
+        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+        public static double maxAmbiguity = 0.3;
+        public static double maxZError = 0.75;
     }
     
 
@@ -469,10 +479,10 @@ public final class Constants {
         
         public static final Pose2d RED_HALF_LEFT = new Pose2d(14.241, 1.835, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
         public static final Pose2d RED_HALF_RIGHT = new Pose2d(14.241, 5.719, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
-    }
+    } 
 
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
     public static final ModuleConfig moduleConfig = new ModuleConfig(ModuleConstants.kWheelDiameterMeters/2, AutoConstants.kMaxSpeedMetersPerSecond, ModuleConstants.kWheelCOF, ModuleConstants.kDriveMotor, ModuleConstants.kDriveMotorCurrentLimit, ModuleConstants.kNumMotorsPerModule);
     public static final RobotConfig robotConfig = new RobotConfig(RobotConstants.kRobotTotalWeightKG, RobotConstants.kRobotMOI, moduleConfig, DriveConstants.kDriveKinematics.getModules());
-    public static final PathConstraints pathConstraints = new PathConstraints(4.8, 1.3, 540, 720);
+    public static final PathConstraints pathConstraints = new PathConstraints(AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared, AutoConstants.kMaxAngularSpeedRadiansPerSecond, AutoConstants.kMaxAngularSpeedRadiansPerSecond);
 }

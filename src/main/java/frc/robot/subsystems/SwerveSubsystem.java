@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -96,6 +97,9 @@ public class SwerveSubsystem extends SubsystemBase {
     private double turretToTargetAngle = 0;
     private double turretToTargetHoodValue = 0;
     private double turretToTargetRPMValue = 0;
+    
+    private static final InterpolatingDoubleTreeMap rpmTable = new InterpolatingDoubleTreeMap();
+    private static final InterpolatingDoubleTreeMap angleTable = new InterpolatingDoubleTreeMap();
 
     private double headingOffset = 0;
     
@@ -176,6 +180,43 @@ public class SwerveSubsystem extends SubsystemBase {
         
         holonomicDriveController = new HolonomicDriveController(xController, yController, thetaController);
 
+        rpmTable.put(1.25, 3100.0);
+        rpmTable.put(1.5, 3150.0);
+        rpmTable.put(1.75, 3200.0);
+        rpmTable.put(2.0, 3350.0);
+        rpmTable.put(2.25, 3400.0);
+        rpmTable.put(2.5, 3500.0);
+        rpmTable.put(2.75, 3600.0);
+        rpmTable.put(3.0, 3650.0);
+        rpmTable.put(3.1, 3700.0);
+        rpmTable.put(3.25, 3900.0);
+        rpmTable.put(3.5, 3900.0);
+        rpmTable.put(3.75, 3950.0);
+        rpmTable.put(4.0, 4050.0);
+        rpmTable.put(4.25, 4050.0);
+        rpmTable.put(4.5, 4050.0);
+        rpmTable.put(4.75, 4100.0);
+        rpmTable.put(5.0, 4150.0);
+        
+        angleTable.put(0.0, 0.0);
+        angleTable.put(1.25, 0.0);
+        angleTable.put(1.5, 0.1);
+        angleTable.put(1.75, 0.217);
+        angleTable.put(2.0, 0.42);
+        angleTable.put(2.25, 0.65);
+        angleTable.put(2.5, 0.755);
+        angleTable.put(2.75, 0.875);
+        angleTable.put(3.0, 1.0);
+        angleTable.put(3.1, 1.2);
+        angleTable.put(3.25, 1.7);
+        angleTable.put(3.5, 1.75);
+        angleTable.put(3.75, 2.0);
+        angleTable.put(4.0, 2.5);
+        angleTable.put(4.25, 3.5);
+        angleTable.put(4.5, 3.8);
+        angleTable.put(4.75, 4.4);
+        angleTable.put(5.0, 4.7);
+        // angleTable.put(5.25, 00.0);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -372,7 +413,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         //     if (!rejectTurretUpdate)
         //     {
-        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,9999999));
+        //         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustValue,visionTrustValue,Double.POSITIVE_INFINITY));
         //         poseEstimator.addVisionMeasurement(
         //             turretMT2.pose,
         //             turretMT2.timestampSeconds);
@@ -403,11 +444,22 @@ public class SwerveSubsystem extends SubsystemBase {
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustRightValue = 0;
+            } else {
+                // // reject if > 1 m away
+                boolean isCloserThan1m = rightMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // reject if outside arena
+                boolean isOutsideField = rightMT2.pose.getX() < 0
+                                        || rightMT2.pose.getX() > 17
+                                        || rightMT2.pose.getY() < 0
+                                        || rightMT2.pose.getY() > 8;
+                if (isCloserThan1m || isOutsideField) {
+                    rejectRightUpdate = true;
+                }
             }
             if (!rejectRightUpdate)
             {
                 limelightPoses.add(rightMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustRightValue,visionTrustRightValue,999999999));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustRightValue,visionTrustRightValue,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     rightMT2.pose,
                     rightMT2.timestampSeconds);
@@ -448,7 +500,7 @@ public class SwerveSubsystem extends SubsystemBase {
             if (!rejectForwardUpdate)
             {
                 limelightPoses.add(forwardMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustForwardValue,visionTrustForwardValue,999999999));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustForwardValue,visionTrustForwardValue,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     forwardMT2.pose,
                     forwardMT2.timestampSeconds);
@@ -479,17 +531,17 @@ public class SwerveSubsystem extends SubsystemBase {
                 visionTrustLeftValue = 0;
             } else {
                 // // reject if > 1 m away
-                // boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
-                // // reject if outside arena
-                // boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
-                // if (isCloserThan1m || isOutsideField) {
-                //     // rejectLeftUpdate = true;
-                // }
+                boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // reject if outside arena
+                boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
+                if (isCloserThan1m || isOutsideField) {
+                    rejectLeftUpdate = true;
+                }
             }
             if (!rejectLeftUpdate)
             {
                 limelightPoses.add(leftMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,999999999));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     leftMT2.pose,
                     leftMT2.timestampSeconds);
@@ -637,8 +689,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public double[] updateRPMHoodValues(double distanceToTarget) {
         // https://www.desmos.com/calculator/80g65lmlho
-        double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
-        double hoodValue = 0;
+        // double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
+        // double hoodValue = 0;
+        double rpm = rpmTable.get(distanceToTarget);
+        double hoodValue = angleTable.get(distanceToTarget);
         return new double[] {-rpm, hoodValue};
     }
 }

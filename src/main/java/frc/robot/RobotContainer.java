@@ -212,7 +212,7 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
-      ).withTimeout(0.5).andThen(
+      ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
@@ -233,7 +233,7 @@ public class RobotContainer {
     //       new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
     //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
     //       , RobotContainer::isReadyToShoot)
-    //   ).withTimeout(0.5).andThen(
+    //   ).withTimeout(0.75).andThen(
     //     Commands.parallel(
     //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
     //         new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
@@ -260,7 +260,7 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.5).andThen(
+      ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
             new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
@@ -281,7 +281,7 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.5).andThen(
+      ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
             new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
@@ -298,7 +298,7 @@ public class RobotContainer {
     operatorController.x().whileTrue(
       Commands.parallel(
         new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
-        new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
+        new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
       )
     ).whileFalse(
       Commands.parallel(
@@ -359,7 +359,7 @@ public class RobotContainer {
     );
     
 
-    operatorController.button(XBoxConstants.PAGE).onTrue(
+    operatorController.button(XBoxConstants.PAGE).whileTrue(
       new EnableZeroTurretCommand(shooterTurretSubsystem)
     );
 
