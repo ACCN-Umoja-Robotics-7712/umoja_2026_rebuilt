@@ -63,10 +63,6 @@ public class SwerveJoystick extends Command {
   @Override
   public void execute() {
     boolean isLastShiftEndingAndEndGame = DriverStation.getMatchTime() <= 33;
-    boolean is3rdShiftEnding = DriverStation.getMatchTime() >= 55 && DriverStation.getMatchTime() <= 58; 
-    boolean is2ndShiftEnding = DriverStation.getMatchTime() >= 80 && DriverStation.getMatchTime() <= 83;
-    boolean is1stShiftEnding = DriverStation.getMatchTime() >= 105 && DriverStation.getMatchTime() <= 108;
-    boolean isTransitionShiftEnding = DriverStation.getMatchTime() >= 105 && DriverStation.getMatchTime() <= 108; 
       if (DriverStation.getMatchType() != MatchType.None && DriverStation.getMatchTime() <= 30) {
           j.setRumble(RumbleType.kBothRumble, 0.2);
       } else {
@@ -110,8 +106,13 @@ public class SwerveJoystick extends Command {
           }
 
           if (RobotContainer.shooterFlywheelSubsystem.isShooting()) {
-            xSpeed = xLimiter.calculate(Math.min(xSpeed, DriveConstants.shootingSpeedCap)) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-            ySpeed = yLimiter.calculate(Math.min(ySpeed, DriveConstants.shootingSpeedCap)) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+            // BUG FIX: Math.min(speed, cap) only clamps positive speeds; negative speeds
+            // (driving backward while shooting) bypassed the cap entirely.
+            // Clamp the magnitude symmetrically in both directions.
+            double cappedX = Math.signum(xSpeed) * Math.min(Math.abs(xSpeed), DriveConstants.shootingSpeedCap);
+            double cappedY = Math.signum(ySpeed) * Math.min(Math.abs(ySpeed), DriveConstants.shootingSpeedCap);
+            xSpeed = xLimiter.calculate(cappedX) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+            ySpeed = yLimiter.calculate(cappedY) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
           }
       
           // set current angle

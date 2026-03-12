@@ -38,6 +38,9 @@ public class SwerveModule {
         // CANBus rioCanBus = new CANBus("rio");
 
         absoluteEncoder = new CANcoder(absoluteEncoderId, CANivoreBus);
+        // BUG FIX: CANcoder config was created but never pushed to hardware;
+        // without this the offset and direction settings have no effect.
+        absoluteEncoder.getConfigurator().apply(CANconfig);
         this.absoluteEncoderID = absoluteEncoderId;
         this.absoluteEncoderDegreeOffset = absoluteEncoderOffset;
 

@@ -24,7 +24,6 @@ import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.commands.SwerveJoystick;
-import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
@@ -104,13 +103,11 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
     RobotContainer.swerveSubsystem.setDefaultCommand(
-      Commands.parallel(
-        new SwerveJoystick(
-            RobotContainer.swerveSubsystem,
-            () -> -RobotContainer.driverController.getLeftY(),
-            () -> -RobotContainer.driverController.getLeftX(),
-            () -> -RobotContainer.driverController.getRightX()
-        )
+      new SwerveJoystick(
+          RobotContainer.swerveSubsystem,
+          () -> -RobotContainer.driverController.getLeftY(),
+          () -> -RobotContainer.driverController.getLeftX(),
+          () -> -RobotContainer.driverController.getRightX()
       )
     );
 
@@ -398,7 +395,9 @@ public class RobotContainer {
     SmartDashboard.putBoolean("flywheel ready", flywheelReady);
     SmartDashboard.putBoolean("turret ready", turretReady);
     SmartDashboard.putBoolean("hood ready", hoodReady);
-    return flywheelReady;
+    // BUG FIX: was returning only flywheelReady — turret and hood readiness were displayed
+    // on the dashboard but completely ignored when deciding whether to index the note.
+    return flywheelReady && turretReady && hoodReady;
   }
 
   public static double diffFromWantedAngleField(double wantedAngle) {

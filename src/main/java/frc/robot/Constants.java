@@ -190,6 +190,14 @@ public final class Constants {
         // motor -> shaft is 16:1, 16 motor rotations = 1 shaft rotation, and shaft -> turret is 125:35, 125 shaft rotation = 35 turret rotation, ~3.57:1
         public static final double motorToTurretRatio = (1.0/16.0) * (35.0/125.0); // motor rotations to turret rotations
         public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
+
+        /**
+         * Approximate speed of the note from the flywheel to the target, in metres per second.
+         * Used by the shoot-while-moving virtual-target calculation to estimate flight time.
+         * Measure this from video or SysId: (distance to target) / (observed flight time).
+         * Typical flywheel shooter range is 10–18 m/s — tune this to your robot.
+         */
+        public static final double kProjectileSpeedMPS = 12.0; // TODO: characterise for real value
         public static final double turretCenterFromRobotCenterForwardLength = Units.inchesToMeters(-(RobotConstants.robotWidth/2) + 2 + (11.5/2)); // meters (negative cause turret is behind the robot center) 
         public static final double turretCenterFromRobotCenterSideLength = Units.inchesToMeters(-(RobotConstants.robotLength/2) + 2 + (11.5/2)); // meters (positive cause turret is to the left of the robot center)
     }
@@ -236,8 +244,9 @@ public final class Constants {
     public static final class ClimbConstants {
         public static final int climbMotorID = 61; // Update it on the REV Hardware (Do it for all other motor IDs and Encoder IDs)
         public static final int climbLimitSwitchID = 2;
-        public static final int kP = 0;
-        public static final int kI = 0;
+        // BUG FIX: were typed as int — fractional PID gains would silently truncate to 0.
+        public static final double kP = 0;
+        public static final double kI = 0;
     }
 
     public static final class ClimbStates {

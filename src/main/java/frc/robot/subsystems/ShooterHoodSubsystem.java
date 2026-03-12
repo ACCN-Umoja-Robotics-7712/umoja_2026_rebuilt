@@ -79,16 +79,20 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     }
 
     public boolean finishedZeroing() {
-        System.out.println(hoodMotor.getVelocity().getValueAsDouble());
-        
-        if (lastVelocity  >= 0.05) {
+        double currentVelocity = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Hood zeroing velocity", currentVelocity);
+        // BUG FIX: old logic returned true on the SECOND call (lastVelocity was set on call #1,
+        // checked >=0.05 on call #2 — zeroing "finished" after ~40 ms regardless of motor state).
+        // Correct intent: motor was spinning (lastVelocity >= threshold) and has now STALLED
+        // against the mechanical hard stop (currentVelocity dropped below threshold).
+        if (lastVelocity >= 0.05 && currentVelocity < 0.05) {
             hoodMotor.setPosition(-0.2);
             hoodMotor.set(0);
+            lastVelocity = 0;
             return true;
-        } else {
-            lastVelocity = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
-            return false;
         }
+        lastVelocity = currentVelocity;
+        return false;
     }
 
     // public double getHoodValueFromZero() {

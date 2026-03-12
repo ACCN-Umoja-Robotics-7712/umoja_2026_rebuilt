@@ -18,7 +18,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeArmStates;
 import frc.robot.Constants.IntakeConstants;
 
@@ -28,7 +27,6 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private final DigitalInput intakeArmZeroLimitSwitch;
     private final ArmFeedforward intakeArmFeedforward;
     private final PIDController intakeArmPidController;
-    private final Trigger intakeArmTrigger;
 
     private double state = IntakeArmStates.NONE;
 
@@ -53,7 +51,6 @@ public class IntakeArmSubsystem extends SubsystemBase {
         intakeArmPidController = new PIDController(IntakeConstants.armkP, 0, 0);
         intakeArmFeedforward = new ArmFeedforward(0, IntakeConstants.armkG, IntakeConstants.armkV, 0);
 
-        intakeArmTrigger = new Trigger(intakeArmZeroLimitSwitch::get);
         setBrakeMode(NeutralModeValue.Coast);
     }
 
@@ -80,7 +77,9 @@ public class IntakeArmSubsystem extends SubsystemBase {
     }
 
     public void setState(double armState) {
-        if (this.state != state) {
+        // BUG FIX: was comparing this.state != state (field vs itself, always false).
+        // Must compare against the parameter armState so the setpoint actually updates.
+        if (this.state != armState) {
             intakeArmPidController.reset();
             this.state = armState;
         }

@@ -45,7 +45,6 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double maxAngle = 335;
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
-    private PIDController lastPIController = null;
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
@@ -127,7 +126,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         }
         // System.out.println(" " + pidVal + isZeroed);
         if (isZeroed) {
-            turretMotor.setVoltage(pidVal + direction*fakeFeedForward);
+            // BUG FIX: springFeedForward was computed but never included in the output voltage.
+            turretMotor.setVoltage(pidVal + direction * fakeFeedForward + springFeedForward);
         } else {
             turretMotor.set(0);
         }
@@ -147,6 +147,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
+    /** Resets the zeroed flag so the turret will re-seek the home limit switch. */
     public void enableZero() {
         isZeroed = false;
     }
@@ -194,7 +195,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         boolean kPSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack) != turretSlackPidController.getP();
         boolean kPSpring = SmartDashboard.getNumber("kP Turret spring", TurretConstants.kPturretSpring) != turretSpringPidController.getP();
         boolean kISlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack) != turretSlackPidController.getI();
-        boolean kISpring = SmartDashboard.getNumber("kI Turret spring", TurretConstants.kIturretSlack) != turretSpringPidController.getI();
+        // BUG FIX: kISpring check was comparing against kIturretSlack constant instead of kIturretSpring.
+        boolean kISpring = SmartDashboard.getNumber("kI Turret spring", TurretConstants.kIturretSpring) != turretSpringPidController.getI();
 
         if (kPSlack || kPSpring || kISlack || kISpring) {
             turretSlackPidController.setP(kPturretSlack);

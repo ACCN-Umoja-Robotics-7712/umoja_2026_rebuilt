@@ -30,18 +30,11 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
 
-  Timer garbageCollectionTimer = new Timer();
-
   private RobotContainer robotContainer;
   
   // private AutoChooser autoChooser;
 
   // private double autoStartTimer = 0;
-
-
-  public Robot() {
-    garbageCollectionTimer.start();
-  }
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -93,10 +86,8 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    if (garbageCollectionTimer.advanceIfElapsed(5)) {
-      System.gc();
-    }
-    
+    // NOTE: System.gc() removed — manual GC calls cause unpredictable
+    // pause spikes in the 20 ms control loop. WPILib configures G1GC for low-latency.
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -111,9 +102,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // In disabledPeriodic or before match starts
-    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_RIGHT, RobotContainer.swerveSubsystem.getHeading(), 0, 0, 0, 0, 0);
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1); // Seed internal IMU
+    // Orient ALL Limelights while disabled so MegaTag2 pose fusion is accurate
+    // before the match starts (previously only the right camera was updated).
+    double heading = RobotContainer.swerveSubsystem.getHeading();
+    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_RIGHT, heading, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_FORWARD, heading, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_LEFT, heading, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1);
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -110,6 +111,58 @@ public class SwerveSubsystem extends SubsystemBase {
     );
     
     RobotConfig config;
+
+    /**
+     * Hood encoder position lookup table (distance → encoder rotations from zero).
+     * Measured during robot characterisation on 2026-03-11.
+     * Hood stays at max (1.2) for distances beyond 3.5 m — only RPM changes at range.
+     */
+    private static final InterpolatingDoubleTreeMap hoodLookupTable = new InterpolatingDoubleTreeMap();
+    static {
+        //  distance (m)  →  hood encoder position (rotations from zeroed home)
+        hoodLookupTable.put(1.50, 0.000);
+        hoodLookupTable.put(1.75, 0.000);
+        hoodLookupTable.put(2.00, 0.430);
+        hoodLookupTable.put(2.25, 0.598);
+        hoodLookupTable.put(2.50, 0.725);
+        hoodLookupTable.put(2.75, 0.875);
+        hoodLookupTable.put(3.00, 1.000);
+        hoodLookupTable.put(3.25, 1.150);
+        hoodLookupTable.put(3.50, 1.200);
+        // Beyond 3.5 m the hood saturates at its max position (1.2);
+        // only flywheel RPM is used to reach longer distances.
+        hoodLookupTable.put(5.50, 1.200);
+    }
+
+    /**
+     * Flywheel RPM lookup table (distance → RPM magnitude, always positive here).
+     * Measured during robot characterisation on 2026-03-11.
+     * "Tuned RPM" values used for 1.5–3.5 m; manufacturer-converted values used beyond.
+     * The returned RPM from updateRPMHoodValues is negated because the motor runs reversed.
+     */
+    private static final InterpolatingDoubleTreeMap rpmLookupTable = new InterpolatingDoubleTreeMap();
+    static {
+        //  distance (m)  →  flywheel RPM (positive magnitude)
+        rpmLookupTable.put(1.50, 3100.0);
+        rpmLookupTable.put(1.75, 3200.0);
+        rpmLookupTable.put(2.00, 3300.0);
+        rpmLookupTable.put(2.25, 3350.0);
+        rpmLookupTable.put(2.50, 3400.0);
+        rpmLookupTable.put(2.75, 3450.0);
+        rpmLookupTable.put(3.00, 3550.0);
+        rpmLookupTable.put(3.25, 3650.0);
+        rpmLookupTable.put(3.50, 3750.0);
+        // From 3.75 m onwards only converted (formula) values are available;
+        // replace these once tuned values are confirmed on the field.
+        rpmLookupTable.put(3.75, 3954.0);
+        rpmLookupTable.put(4.00, 4041.0);
+        rpmLookupTable.put(4.25, 4126.0);
+        rpmLookupTable.put(4.50, 4209.0);
+        rpmLookupTable.put(4.75, 4291.0);
+        rpmLookupTable.put(5.00, 4372.0);
+        rpmLookupTable.put(5.25, 4451.0);
+        rpmLookupTable.put(5.50, 4529.0);
+    }
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -225,17 +278,18 @@ public class SwerveSubsystem extends SubsystemBase {
         return heading;
     }
 
-    // This is the same as getHeading but does not apply the alliance flip. Use this when you need the actual gyro reading rather than the field-relative heading
+    // This is the same as getHeading but does not apply the alliance flip.
+    // Use this when you need the raw gyro reading rather than the field-relative heading.
     public double getGlobalHeading() {
         double yaw = gyro.getYaw().getValueAsDouble();
 
         //Changes the -180->0 to 180->360 (0 to 180 stays the same)
         double heading = Math.IEEEremainder(yaw, 360);
-        // double heading = (-gyro.getYaw() + 360)%180;
         if(heading < 0){
             heading = 180 + (180+heading);
         }
-        SmartDashboard.putNumber("HEADING", heading);
+        // BUG FIX: was publishing to "HEADING" key, overwriting the field-relative heading.
+        SmartDashboard.putNumber("RAW_HEADING", heading);
         return heading;
     }
 
@@ -259,6 +313,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public ChassisSpeeds getRobotRelativeSpeeds(){
         return DriveConstants.kDriveKinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
+    }
+
+    /**
+     * Returns the robot's velocity in field-relative coordinates (X = away from blue wall,
+     * Y = left when standing at blue alliance).
+     * Used by the shoot-while-moving virtual-target calculation.
+     */
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
     }
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
@@ -305,8 +368,8 @@ public class SwerveSubsystem extends SubsystemBase {
         allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_LEFT);
         
         allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_RIGHT);
-        
-        allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_RIGHT);
+        // BUG FIX: RED_NEUTRAL_RIGHT was mistakenly added twice; replaced with RED_NEUTRAL_LEFT_PICKUP.
+        allPoints.add(Constants.SHOOTING_POSES.RED_NEUTRAL_LEFT_PICKUP);
         
         allPointsPublisher.set(allPoints.toArray(new Pose2d[0]));
     }
@@ -416,6 +479,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         String limelightForward = LimelightConstants.LIMELIGHT_FORWARD;
         LimelightHelpers.SetRobotOrientation(limelightForward, getHeading(), 0, 0, 0, 0, 0);
+        // FIX: SetIMUMode(4) tells MegaTag2 to use the heading supplied by SetRobotOrientation
+        // (i.e. the Pigeon2) instead of the limelight's own internal IMU, which has no knowledge
+        // of the robot's true heading.  Without this call MegaTag2 poses are systematically wrong.
+        LimelightHelpers.SetIMUMode(limelightForward, 4);
         LimelightHelpers.setCameraPose_RobotSpace(limelightForward, LimelightConstants.limelight2Forward, LimelightConstants.limelight2Side, LimelightConstants.limelight2Height, 0, LimelightConstants.limelight2Angle, 0);
         LimelightHelpers.PoseEstimate forwardMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightForward);
 
@@ -426,6 +493,8 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectForwardUpdate = true;
         }
 
+        // Trust value intentionally lower than limelight-four: tested and confirmed that
+        // the older LL2/LL3 hardware is less pose-accurate than LL4.
         double visionTrustForwardValue = 2.7;
         if (forwardMT2 != null) {
             if (forwardMT2.tagCount == 0) {
@@ -436,11 +505,14 @@ public class SwerveSubsystem extends SubsystemBase {
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustForwardValue = 0;
             } else {
-                // reject if > 1 m away
-                boolean isCloserThan1m = forwardMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // Reject estimates that are unreasonably far from current odometry (bad tag read).
+                // Threshold widened from 1.0 m → 2.5 m to avoid the chicken-and-egg problem:
+                // a stale odometry from a single-camera drop shouldn't permanently block the
+                // other two cameras from contributing updates.
+                boolean isTooFarFromOdometry = forwardMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 2.5;
                 // reject if outside arena 
-                boolean isOutsideField = forwardMT2.pose.getX()< 0 || forwardMT2.pose.getX() > 17 || forwardMT2.pose.getY() > 8 || forwardMT2.pose.getY() < 0;
-                if (isCloserThan1m || isOutsideField) {
+                boolean isOutsideField = forwardMT2.pose.getX() < 0 || forwardMT2.pose.getX() > 17 || forwardMT2.pose.getY() > 8 || forwardMT2.pose.getY() < 0;
+                if (isTooFarFromOdometry || isOutsideField) {
                     rejectForwardUpdate = true;
                 }
             }
@@ -453,9 +525,12 @@ public class SwerveSubsystem extends SubsystemBase {
                     forwardMT2.timestampSeconds);
             }
         }
-        
         String limelightLeft = LimelightConstants.LIMELIGHT_LEFT;
         LimelightHelpers.SetRobotOrientation(limelightLeft, getHeading(), 0, 0, 0, 0, 0);
+        // FIX: SetIMUMode(4) — same reason as limelightForward above.  Without this the left
+        // camera's MegaTag2 ignores the Pigeon2 heading and uses its internal IMU, producing
+        // systematically incorrect poses.
+        LimelightHelpers.SetIMUMode(limelightLeft, 4);
         LimelightHelpers.setCameraPose_RobotSpace(limelightLeft, LimelightConstants.limelight3Forward, LimelightConstants.limelight3Side, LimelightConstants.limelight3Height, 0, LimelightConstants.limelight3Angle, 90);
         LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightLeft);
 
@@ -466,6 +541,8 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectLeftUpdate = true;
         }
 
+        // Trust value intentionally lower than limelight-four: tested and confirmed that
+        // the older LL2/LL3 hardware is less pose-accurate than LL4.
         double visionTrustLeftValue = 3.7;
         if (leftMT2 != null) {
             if (leftMT2.tagCount == 0) {
@@ -476,11 +553,12 @@ public class SwerveSubsystem extends SubsystemBase {
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustLeftValue = 0;
             } else {
-                // reject if > 1 m away
-                boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // Reject estimates that are unreasonably far from current odometry (bad tag read).
+                // Threshold widened from 1.0 m → 2.5 m — same reasoning as limelightForward.
+                boolean isTooFarFromOdometry = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 2.5;
                 // reject if outside arena
                 boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
-                if (isCloserThan1m || isOutsideField) {
+                if (isTooFarFromOdometry || isOutsideField) {
                     rejectLeftUpdate = true;
                 }
             }
@@ -607,12 +685,74 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStatesFromSpeeds(speeds);
     }
     
+    /**
+     * Calculates the turret angle and effective distance to a target on the field,
+     * compensating for the robot's own velocity so the robot can shoot accurately
+     * while moving ("shoot while moving" / "shoot from anywhere").
+     *
+     * <p>Principle: the note inherits the robot's velocity at the moment of release.
+     * If the robot is moving, the note will travel along the vector sum of
+     * (ejection velocity) + (robot velocity). To still hit a stationary target we
+     * must aim at a <em>virtual target</em>:
+     *
+     * <pre>
+     *   virtualTarget = realTarget − robotVelocity × flightTime
+     * </pre>
+     *
+     * Two Newton–Raphson iterations are used for accuracy (the flight time itself
+     * depends on the adjusted distance, so we refine it once).
+     *
+     * <p>A SmartDashboard boolean key <b>"Shoot While Moving"</b> can be toggled to
+     * disable compensation during testing/tuning (defaults to enabled).
+     *
+     * @param targetPose Field-relative pose of the target (only translation is used).
+     * @return double[] {turretAngleDegrees, effectiveDistanceMeters}
+     */
     public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
         targetPosePublisher.set(targetPose);
-        Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
-        double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
-        double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
+
+        // --- Raw geometry -------------------------------------------------------
+        Translation2d robotTranslation = getPose().getTranslation();
+        Translation2d toTarget = targetPose.getTranslation().minus(robotTranslation);
+        double rawDistance = toTarget.getNorm();
+
+        // --- Shoot-while-moving (virtual target) --------------------------------
+        // Read the enable flag from SmartDashboard so it can be toggled in the pits.
+        boolean shootWhileMoving = SmartDashboard.getBoolean("Shoot While Moving", true);
+        SmartDashboard.putBoolean("Shoot While Moving", shootWhileMoving);
+
+        Translation2d virtualTarget = toTarget; // start with raw vector
+
+        if (shootWhileMoving) {
+            ChassisSpeeds fieldSpeeds = getFieldRelativeSpeeds();
+            double vx = fieldSpeeds.vxMetersPerSecond;
+            double vy = fieldSpeeds.vyMetersPerSecond;
+            double projectileSpeed = TurretConstants.kProjectileSpeedMPS;
+
+            // Iteration 1 — rough flight time from raw distance
+            double flightTime = rawDistance / projectileSpeed;
+            virtualTarget = toTarget.minus(new Translation2d(vx * flightTime, vy * flightTime));
+
+            // Iteration 2 — refine using adjusted distance (Newton-Raphson step)
+            flightTime = virtualTarget.getNorm() / projectileSpeed;
+            virtualTarget = toTarget.minus(new Translation2d(vx * flightTime, vy * flightTime));
+
+            SmartDashboard.putNumber("SWM Robot Vx (m/s)", vx);
+            SmartDashboard.putNumber("SWM Robot Vy (m/s)", vy);
+            SmartDashboard.putNumber("SWM Flight Time (s)", flightTime);
+            SmartDashboard.putNumber("SWM Angle Correction (deg)",
+                Units.radiansToDegrees(Math.atan2(virtualTarget.getY(), virtualTarget.getX()))
+                - Units.radiansToDegrees(Math.atan2(toTarget.getY(), toTarget.getX())));
+        }
+
+        double turretAngleToTarget = Units.radiansToDegrees(
+            Math.atan2(virtualTarget.getY(), virtualTarget.getX()));
+        double effectiveDistance = virtualTarget.getNorm();
+
+        SmartDashboard.putNumber("SWM Raw Distance (m)", rawDistance);
+        SmartDashboard.putNumber("SWM Effective Distance (m)", effectiveDistance);
+
+        return new double[]{turretAngleToTarget, effectiveDistance};
     }
 
     public double getRobotToTargetAngle() {
@@ -632,9 +772,17 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double[] updateRPMHoodValues(double distanceToTarget) {
-        // https://www.desmos.com/calculator/80g65lmlho
-        double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
-        double hoodValue = 0;
-        return new double[] {-rpm, hoodValue};
+        // Clamp distance to characterised range so the table never extrapolates
+        // wildly outside tested data (robot won't attempt shots from <1.5 m or >5.5 m).
+        double clampedDistance = Math.max(1.50, Math.min(5.50, distanceToTarget));
+
+        double rpm      = rpmLookupTable.get(clampedDistance);  // positive magnitude
+        double hoodValue = hoodLookupTable.get(clampedDistance);
+
+        SmartDashboard.putNumber("Lookup RPM", rpm);
+        SmartDashboard.putNumber("Lookup Hood", hoodValue);
+
+        // Motor runs in reverse, so RPM is negated on the way out.
+        return new double[]{-rpm, hoodValue};
     }
 }

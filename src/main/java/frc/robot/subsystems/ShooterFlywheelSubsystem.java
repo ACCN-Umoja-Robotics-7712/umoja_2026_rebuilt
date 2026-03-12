@@ -45,8 +45,9 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);
-        leaderConfig.idleMode(IdleMode.kCoast);
-        followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower is opposite of leader
+        // BUG FIX: was calling leaderConfig.idleMode() a second time — followerConfig never got kCoast.
+        followerConfig.idleMode(IdleMode.kCoast);
+        followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower runs opposite direction
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, TurretConstants.kDfly);
@@ -97,13 +98,12 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
     }
 
     public boolean didReachVelocity() {
-        // return flywheelPidController.atSetpoint() && kickerPidController.atSetpoint();
         boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity() - wantedKickerRPM) <= 100;
         boolean shooterAtRPM = Math.abs(flywheelMotorLeader.getEncoder().getVelocity() - wantedShooterRPM) <= 100;
-        boolean kickerRPMChange = kickerPidController.atSetpoint();
-        boolean shooterRPMChange = flywheelPidController.atSetpoint();
-        System.out.println("Kicker" + kickerAtRPM + "shooter" + shooterAtRPM);
-        System.out.println(kickerMotor.getEncoder().getVelocity() - wantedKickerRPM);
+        // NOTE: System.out.println removed — printing every 20 ms loop causes CAN bus jitter and brownouts.
+        SmartDashboard.putBoolean("Kicker At RPM", kickerAtRPM);
+        SmartDashboard.putBoolean("Shooter At RPM", shooterAtRPM);
+        SmartDashboard.putNumber("Kicker RPM Error", kickerMotor.getEncoder().getVelocity() - wantedKickerRPM);
         return kickerAtRPM && shooterAtRPM;
     }
 
