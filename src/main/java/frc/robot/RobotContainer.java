@@ -16,6 +16,7 @@ import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.USB;
 import frc.robot.Constants.XBoxConstants;
 import frc.robot.commands.AlignRobotBackWithHubFieldCommand;
+import frc.robot.commands.AlignWithOutpost;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
 import frc.robot.commands.IntakeWhileMoving;
@@ -205,7 +206,7 @@ public class RobotContainer {
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 7.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
-    operatorController.rightTrigger().and(operatorController.a().negate())
+    operatorController.rightTrigger()
     .whileTrue(
       // runIndexer
       Commands.parallel(
@@ -224,17 +225,44 @@ public class RobotContainer {
       )
     );
     
+    // operatorController.a()
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+    //     new ConditionalCommand(
+    //       new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+    //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+    //       , RobotContainer::isReadyToShoot)
+    //   ).withTimeout(0.5).andThen(
+    //     Commands.parallel(
+    //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+    //         new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+    //     )
+    //   )
+    // ).whileFalse(
+    //   Commands.parallel(
+    //     new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
+    //     new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+    //   )
+    // );
+    
+    // operatorController.a().whileTrue(
+      // new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
+    // )
+
+    
+    
     operatorController.a()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
           new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.5).andThen(
         Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
             new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
         )
       )
@@ -244,7 +272,6 @@ public class RobotContainer {
         new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
-    
     
     operatorController.b()
     .whileTrue(
@@ -269,9 +296,15 @@ public class RobotContainer {
 
 
     operatorController.x().whileTrue(
-      new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
+      Commands.parallel(
+        new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
+        new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
+      )
     ).whileFalse(
+      Commands.parallel(
+      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0),
       new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
+    )
     );
 
     // operatorController.x().whileTrue(

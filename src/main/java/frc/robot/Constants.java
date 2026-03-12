@@ -165,13 +165,13 @@ public final class Constants {
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
-        public static final double kPhood = 0.9;
+        public static final double kPhood = 0.1;
         public static final double kIhood = 0.0; 
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 1;
-        public static final double kPturretSlack = 0.05;
+        public static final double kPturretSlack = 0.1;
         public static final double kPturretSpring = 0;
         public static final double kIturretSlack = 0.02;
         public static final double kIturretSpring = 0;
@@ -451,8 +451,8 @@ public final class Constants {
 
         //RED SIDE
         public static final Pose2d RED_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
-        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
-        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 2, new Rotation2d(0));
+        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 2, new Rotation2d(0));
+        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
 
         public static final Pose2d RED_HUB_CENTER = new Pose2d(13.112, 4.062, new Rotation2d(0));
         public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost

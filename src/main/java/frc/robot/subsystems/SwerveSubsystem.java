@@ -399,7 +399,7 @@ public class SwerveSubsystem extends SubsystemBase {
             if (rightMT2.tagCount == 0) {
                 rejectRightUpdate = true;
             } else if (rightMT2.tagCount == 1) {
-                visionTrustRightValue += 1;
+                visionTrustRightValue += 2;
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustRightValue = 0;
@@ -407,7 +407,7 @@ public class SwerveSubsystem extends SubsystemBase {
             if (!rejectRightUpdate)
             {
                 limelightPoses.add(rightMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustRightValue,visionTrustRightValue,9999999));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustRightValue,visionTrustRightValue,999999999));
                 poseEstimator.addVisionMeasurement(
                     rightMT2.pose,
                     rightMT2.timestampSeconds);
@@ -440,6 +440,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 boolean isCloserThan1m = forwardMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
                 // reject if outside arena 
                 boolean isOutsideField = forwardMT2.pose.getX()< 0 || forwardMT2.pose.getX() > 17 || forwardMT2.pose.getY() > 8 || forwardMT2.pose.getY() < 0;
+                // boolean isAmbigious = forwardMT2.
                 if (isCloserThan1m || isOutsideField) {
                     rejectForwardUpdate = true;
                 }
@@ -447,7 +448,7 @@ public class SwerveSubsystem extends SubsystemBase {
             if (!rejectForwardUpdate)
             {
                 limelightPoses.add(forwardMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustForwardValue,visionTrustForwardValue,9999999));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustForwardValue,visionTrustForwardValue,999999999));
                 poseEstimator.addVisionMeasurement(
                     forwardMT2.pose,
                     forwardMT2.timestampSeconds);
@@ -456,6 +457,7 @@ public class SwerveSubsystem extends SubsystemBase {
         
         String limelightLeft = LimelightConstants.LIMELIGHT_LEFT;
         LimelightHelpers.SetRobotOrientation(limelightLeft, getHeading(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetIMUMode(limelightLeft, 4);
         LimelightHelpers.setCameraPose_RobotSpace(limelightLeft, LimelightConstants.limelight3Forward, LimelightConstants.limelight3Side, LimelightConstants.limelight3Height, 0, LimelightConstants.limelight3Angle, 90);
         LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightLeft);
 
@@ -466,7 +468,7 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectLeftUpdate = true;
         }
 
-        double visionTrustLeftValue = 3.7;
+        double visionTrustLeftValue = 0.7;
         if (leftMT2 != null) {
             if (leftMT2.tagCount == 0) {
                 rejectLeftUpdate = true;
@@ -476,18 +478,18 @@ public class SwerveSubsystem extends SubsystemBase {
             if (RobotContainer.gameState == GameConstants.Disabled) {
                 visionTrustLeftValue = 0;
             } else {
-                // reject if > 1 m away
-                boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
-                // reject if outside arena
-                boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
-                if (isCloserThan1m || isOutsideField) {
-                    rejectLeftUpdate = true;
-                }
+                // // reject if > 1 m away
+                // boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
+                // // reject if outside arena
+                // boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
+                // if (isCloserThan1m || isOutsideField) {
+                //     // rejectLeftUpdate = true;
+                // }
             }
             if (!rejectLeftUpdate)
             {
                 limelightPoses.add(leftMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,9999999));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,999999999));
                 poseEstimator.addVisionMeasurement(
                     leftMT2.pose,
                     leftMT2.timestampSeconds);
@@ -498,8 +500,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         if (RobotContainer.gameState == GameConstants.Disabled) {
             LimelightHelpers.SetThrottle(limelightLeft, 100);
+            LimelightHelpers.SetThrottle(limelightRight, 100);
         } else {
             LimelightHelpers.SetThrottle(limelightLeft, 0);
+            LimelightHelpers.SetThrottle(limelightRight, 0);
         }
         Pose2d turretFieldPose = currentPose.plus(new Transform2d(TurretConstants.turretCenterFromRobotCenterForwardLength, TurretConstants.turretCenterFromRobotCenterSideLength, new Rotation2d(Units.degreesToRadians(RobotContainer.shooterTurretSubsystem.getAngleDegrees()))));
         turretPublisher.set(turretFieldPose);
@@ -620,7 +624,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     
     public double getTurretToTargetAngle() {
-        return (((turretToTargetAngle - getHeading())) + 360) % 360;
+        return (((turretToTargetAngle - getHeading())) + 3600) % 360;
     }
 
     public double getTurretToTargetRPMValue() {

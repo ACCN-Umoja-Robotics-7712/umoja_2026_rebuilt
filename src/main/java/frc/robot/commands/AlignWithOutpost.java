@@ -8,26 +8,23 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.LimelightHelpers;
 import frc.robot.RobotContainer;
 
-public class PickUpFuelCommand extends Command{
+public class AlignWithOutpost extends Command{
     SwerveSubsystem swerveSubsystem;
   private final Supplier<Double> xSpdFunction, ySpdFunction;
   private final SlewRateLimiter xLimiter, yLimiter;
   private double wantedAngle;
 
-    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("x speed").publish();
-    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("y speed").publish();
-  
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
-    public PickUpFuelCommand(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, double angle){
+    public AlignWithOutpost(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction){
         this.swerveSubsystem = swerveSubsystem;
 
         this.xSpdFunction = xSpdFunction;
@@ -36,15 +33,15 @@ public class PickUpFuelCommand extends Command{
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
 
-        this.wantedAngle = angle;
+        boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+        wantedAngle = isBlue ? 180 : 0;
 
         addRequirements(swerveSubsystem);
     }
 
     @Override
     public void initialize(){
-        System.out.println("Align with tag Initialized");
-        // LimelightHelpers.setPipelineIndex(LimelightConstants.LIMELIGHT_RIGHT, LimelightConstants.gamePiecePipeline);
+        System.out.println("Align with outpost Initialized");
     }
 
     @Override
@@ -78,8 +75,8 @@ public class PickUpFuelCommand extends Command{
         //     swerveSubsystem.alignWithTag(target_x, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
         // } else {
           ChassisSpeeds chassisSpeeds;
-          wantedAngle = swerveSubsystem.getHeading();
           
+          int flipDirection = wantedAngle == 0 ? 1 : -1;
           // xSpeedPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
 
           chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
@@ -90,14 +87,13 @@ public class PickUpFuelCommand extends Command{
 
     @Override
     public void end(boolean isInterrupted){
-        System.out.println("Align with tag end is interrupted:" + isInterrupted);
-        // LimelightHelpers.setPipelineIndex(LimelightConstants.LIMELIGHT_RIGHT, LimelightConstants.aprilTagPipeline);
+        System.out.println("Align with outpost is interrupted:" + isInterrupted);
+        swerveSubsystem.stopModules();
     }
 
     @Override
     public boolean isFinished() {
         return false;
-        // return swerveSubsystem.hasCoralSensor();
     }
     
 }

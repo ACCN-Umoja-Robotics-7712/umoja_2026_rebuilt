@@ -114,6 +114,8 @@ public class Robot extends TimedRobot {
     // In disabledPeriodic or before match starts
     LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_RIGHT, RobotContainer.swerveSubsystem.getHeading(), 0, 0, 0, 0, 0);
     LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1); // Seed internal IMU
+    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_LEFT, RobotContainer.swerveSubsystem.getHeading(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_LEFT, 1); // Seed internal IMU
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
