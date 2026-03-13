@@ -449,9 +449,9 @@ public class SwerveSubsystem extends SubsystemBase {
                 boolean isCloserThan1m = rightMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
                 // reject if outside arena
                 boolean isOutsideField = rightMT2.pose.getX() < 0
-                                        || rightMT2.pose.getX() > 17
+                                        || rightMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || rightMT2.pose.getY() < 0
-                                        || rightMT2.pose.getY() > 8;
+                                        || rightMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
                 if (isCloserThan1m || isOutsideField) {
                     rejectRightUpdate = true;
                 }
@@ -491,8 +491,10 @@ public class SwerveSubsystem extends SubsystemBase {
                 // reject if > 1 m away
                 boolean isCloserThan1m = forwardMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
                 // reject if outside arena 
-                boolean isOutsideField = forwardMT2.pose.getX()< 0 || forwardMT2.pose.getX() > 17 || forwardMT2.pose.getY() > 8 || forwardMT2.pose.getY() < 0;
-                // boolean isAmbigious = forwardMT2.
+                boolean isOutsideField = forwardMT2.pose.getX() < 0
+                                        || forwardMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
+                                        || forwardMT2.pose.getY() < 0
+                                        || forwardMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();                // boolean isAmbigious = forwardMT2.
                 if (isCloserThan1m || isOutsideField) {
                     rejectForwardUpdate = true;
                 }
@@ -533,7 +535,10 @@ public class SwerveSubsystem extends SubsystemBase {
                 // // reject if > 1 m away
                 boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
                 // reject if outside arena
-                boolean isOutsideField = leftMT2.pose.getX() < 0 || leftMT2.pose.getX() > 17 || leftMT2.pose.getY() > 8 || leftMT2.pose.getY() < 0;
+                boolean isOutsideField = leftMT2.pose.getX() < 0
+                                        || leftMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
+                                        || leftMT2.pose.getY() < 0
+                                        || leftMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth(); 
                 if (isCloserThan1m || isOutsideField) {
                     rejectLeftUpdate = true;
                 }
