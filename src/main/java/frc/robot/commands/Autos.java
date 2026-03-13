@@ -152,10 +152,11 @@ public class Autos {
         Pose2d pickUpPose = SHOOTING_POSES.RED_HALF_RIGHT;
         Pose2d returnPose = SHOOTING_POSES.RED_TRENCH_OUTPOST_AUTO_RETURN;
         Pose2d trenchPose = SHOOTING_POSES.RED_TRENCH_RIGHT;
-        posePublisher.set(endPose);
         
         Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
         Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
+        Command runIndexer1 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
+        Command stopIndexer2 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
         Command lowerArm = Commands.parallel(
@@ -172,7 +173,7 @@ public class Autos {
         );
         Command shoot2 = Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-            new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+            new ConditionalCommand(runIndexer1, stopIndexer2, RobotContainer::isReadyToShoot)
         ).withTimeout(0.75).andThen(Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
@@ -208,10 +209,11 @@ public class Autos {
         Pose2d pickUpPose = SHOOTING_POSES.RED_HALF_LEFT;
         Pose2d returnPose = SHOOTING_POSES.RED_TRENCH_DEPOT_AUTO_RETURN;
         Pose2d trenchPose = SHOOTING_POSES.RED_TRENCH_LEFT;
-        posePublisher.set(endPose);
        
         Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
         Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
+        Command runIndexer1 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
+        Command stopIndexer2 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
         Command lowerArm = Commands.parallel(
@@ -228,7 +230,7 @@ public class Autos {
         );
         Command shoot2 = Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-            new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+            new ConditionalCommand(runIndexer1, stopIndexer2, RobotContainer::isReadyToShoot)
         ).withTimeout(0.75).andThen(Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
@@ -264,10 +266,11 @@ public class Autos {
         Pose2d pickUpPose = SHOOTING_POSES.BLUE_HALF_LEFT;
         Pose2d returnPose = SHOOTING_POSES.BLUE_TRENCH_DEPOT_AUTO_RETURN;
         Pose2d trenchPose = SHOOTING_POSES.BLUE_TRENCH_LEFT;
-        posePublisher.set(endPose);
        
         Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
         Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
+        Command runIndexer1 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
+        Command stopIndexer2 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
         Command lowerArm = Commands.parallel(
@@ -284,7 +287,7 @@ public class Autos {
         );
         Command shoot2 = Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-            new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+            new ConditionalCommand(runIndexer1, stopIndexer2, RobotContainer::isReadyToShoot)
         ).withTimeout(0.75).andThen(Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
@@ -349,10 +352,11 @@ public class Autos {
         Pose2d pickUpPose = SHOOTING_POSES.BLUE_HALF_RIGHT;
         Pose2d returnPose = SHOOTING_POSES.BLUE_TRENCH_OUTPOST_AUTO_RETURN;
         Pose2d trenchPose = SHOOTING_POSES.BLUE_TRENCH_RIGHT;
-        posePublisher.set(endPose);
         
         Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
         Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
+        Command runIndexer1 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0);
+        Command stopIndexer2 = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
         Command lowerArm = Commands.parallel(
@@ -369,7 +373,7 @@ public class Autos {
         );
         Command shoot2 = Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-            new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+            new ConditionalCommand(runIndexer1, stopIndexer2, RobotContainer::isReadyToShoot)
         ).withTimeout(0.75).andThen(Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
