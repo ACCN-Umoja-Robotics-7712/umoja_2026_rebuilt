@@ -225,26 +225,26 @@ public class RobotContainer {
       )
     );
     
-    // operatorController.a()
-    // .whileTrue(
-    //   Commands.parallel(
-    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
-    //     new ConditionalCommand(
-    //       new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
-    //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
-    //       , RobotContainer::isReadyToShoot)
-    //   ).withTimeout(0.75).andThen(
-    //     Commands.parallel(
-    //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
-    //         new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
-    //     )
-    //   )
-    // ).whileFalse(
-    //   Commands.parallel(
-    //     new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
-    //     new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
-    //   )
-    // );
+    operatorController.a()
+    .whileTrue(
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+        new ConditionalCommand(
+          new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+          , RobotContainer::isReadyToShoot)
+      ).withTimeout(0.75).andThen(
+        Commands.parallel(
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+        )
+      )
+    ).whileFalse(
+      Commands.parallel(
+        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
+        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+      )
+    );
     
     // operatorController.a().whileTrue(
       // new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
@@ -307,6 +307,24 @@ public class RobotContainer {
     )
     );
 
+    operatorController.povDown().whileTrue(
+        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 0.0)
+    ).whileFalse(
+      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
+    );
+    
+
+    operatorController.povLeft().whileTrue(
+        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 2.0)
+    ).whileFalse(
+      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
+    );
+
+    operatorController.povUp().whileTrue(
+        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 5.0)
+    ).whileFalse(
+      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
+    );
     // operatorController.x().whileTrue(
     //   new ShooterTurretAngleCommand(shooterTurretSubsystem, shooterTurretSubsystem::getCustomAngle)
     // ).whileFalse(

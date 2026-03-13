@@ -448,8 +448,8 @@ public final class Constants {
         public static final Pose2d BLUE_TRENCH_LEFT = new Pose2d(3.504, 7.559, new Rotation2d(0)); // Check if intake is facing neutral zone
         public static final Pose2d BLUE_TRENCH_RIGHT = new Pose2d(3.504, 0.436, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
         
-        public static final Pose2d BLUE_HALF_LEFT = new Pose2d(2.159, 5.988, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
-        public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(2.159, 2.168, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d BLUE_HALF_LEFT = new Pose2d(2.159, 5.588, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(2.159, 2.568, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
 
         public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
         public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
@@ -477,8 +477,8 @@ public final class Constants {
         public static final Pose2d RED_TRENCH_LEFT = new Pose2d(12.993, 0.619, new Rotation2d(180)); // Check if intake is facing neutral zone
         public static final Pose2d RED_TRENCH_RIGHT = new Pose2d(12.993, 7.408, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
         
-        public static final Pose2d RED_HALF_LEFT = new Pose2d(14.241, 1.835, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
-        public static final Pose2d RED_HALF_RIGHT = new Pose2d(14.241, 5.719, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d RED_HALF_LEFT = new Pose2d(14.241, 2.535, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d RED_HALF_RIGHT = new Pose2d(14.241, 5.519, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
     } 
 
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
