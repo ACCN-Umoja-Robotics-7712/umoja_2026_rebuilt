@@ -185,9 +185,9 @@ public class SwerveSubsystem extends SubsystemBase {
         rpmTable.put(1.75, 3200.0);
         rpmTable.put(2.0, 3350.0);
         rpmTable.put(2.25, 3400.0);
-        rpmTable.put(2.5, 3600.0);
-        rpmTable.put(2.75, 3650.0);
-        rpmTable.put(3.0, 3700.0);
+        rpmTable.put(2.5, 3700.0);
+        rpmTable.put(2.75, 3750.0);
+        rpmTable.put(3.0, 3800.0);
         rpmTable.put(3.1, 3900.0);
         rpmTable.put(3.25, 3900.0);
         rpmTable.put(3.5, 3900.0);
@@ -203,10 +203,10 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(1.5, 0.1);
         angleTable.put(1.75, 0.217);
         angleTable.put(2.0, 0.42);
-        angleTable.put(2.25, 0.65);
-        angleTable.put(2.5, 0.8);
-        angleTable.put(2.75, 0.9);
-        angleTable.put(3.0, 1.0);
+        angleTable.put(2.25, 0.7);
+        angleTable.put(2.5, 0.9);
+        angleTable.put(2.75, 1.0);
+        angleTable.put(3.0, 1.2);
         angleTable.put(3.1, 1.55);
         angleTable.put(3.25, 1.7);
         angleTable.put(3.5, 1.75);
@@ -452,7 +452,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         || rightMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || rightMT2.pose.getY() < 0
                                         || rightMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
-                if (isCloserThan1m || isOutsideField) {
+                if (isOutsideField) {
                     rejectRightUpdate = true;
                 }
             }
@@ -539,7 +539,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         || leftMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || leftMT2.pose.getY() < 0
                                         || leftMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth(); 
-                if (isCloserThan1m || isOutsideField) {
+                if (isOutsideField) {
                     rejectLeftUpdate = true;
                 }
             }
@@ -697,6 +697,9 @@ public class SwerveSubsystem extends SubsystemBase {
         // double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
         // double hoodValue = 0;
         double rpm = rpmTable.get(distanceToTarget);
+        if (distanceToTarget >= 2.75 && distanceToTarget <= 3.5) {
+            rpm = rpm * 1.025;
+        }
         double hoodValue = angleTable.get(distanceToTarget);
         return new double[] {-rpm, hoodValue};
     }

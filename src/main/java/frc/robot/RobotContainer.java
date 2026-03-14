@@ -154,7 +154,7 @@ public class RobotContainer {
       new AlignWithTrench(
         RobotContainer.swerveSubsystem,
         () -> -RobotContainer.driverController.getLeftY(),
-        () -> -RobotContainer.driverController.getLeftX(),
+        () -> RobotContainer.driverController.getLeftX(),
         270
       )
     );
@@ -169,14 +169,14 @@ public class RobotContainer {
 
     //Manual Commands (Just for Now)
     // Intake Roller
-    driverController.rightBumper().whileTrue(
-      new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
-        () -> -0.30,
-        () -> RobotContainer.driverController.getLeftX(),
-        () -> -RobotContainer.driverController.getLeftY(),
-        () -> -RobotContainer.driverController.getRightY()
-      )
-    );
+    // driverController.rightBumper().whileTrue(
+    //   new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
+    //     () -> -0.30,
+    //     () -> RobotContainer.driverController.getLeftX(),
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> -RobotContainer.driverController.getRightY()
+    //   )
+    // );
 
 
 

@@ -94,11 +94,12 @@ public class SwerveJoystick extends Command {
       
           boolean isRobotOrientatedDrive = RobotContainer.driverController.getRawAxis(XBoxConstants.RT) >= 0.5;
           // 3. Make the driving smoother
-          if (!(RobotContainer.driverController.rightBumper().getAsBoolean()) || isRobotOrientatedDrive){
-            xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
-            ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
-            turningSpeed = turningLimiter.calculate(turningSpeed) * (DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.kSlowButtonTurnModifier);
-          } else if (RobotContainer.driverController.leftBumper().getAsBoolean()){
+          // if (!(RobotContainer.driverController.rightBumper().getAsBoolean()) || isRobotOrientatedDrive){
+          //   xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
+          //   ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
+          //   turningSpeed = turningLimiter.calculate(turningSpeed) * (DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.kSlowButtonTurnModifier);
+          // } elseif
+          if (RobotContainer.driverController.rightBumper().getAsBoolean()){
             xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
             ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
             turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond; 
