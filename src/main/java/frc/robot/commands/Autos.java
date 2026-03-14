@@ -144,7 +144,7 @@ public class Autos {
 
     public Command getTuneAuto() {
         // drive forward/side 1 meter, turn 60 degrees
-        return AutoBuilder.pathfindToPose(swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 1, 1, 60), Constants.pathConstraints);
+        return getPathToPose(swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 1, 1, 60));
     }
 
     public Command getRedTrenchRightNeutral() {
@@ -703,7 +703,7 @@ public class Autos {
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
         Command lowerArm = Commands.parallel(
-            new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
+            new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.3),
             new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
         ).withTimeout(0.5);
         Command shoot = Commands.parallel(

@@ -188,7 +188,7 @@ public class SwerveSubsystem extends SubsystemBase {
         rpmTable.put(2.5, 3500.0);
         rpmTable.put(2.75, 3600.0);
         rpmTable.put(3.0, 3650.0);
-        rpmTable.put(3.1, 3700.0);
+        rpmTable.put(3.1, 3800.0);
         rpmTable.put(3.25, 3900.0);
         rpmTable.put(3.5, 3900.0);
         rpmTable.put(3.75, 3950.0);
@@ -207,7 +207,7 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(2.5, 0.755);
         angleTable.put(2.75, 0.875);
         angleTable.put(3.0, 1.0);
-        angleTable.put(3.1, 1.2);
+        angleTable.put(3.1, 1.4);
         angleTable.put(3.25, 1.7);
         angleTable.put(3.5, 1.75);
         angleTable.put(3.75, 2.0);

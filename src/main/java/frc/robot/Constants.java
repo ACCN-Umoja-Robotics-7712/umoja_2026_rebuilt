@@ -45,8 +45,8 @@ public final class Constants {
     public final class RobotConstants {
         public static final double robotWidth = 28;
         public static final double robotLength = 26;
-        public static final double kRobotWeightKG = Units.lbsToKilograms(115);
-        public static final double kBumperWeightKG = Units.lbsToKilograms(8);
+        public static final double kRobotWeightKG = Units.lbsToKilograms(113.4);
+        public static final double kBumperWeightKG = Units.lbsToKilograms(12.3);
         public static final double kBatteryWeightKG = Units.lbsToKilograms(12);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
         public static final double kRobotMOI = 6.883; // kg*m^2, moment of inertia about the center of mass
