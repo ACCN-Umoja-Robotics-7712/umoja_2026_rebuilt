@@ -360,7 +360,7 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-        public static final String LIMELIGHT_LEFT = "limelight";
+        public static final String LIMELIGHT_LEFT = "limelight-new";
         public static final String LIMELIGHT_RIGHT = "limelight-four";
         public static final String LIMELIGHT_FORWARD = "limelight-driver";
         public static final int Estimate_Distance = 20;
