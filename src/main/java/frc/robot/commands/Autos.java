@@ -184,33 +184,33 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
                     )
                 )
-                ).withTimeout(5)
-                .andThen(
-                    Commands.deadline(
-                        getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
-                        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
-                    )
-                ).andThen(
-                    // Shoot again
-                    Commands.parallel(
-                        new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-                        new ConditionalCommand(
-                            // Run Indexer
-                            new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0),
-                            // Stop Indexer
-                            new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
-                            RobotContainer::isReadyToShoot)
-                    ).withTimeout(0.75).andThen(Commands.parallel(
-                        new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0))
-                    )
-                ).withTimeout(5)
-                .andThen(
-                    Commands.deadline(
-                        getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
-                        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
-                    )
+            ).withTimeout(5)
+            .andThen(
+                Commands.deadline(
+                    getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
                 )
+            ).andThen(
+                // Shoot again
+                Commands.parallel(
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                    new ConditionalCommand(
+                        // Run Indexer
+                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0),
+                        // Stop Indexer
+                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
+                        RobotContainer::isReadyToShoot)
+                ).withTimeout(0.75).andThen(Commands.parallel(
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0))
+                )
+            ).withTimeout(5)
+            .andThen(
+                Commands.deadline(
+                    getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
+                )
+            )
         );
     }
 
@@ -330,13 +330,13 @@ public class Autos {
                     )
                 )
             ).withTimeout(5)
-                .andThen(
-                    Commands.deadline(
-                        // Pick Up from CENTER and return
-                        getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
-                        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
-                    )
+            .andThen(
+                Commands.deadline(
+                    // Pick Up from CENTER and return
+                    getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
                 )
+            )
             .andThen(
                 // shoot
                 Commands.parallel(
@@ -435,13 +435,13 @@ public class Autos {
                     )
                 )
             ).withTimeout(5)
-                .andThen(
-                    Commands.deadline(
-                        // Pick Up from CENTER and return
-                        getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
-                        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
-                    )
+            .andThen(
+                Commands.deadline(
+                    // Pick Up from CENTER and return
+                    getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
                 )
+            )
             .andThen(
                 // shoot
                 Commands.parallel(
@@ -699,13 +699,13 @@ public class Autos {
                     )
                 )
             ).withTimeout(5)
-                .andThen(
-                    Commands.deadline(
-                        // Pick Up from CENTER and return
-                        getPathToPose(endPose2d).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(finalPose)),
-                        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
-                    )
+            .andThen(
+                Commands.deadline(
+                    // Pick Up from CENTER and return
+                    getPathToPose(endPose2d).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(finalPose)),
+                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
                 )
+            )
             .andThen(
                 // shoot
                 Commands.parallel(
