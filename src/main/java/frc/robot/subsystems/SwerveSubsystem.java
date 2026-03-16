@@ -97,6 +97,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private double turretToTargetAngle = 0;
     private double turretToTargetHoodValue = 0;
     private double turretToTargetRPMValue = 0;
+    private double flatHoodIncrease = 0;
     
     private static final InterpolatingDoubleTreeMap rpmTable = new InterpolatingDoubleTreeMap();
     private static final InterpolatingDoubleTreeMap angleTable = new InterpolatingDoubleTreeMap();
@@ -697,10 +698,19 @@ public class SwerveSubsystem extends SubsystemBase {
         // double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
         // double hoodValue = 0;
         double rpm = rpmTable.get(distanceToTarget);
-        if (distanceToTarget >= 2.75 && distanceToTarget <= 3.5) {
-            rpm = rpm * 1.025;
+        double hood = angleTable.get(distanceToTarget);
+        if (distanceToTarget >= 1.75 && distanceToTarget <= 5.0) {
+            rpm = rpm * 1.045;
         }
-        double hoodValue = angleTable.get(distanceToTarget);
-        return new double[] {-rpm, hoodValue};
+        
+        if (distanceToTarget < 2.3 ) {
+            hood = hood + 0.075;
+        }
+        
+        if (distanceToTarget >= 2.3 && distanceToTarget <= 5.0) {
+            hood = hood + 0.2;
+        }
+
+        return new double[] {-rpm, hood};
     }
 }

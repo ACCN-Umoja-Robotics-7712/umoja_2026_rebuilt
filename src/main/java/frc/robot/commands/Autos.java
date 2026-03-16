@@ -3,11 +3,15 @@ package frc.robot.commands;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -144,7 +148,22 @@ public class Autos {
 
     public Command getTuneAuto() {
         // drive forward/side 1 meter, turn 60 degrees
-        return getPathToPose(swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 1, 1, 60));
+        // return getPathToPose(swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 1, 1, 60));
+        
+        Pose2d endPose = SHOOTING_POSES.BLUE_NEUTRAL_LEFT;
+        Pose2d pickUpPose = SHOOTING_POSES.BLUE_HALF_LEFT;
+        Pose2d returnPose = SHOOTING_POSES.BLUE_TRENCH_DEPOT_AUTO_RETURN;
+        Pose2d trenchPose = SHOOTING_POSES.BLUE_TRENCH_LEFT;
+       
+        List<Waypoint> points = PathPlannerPath.waypointsFromPoses(endPose, pickUpPose, returnPose, trenchPose);
+        
+        PathPlannerPath path;
+        try {
+            path = PathPlannerPath.fromPathFile("2");
+        } catch (Exception e) {
+            return new InstantCommand();
+        }
+        return AutoBuilder.followPath(path);
     }
 
     public Command getRedTrenchRightNeutral() {
@@ -739,7 +758,7 @@ public class Autos {
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
         Command lowerArm = Commands.parallel(
-            new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.3),
+            new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.6),
             new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
         ).withTimeout(0.5);
         Command shoot = Commands.parallel(

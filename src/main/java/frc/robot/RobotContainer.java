@@ -373,7 +373,7 @@ public class RobotContainer {
     );
 
     operatorController.button(XBoxConstants.MENU).onTrue(
-      new ZeroHoodCommand(shooterHoodSubsystem)
+      new ZeroHoodCommand(shooterHoodSubsystem).withTimeout(1)
     );
     
 

@@ -13,7 +13,7 @@ public class EnableZeroTurretCommand extends Command {
 
     @Override
     public void initialize(){
-        System.out.println("Starting zeroing hood");
+        System.out.println("Starting zeroing turret");
         this.turretSubsystem.enableZero();
     }
 
@@ -23,7 +23,7 @@ public class EnableZeroTurretCommand extends Command {
 
     @Override
     public void end(boolean isInterrupted){
-        System.out.println("Zeroing hood finished inturrupted: " + isInterrupted);
+        System.out.println("Zeroing turret finished inturrupted: " + isInterrupted);
     }
 
     @Override
