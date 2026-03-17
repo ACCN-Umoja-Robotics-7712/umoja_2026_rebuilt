@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.RobotContainer;
 
 public class AlignWithOutpost extends Command{
@@ -46,43 +48,21 @@ public class AlignWithOutpost extends Command{
 
     @Override
     public void execute(){
-        // boolean canSeeTarget = LimelightHelpers.getTV(Constants.LimelightConstants.tagName);
-        // 1. Get joystic inputs
-        double xSpeed = xSpdFunction.get();
-        double ySpeed = ySpdFunction.get();
-        // 2. Apply deadband
-          // xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
-          // ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
-          if (Math.abs(xSpeed) + Math.abs(ySpeed) < OIConstants.kDeadband) {
-            xSpeed = 0.0;
-            ySpeed = 0.0;
-          }
-
-          // 3. Make the driving smoother
-          if (!(RobotContainer.driverController.rightBumper().getAsBoolean())){
-            xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
-            ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
-          } else if (RobotContainer.driverController.leftBumper().getAsBoolean()){
-            xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-            ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-          } else{
-            xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond  * DriveConstants.teleSpeed;
-            ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.teleSpeed;
-          }
-
-        // if (canSeeTarget){
-        //     double target_x = LimelightHelpers.getTX(Constants.LimelightConstants.tagName);
-        //     swerveSubsystem.alignWithTag(target_x, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
-        // } else {
-          ChassisSpeeds chassisSpeeds;
-          
-          int flipDirection = wantedAngle == 0 ? 1 : -1;
-          // xSpeedPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
-
-          chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
-          SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-          swerveSubsystem.setModuleStates(moduleStates);
-        // }
+      double xSpeed = xSpdFunction.get();
+      double ySpeed = ySpdFunction.get();
+      boolean canSeeTarget = LimelightHelpers.getTV(Constants.LimelightConstants.LIMELIGHT_FORWARD);
+      if (canSeeTarget){
+          double x_offset= LimelightHelpers.getTX(Constants.LimelightConstants.LIMELIGHT_FORWARD);
+          double size_tag = LimelightHelpers.getTA(Constants.LimelightConstants.LIMELIGHT_FORWARD);
+          double forwardError = Constants.AutoConstants.wantedOutpostArea - size_tag;
+          double sideError = 0 - x_offset;
+          swerveSubsystem.alignWithPID(forwardError, sideError, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
+      } else {
+        ChassisSpeeds chassisSpeeds;
+        chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
+        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        swerveSubsystem.setModuleStates(moduleStates);
+      }
     }
 
     @Override

@@ -133,7 +133,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // store this in your Constants file
         try{
             // config = Constants.robotConfig;
-            config = RobotConfig.fromGUISettings();
+            // config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
         // Handle exception as needed
             e.printStackTrace();
@@ -652,20 +652,14 @@ public class SwerveSubsystem extends SubsystemBase {
         return pose.transformBy(transform);
     }
 
-    public void alignWithTag(Double targetX, Double ySpeed, Double turningSpeed) {
-        double currentX = 0;
-        double xError = targetX - currentX;
-
-        // Pose2d pose = getPose();
-
-        // ChassisSpeeds robotLOrientedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
-
+    public void alignWithPID(Double forwardError, Double sideError, Double turningSpeed) {
         ChassisSpeeds speeds = new ChassisSpeeds(
-            shootController.calculate(xError, 0),
-            ySpeed,
+            xController.calculate(forwardError, 0),
+            yController.calculate(sideError, 0),
             turningSpeed
         );
-        SmartDashboard.putNumber("TARGET X ERROR", xError);
+        SmartDashboard.putNumber("TARGET forward ERROR", forwardError);
+        SmartDashboard.putNumber("TARGET side ERROR", sideError);
 
         setModuleStatesFromSpeeds(speeds);
     }
@@ -711,6 +705,8 @@ public class SwerveSubsystem extends SubsystemBase {
         if (distanceToTarget >= 2.3 && distanceToTarget <= 5.0) {
             hood = hood + 0.2;
         }
+
+        hood = Math.min(5.0, hood);
 
         return new double[] {-rpm, hood};
     }

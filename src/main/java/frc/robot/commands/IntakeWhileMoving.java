@@ -50,9 +50,9 @@ public class IntakeWhileMoving extends Command{
 
         // drive at set speed forward, can control forward speed and rotation
         // set speed of 0.35 m/s forward
-        double xSpeed = -0.10;
-        double speedOffset = -0.10*forwardSpeed.get();
-        xSpeed = xSpeed + speedOffset;
+        double xSpeed = -0.10 * forwardSpeed.get();
+        // double speedOffset = -0.10*;
+        // xSpeed = xSpeed + speedOffset;
 
         double wantedAngle = swerveSubsystem.getHeading();
         wantedAngle = Units.degreesToRadians(Math.atan2(leftYSupplier.get(), leftXSupplier.get()) + 3*Math.PI/4);

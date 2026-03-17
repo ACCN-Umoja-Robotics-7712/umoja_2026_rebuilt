@@ -125,14 +125,12 @@ public class RobotContainer {
       )
     );
 
-    // RobotContainer.driverController.x().whileTrue(
-    //   new AlignWithTrench(
-    //     RobotContainer.swerveSubsystem,
-    //     () -> -RobotContainer.driverController.getLeftY(),
-    //     () -> -RobotContainer.driverController.getLeftX(),
-    //     90
-    //   )
-    // );
+    RobotContainer.driverController.x().whileTrue(
+      new AlignWithOutpost(swerveSubsystem, 
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getLeftX()
+      )
+    );
 
     RobotContainer.driverController.x().whileTrue(
       new AlignRobotBackWithHubFieldCommand(swerveSubsystem,
@@ -150,33 +148,33 @@ public class RobotContainer {
       )
     );
 
-    RobotContainer.driverController.b().whileTrue(
-      new AlignWithTrench(
-        RobotContainer.swerveSubsystem,
-        () -> -RobotContainer.driverController.getLeftY(),
-        () -> RobotContainer.driverController.getLeftX(),
-        270
-      )
-    );
+    // RobotContainer.driverController.b().whileTrue(
+    //   new AlignWithTrench(
+    //     RobotContainer.swerveSubsystem,
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> RobotContainer.driverController.getLeftX(),
+    //     270
+    //   )
+    // );
 
     //Manual Commands (Just for Now)
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -0.31
+        () -> Constants.IntakeConstants.intakeSpeed
       )
     );
 
     //Manual Commands (Just for Now)
     // Intake Roller
-    // driverController.rightBumper().whileTrue(
-    //   new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
-    //     () -> -0.30,
-    //     () -> RobotContainer.driverController.getLeftX(),
-    //     () -> -RobotContainer.driverController.getLeftY(),
-    //     () -> -RobotContainer.driverController.getRightY()
-    //   )
-    // );
+    driverController.b().whileTrue(
+      new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
+        () -> Constants.IntakeConstants.intakeSpeed,
+        () -> RobotContainer.driverController.getLeftX(),
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getRightY()
+      )
+    );
 
 
 
@@ -203,7 +201,7 @@ public class RobotContainer {
     //   )
     // );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 8.0);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
@@ -215,7 +213,7 @@ public class RobotContainer {
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
       )
     ).whileFalse(
@@ -230,13 +228,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> 8.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
-            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
       )
     ).whileFalse(
@@ -257,13 +255,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> 8.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
-            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
       )
     ).whileFalse(
@@ -278,13 +276,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> 8.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
-            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
       )
     ).whileFalse(

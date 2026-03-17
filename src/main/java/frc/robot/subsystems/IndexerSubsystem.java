@@ -32,6 +32,11 @@ public class IndexerSubsystem extends SubsystemBase {
         indexerMotorOriginal.setVoltage(voltage);
         beltMotor.setVoltage(voltage/2.25); // 3.0
     }
+    
+    public void stopIndexer() {
+        indexerMotorOriginal.stopMotor();
+        beltMotor.stopMotor();
+    }
 
     @Override
     public void periodic() {

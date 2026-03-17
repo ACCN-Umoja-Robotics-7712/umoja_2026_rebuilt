@@ -80,10 +80,12 @@ public final class Constants {
     }
 
     public static final class DriveConstants {
-        public static final double kTrackWidth = Units.inchesToMeters(RobotConstants.robotWidth-2.5); // 28 width (motor center 2.5 inches from edge)
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(RobotConstants.robotLength-2.5); // 26 length
+        public static final double kTrackWidth = Units.inchesToMeters(RobotConstants.robotWidth-2.5); // 28 width (motor center 2.5 inches from edge)
+        
         // Distance between front and back wheels
+        public static final double kWheelBase = Units.inchesToMeters(RobotConstants.robotLength-2.5); // 26 length
+        
 
         public static final double kRobotRadius = Math.sqrt(Math.pow(kTrackWidth, 2) + Math.pow(kWheelBase, 2)) / 2;
 
@@ -232,6 +234,8 @@ public final class Constants {
         public static final double armkP = 0.00;
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
+
+        public static final double intakeSpeed = -0.31;
     }
 
     public static final class IntakeRollerStates {
@@ -244,6 +248,8 @@ public final class Constants {
         public static final int indexerMotorLeaderID = 3;
         public static final int kickerMotorID = 5;
         public static final int indexerMotorFollowerID = 34;
+
+        public static final double indexVolts = 8.0;
     }
 
     public static final class ClimbConstants {
@@ -276,6 +282,8 @@ public final class Constants {
         public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond;
         public static final double kMaxAccelerationMetersPerSecondSquared = DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI;
+
+        public static final double wantedOutpostArea = 0.5;
 
         // public static final double kPXController = 5;
         // public static final double kPYController = 5;
@@ -445,7 +453,7 @@ public final class Constants {
         public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(2.25, 2, new Rotation2d(0));
         
         public static final Pose2d BLUE_HUB_CENTER = new Pose2d(3.439, 3.987, new Rotation2d(0));
-        public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
+        public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(180));
         public static final Pose2d BLUE_TOWER_CENTER = new Pose2d(1.567, 3.739, new Rotation2d(0));
         public static final Pose2d BLUE_DEPOT_CENTER = new Pose2d(1.212, 5.923, new Rotation2d(0));
         public static final Pose2d BLUE_DEPOT_CORNER = new Pose2d(0.491, 7.074, new Rotation2d(270));
@@ -472,7 +480,7 @@ public final class Constants {
         public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
 
         public static final Pose2d RED_HUB_CENTER = new Pose2d(13.112, 4.062, new Rotation2d(0));
-        public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
+        public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0));
         public static final Pose2d RED_TOWER_CENTER = new Pose2d(14.887, 4.352, new Rotation2d(0));
         public static final Pose2d RED_DEPOT_CENTER = new Pose2d(15.296, 2.114, new Rotation2d(0));
         public static final Pose2d RED_DEPOT_CORNER = new Pose2d(15.920, 0.963, new Rotation2d(90));
