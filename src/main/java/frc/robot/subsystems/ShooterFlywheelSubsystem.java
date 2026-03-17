@@ -42,6 +42,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
         SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(40);
         leaderConfig.idleMode(IdleMode.kCoast);
+        leaderConfig.inverted(true);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);

@@ -448,7 +448,7 @@ public final class Constants {
     public static final class SHOOTING_POSES {
 
         // BLUE SIDE
-        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
+        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.6, 4, new Rotation2d(0));
         public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(2.25, 6, new Rotation2d(0));
         public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(2.25, 2, new Rotation2d(0));
         
@@ -475,7 +475,7 @@ public final class Constants {
         public static final Pose2d RED_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(10.841, 0.716, new Rotation2d(90));
 
         //RED SIDE
-        public static final Pose2d RED_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
+        public static final Pose2d RED_HUB_POSE = new Pose2d(11.9, 4, new Rotation2d(0));
         public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 2, new Rotation2d(0));
         public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
 
