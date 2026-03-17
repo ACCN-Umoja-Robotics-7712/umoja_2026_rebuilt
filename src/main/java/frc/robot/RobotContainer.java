@@ -203,7 +203,7 @@ public class RobotContainer {
     //   )
     // );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 7.0);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 8.0);
     Command stopIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0);
 
     operatorController.rightTrigger()
@@ -215,7 +215,7 @@ public class RobotContainer {
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
         )
       )
     ).whileFalse(
@@ -230,13 +230,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> 8.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
-            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
         )
       )
     ).whileFalse(
@@ -257,13 +257,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> 8.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
-            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
         )
       )
     ).whileFalse(
@@ -278,13 +278,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
+          new ManualIndexerCommand(indexerSubsystem, () -> 8.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.75).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
-            new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
+            new ManualIndexerCommand(indexerSubsystem, () -> 8.0)
         )
       )
     ).whileFalse(
@@ -352,7 +352,7 @@ public class RobotContainer {
     // Turret Motor
     operatorController.leftBumper().whileTrue(
       new ManualTurretCommand(shooterTurretSubsystem,
-        () -> -operatorController.getLeftX() * 0.6
+        () -> -operatorController.getLeftX() * 0.4
       )
     );
 

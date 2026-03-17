@@ -157,13 +157,15 @@ public class Autos {
        
         List<Waypoint> points = PathPlannerPath.waypointsFromPoses(endPose, pickUpPose, returnPose, trenchPose);
         
-        PathPlannerPath path;
-        try {
-            path = PathPlannerPath.fromPathFile("2");
-        } catch (Exception e) {
-            return new InstantCommand();
-        }
-        return AutoBuilder.followPath(path);
+        // PathPlannerPath path;
+        // try {
+        //     path = PathPlannerPath.fromPathFile("2");
+        // } catch (Exception e) {
+        //     return new InstantCommand();
+        // }
+        Command path1 = getPathToPose(SHOOTING_POSES.BLUE_NEUTRAL_RIGHT);
+        // RED_TRENCH_DEPOT_AUTO_RETURN
+        return path1;
     }
 
     public Command getRedTrenchRightNeutral() {
@@ -425,8 +427,7 @@ public class Autos {
                 .alongWith(
                     // Run Inake
                     Commands.parallel(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
-                        new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5)
                     ).withTimeout(0.5)
                 ).andThen(
                     // Turret auto aim
@@ -457,7 +458,12 @@ public class Autos {
             .andThen(
                 Commands.deadline(
                     // Pick Up from CENTER and return
-                    getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
+                    Commands.sequence(
+                        getPathToPose(swerveSubsystem.getPose(),endPose),
+                        getPathToPose(endPose, pickUpPose),
+                        getPathToPose(pickUpPose, returnPose),
+                        getPathToPose(returnPose, trenchPose)
+                    ),
                     new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
                 )
             )
@@ -478,13 +484,13 @@ public class Autos {
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 7.0)
                 )
             )).withTimeout(5.5)
-            .andThen(
-                Commands.deadline(
-                    // Drive back to center
-                    getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
-                    new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
-                )
-            )
+            // .andThen(
+            //     Commands.deadline(
+            //         // Drive back to center
+            //         getPathToPose(endPose).andThen(getPathToPose(pickUpPose)).andThen(getPathToPose(returnPose)).andThen(getPathToPose(trenchPose)),
+            //         new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> 0.31)
+            //     )
+            // )
         );
 }
 
@@ -782,8 +788,34 @@ public class Autos {
         );
     }
 
+  public Command getPathToPose(Pose2d startPose, Pose2d endPose) {
+    posePublisher.set(endPose);
+
+    Trajectory traj = TrajectoryGenerator.generateTrajectory(
+      startPose,
+      List.of(),
+      endPose,
+      trajectoryConfig);
+      
+
+    // 4. Construct command to follow trajectory 
+    SwerveControllerCommand trajectoryPath = new SwerveControllerCommand(
+        traj,
+        swerveSubsystem::getPose, 
+        DriveConstants.kDriveKinematics,
+        xController,
+        yController,
+        thetaController,
+        swerveSubsystem::setModuleStates,
+        swerveSubsystem);
+
+    // Command pathPlannerPath = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
+    return trajectoryPath;
+  }
+
   public Command getPathToPose(Pose2d endPose) {
     posePublisher.set(endPose);
+
     Trajectory traj = TrajectoryGenerator.generateTrajectory(
       swerveSubsystem.getPose(),
       List.of(),
@@ -802,7 +834,7 @@ public class Autos {
         swerveSubsystem::setModuleStates,
         swerveSubsystem);
 
-    Command pathPlannerPath = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
+    // Command pathPlannerPath = AutoBuilder.pathfindToPose(endPose, Constants.pathConstraints);
     return trajectoryPath;
   }
 }

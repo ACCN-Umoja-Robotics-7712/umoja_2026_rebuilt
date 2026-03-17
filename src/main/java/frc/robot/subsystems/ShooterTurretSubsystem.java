@@ -41,8 +41,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double state = ShooterStates.NONE;
     private boolean isZeroed = false;
 
-    private double minAngle = 55;
-    private double maxAngle = 335;
+    private double minAngle = 25;
+    private double maxAngle = 280;
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
     private PIDController lastPIController = null;
@@ -63,7 +63,13 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // if (turretZeroLimitSwitch.get() && speed < 0) {
         //     speed = 0;
         // }
-        
+        if (isZeroed) {
+            if (speed > 0 && getAngleDegrees() > maxAngle) {
+                speed = 0;
+            } else if (speed < 0 && getAngleDegrees() < minAngle) {
+                speed = 0;
+            }
+        }
         turretMotor.set(speed);
     }
 
@@ -85,10 +91,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
         double limitToRange = wantedTurretAngleInDegrees % 360;
-        if (wantedTurretAngleInDegrees <= minAngle) { // 55
+        if (wantedTurretAngleInDegrees <= minAngle) { // 25
             limitToRange = minAngle;
         }
-        if (wantedTurretAngleInDegrees >= maxAngle) { // 335
+        if (wantedTurretAngleInDegrees >= maxAngle) { // 280
             limitToRange = maxAngle;
         }
         double fakeFeedForward = SmartDashboard.getNumber("Turret static friction", TurretConstants.turretFakeFeedForward);
