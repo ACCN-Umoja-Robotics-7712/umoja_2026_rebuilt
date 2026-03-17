@@ -131,14 +131,15 @@ public class SwerveSubsystem extends SubsystemBase {
     
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
-        // try{
-            config = Constants.robotConfig;
-        // } catch (Exception e) {
-        // // Handle exception as needed
-        //     e.printStackTrace();
-        //     System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
-        //     return;
-        // }
+        try{
+            // config = Constants.robotConfig;
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+        // Handle exception as needed
+            e.printStackTrace();
+            System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
+            return;
+        }
 
         // Configure AutoBuilder last
         AutoBuilder.configure(

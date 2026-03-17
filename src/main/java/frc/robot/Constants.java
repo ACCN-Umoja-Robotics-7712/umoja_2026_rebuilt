@@ -45,23 +45,30 @@ public final class Constants {
     public final class RobotConstants {
         public static final double robotWidth = 28;
         public static final double robotLength = 26;
-        public static final double kRobotWeightKG = Units.lbsToKilograms(113.4);
+        public static final double kRobotWeightKG = Units.lbsToKilograms(114);
         public static final double kBumperWeightKG = Units.lbsToKilograms(12.3);
         public static final double kBatteryWeightKG = Units.lbsToKilograms(12);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
         public static final double kRobotMOI = 6.883; // kg*m^2, moment of inertia about the center of mass
     }
 
+    public final class MotorConstants {
+        // https://cdn.shopify.com/s/files/1/0065/4308/1590/files/14T_Gear_Ratios.png?v=1723760292
+        public static final double L1gearRatio = 8.14;
+        public static final double L2gearRatio = 6.75;
+        public static final double L3gearRatio = 6.12;
+    }
+
     public final class ModuleConstants{
         // For RobotConfig + robot setup
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // 4.5 inches
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // 4 inches
         public static final double kWheelCOF = 1.200; // wheel COF inches
-        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(1);
-        public static final int kDriveMotorCurrentLimit = 60;
+        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60Foc(1).withReduction(MotorConstants.L2gearRatio);
+        public static final int kDriveMotorCurrentLimit = 120;
         public static final int kNumMotorsPerModule = 1; // number of drive motors per module (not including turning motors)
 
         // gear ratio from thrifty swerve https://thethriftybot.com/products/thrify-swerve gear ratio options (pinion size 12 + second stage gear 16t? (only confirmed pinion))
-        public static final double kDriveMotorGearRatio = 1/6.0;
+        public static final double kDriveMotorGearRatio = 1/6.75; // Was 6.0 changed it to 6.75 after updating L2 gear ratio.
         public static final double kTurningMotorGearRatio = 1 / 21.42857142857143;//(12*14)/(72*50) based on #of teeth
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters; // Math.PI * kWheelDiameterMeters = Circumference
         public static final double kTurnEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;

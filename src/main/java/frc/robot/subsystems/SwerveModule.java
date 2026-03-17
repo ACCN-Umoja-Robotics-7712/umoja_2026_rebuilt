@@ -44,9 +44,9 @@ public class SwerveModule {
         driveMotor = new TalonFX(driveMotorId, CANivoreBus);
 
         CurrentLimitsConfigs driveCurrentLimits = new CurrentLimitsConfigs();
-        driveCurrentLimits.StatorCurrentLimit = 60;
+        driveCurrentLimits.StatorCurrentLimit = 120; // Original 60
         driveCurrentLimits.StatorCurrentLimitEnable = true;
-        driveCurrentLimits.SupplyCurrentLimit = 50;
+        driveCurrentLimits.SupplyCurrentLimit = 100; // Original 50
         driveCurrentLimits.SupplyCurrentLimitEnable = true;
         driveMotor.getConfigurator().apply(driveCurrentLimits);
 
