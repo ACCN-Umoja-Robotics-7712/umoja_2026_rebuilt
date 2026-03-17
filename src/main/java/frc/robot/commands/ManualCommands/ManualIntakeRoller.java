@@ -23,7 +23,6 @@ public class ManualIntakeRoller extends Command{
     @Override
     public void execute(){
         intakeRoller.runIntake(rollerSpeed.get());
-        System.out.println("Indexer is running!");
     }
 
     @Override
