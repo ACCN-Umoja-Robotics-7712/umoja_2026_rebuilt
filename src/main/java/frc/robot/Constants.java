@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.util.RootNameLookup;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
@@ -49,7 +50,7 @@ public final class Constants {
         public static final double kBumperWeightKG = Units.lbsToKilograms(12.3);
         public static final double kBatteryWeightKG = Units.lbsToKilograms(12);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
-        public static final double kRobotMOI = 6.883; // kg*m^2, moment of inertia about the center of mass
+        public static final double kRobotMOI = (kRobotTotalWeightKG * (Math.pow(robotLength, 2)+Math.pow(robotWidth, 2))) / 12; // kg*m^2, moment of inertia about the center of mass
     }
 
     public final class MotorConstants {
