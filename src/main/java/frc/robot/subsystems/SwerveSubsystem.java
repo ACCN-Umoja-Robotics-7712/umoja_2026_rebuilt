@@ -706,6 +706,7 @@ public class SwerveSubsystem extends SubsystemBase {
             hood = hood + 0.2;
         }
 
+        rpm = Math.min(5200.0, hood);
         hood = Math.min(5.0, hood);
 
         return new double[] {-rpm, hood};
