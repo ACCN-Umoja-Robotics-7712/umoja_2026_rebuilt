@@ -50,7 +50,7 @@ public final class Constants {
         public static final double kBumperWeightKG = Units.lbsToKilograms(12.3);
         public static final double kBatteryWeightKG = Units.lbsToKilograms(12);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
-        public static final double kRobotMOI = (kRobotTotalWeightKG * (Math.pow(robotLength, 2)+Math.pow(robotWidth, 2))) / 12; // kg*m^2, moment of inertia about the center of mass
+        public static final double kRobotMOI = (kRobotTotalWeightKG * (Math.pow(Units.inchesToMeters(robotLength), 2)+Math.pow(Units.inchesToMeters(robotWidth), 2))) / 12; // kg*m^2, moment of inertia about the center of mass
     }
 
     public final class MotorConstants {
@@ -284,7 +284,7 @@ public final class Constants {
         public static final double kMaxAccelerationMetersPerSecondSquared = DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI;
 
-        public static final double wantedOutpostArea = 0.5;
+        public static final double wantedOutpostArea = 0.19;
 
         // public static final double kPXController = 5;
         // public static final double kPYController = 5;
@@ -295,11 +295,11 @@ public final class Constants {
         // public static final double kIThetaController = 0.2;
         public static final double kPXController = 4.8;// 1.5
         public static final double kPYController = 4.8; // 1.5
-        public static final double kPThetaController = 1; // 2.5
+        public static final double kPThetaController = 7.5; // 1
 
-        public static final double kIXController = 0.01; //0.01 
-        public static final double kIYController = 0.01; // 0.01
-        public static final double kIThetaController = 0.01;
+        public static final double kIXController = 0.0; //0.01 
+        public static final double kIYController = 0.0; // 0.01
+        public static final double kIThetaController = 0.0; // 0.01
 
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
@@ -459,9 +459,9 @@ public final class Constants {
         public static final Pose2d BLUE_DEPOT_CENTER = new Pose2d(1.212, 5.923, new Rotation2d(0));
         public static final Pose2d BLUE_DEPOT_CORNER = new Pose2d(0.491, 7.074, new Rotation2d(270));
         
-        public static final Pose2d BLUE_NEUTRAL_LEFT = new Pose2d(7.775, 6.902, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d BLUE_NEUTRAL_LEFT = new Pose2d(7.775, 6.902, new Rotation2d(270)); // Check if intake is facing fuel
         public static final Pose2d BLUE_NEUTRAL_RIGHT = new Pose2d(7.775, 0.877, new Rotation2d(90)); // Check if intake is facing fuel
-        public static final Pose2d BLUE_TRENCH_LEFT = new Pose2d(3.504, 7.559, new Rotation2d(0)); // Check if intake is facing neutral zone
+        public static final Pose2d BLUE_TRENCH_LEFT = new Pose2d(3.504, 7.559, new Rotation2d(180)); // Check if intake is facing neutral zone
         public static final Pose2d BLUE_TRENCH_RIGHT = new Pose2d(3.504, 0.436, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
         
         public static final Pose2d BLUE_HALF_LEFT = new Pose2d(7.775, 5.588, new Rotation2d(270)); // Experimental, we can use these as mid-field shots
@@ -470,7 +470,7 @@ public final class Constants {
         public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(180)); // Pose to return to after going to neutral zone for auto
         public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(180)); // Pose to return to after going to neutral zone for auto
 
-
+// ---------------------------------------------------------------------------------------------------- RED SIDE -------------------------------------------------------------------------------------------------------------------------------------------- //
 
         public static final Pose2d RED_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(10.841, 7.300, new Rotation2d(180));
         public static final Pose2d RED_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(10.841, 0.716, new Rotation2d(90));
@@ -486,15 +486,15 @@ public final class Constants {
         public static final Pose2d RED_DEPOT_CENTER = new Pose2d(15.296, 2.114, new Rotation2d(0));
         public static final Pose2d RED_DEPOT_CORNER = new Pose2d(15.920, 0.963, new Rotation2d(90));
         
-        public static final Pose2d RED_NEUTRAL_LEFT = new Pose2d(8.905, 1.114, new Rotation2d(90)); // Check if intake is facing fuel
-        public static final Pose2d RED_NEUTRAL_RIGHT = new Pose2d(8.905, 7.096, new Rotation2d(270)); // Check if intake is facing fuel
-        public static final Pose2d RED_NEUTRAL_LEFT_PICKUP = new Pose2d(8.905, 4.740, new Rotation2d(90)); // Check if intake is facing fuel
-        public static final Pose2d RED_NEUTRAL_RIGHT_PICKUP = new Pose2d(8.905, 2.695, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_LEFT = new Pose2d(8.905, 1.114, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_RIGHT = new Pose2d(8.905, 7.096, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_LEFT_PICKUP = new Pose2d(8.905, 4.740, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_RIGHT_PICKUP = new Pose2d(8.905, 2.695, new Rotation2d(90)); // Check if intake is facing fuel
         public static final Pose2d RED_TRENCH_LEFT = new Pose2d(12.993, 0.619, new Rotation2d(180)); // Check if intake is facing neutral zone
         public static final Pose2d RED_TRENCH_RIGHT = new Pose2d(12.993, 7.408, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
         
-        public static final Pose2d RED_HALF_LEFT = new Pose2d(8.905, 2.535, new Rotation2d(0)); // Experimental, we can use these as mid-field shots
-        public static final Pose2d RED_HALF_RIGHT = new Pose2d(8.905, 5.519, new Rotation2d(0)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d RED_HALF_LEFT = new Pose2d(8.905, 2.535, new Rotation2d(270)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d RED_HALF_RIGHT = new Pose2d(8.905, 5.519, new Rotation2d(90)); // Experimental, we can use these as mid-field shots
     } 
 
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors

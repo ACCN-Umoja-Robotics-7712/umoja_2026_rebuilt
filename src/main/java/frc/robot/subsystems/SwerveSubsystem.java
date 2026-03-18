@@ -132,7 +132,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
         try{
-            // config = Constants.robotConfig;
+            config = Constants.robotConfig;
             // config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
         // Handle exception as needed
@@ -192,7 +192,7 @@ public class SwerveSubsystem extends SubsystemBase {
         rpmTable.put(3.0, 3800.0);
         rpmTable.put(3.1, 3900.0);
         rpmTable.put(3.25, 3900.0);
-        rpmTable.put(3.5, 3900.0);
+        rpmTable.put(3.5, 3925.0);
         rpmTable.put(3.75, 3950.0);
         rpmTable.put(4.0, 4050.0);
         rpmTable.put(4.25, 4050.0);
@@ -209,9 +209,9 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(2.5, 0.9);
         angleTable.put(2.75, 1.0);
         angleTable.put(3.0, 1.2);
-        angleTable.put(3.1, 1.55);
-        angleTable.put(3.25, 1.7);
-        angleTable.put(3.5, 1.75);
+        angleTable.put(3.1, 1.7);
+        angleTable.put(3.25, 1.8);
+        angleTable.put(3.5, 1.9);
         angleTable.put(3.75, 2.0);
         angleTable.put(4.0, 2.5);
         angleTable.put(4.25, 3.5);

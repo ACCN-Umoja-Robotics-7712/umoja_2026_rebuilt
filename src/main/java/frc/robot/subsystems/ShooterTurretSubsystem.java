@@ -41,7 +41,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double state = ShooterStates.NONE;
     private boolean isZeroed = false;
 
-    private double minAngle = 25;
+    private double minAngle = 30;
     private double maxAngle = 280;
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
@@ -119,19 +119,26 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // System.out.println(getAngleDegrees());
         // System.out.println(limitToRange);
         // System.out.println(pidVal + direction*fakeFeedForward);
-        double springFeedForward = 0;
-        if (!withinSlackRange) {
-            // within lower spring area and moving into spring
-            // if (currentAngle <= minSlack) {
-            if (currentAngle <= minSlack && direction < 1) {
-                springFeedForward = direction*springResistance;
-            } else if (currentAngle >= maxSlack && direction > 1) {
-            // } else if (currentAngle >= maxSlack) {
-            // within upper spring area and moving into spring
-                springFeedForward = direction*springResistance;
-            }
-        }
+        // double springFeedForward = 0;
+        // if (!withinSlackRange) {
+        //     // within lower spring area and moving into spring
+        //     // if (currentAngle <= minSlack) {
+        //     if (currentAngle <= minSlack && direction < 1) {
+        //         springFeedForward = direction*springResistance;
+        //     } else if (currentAngle >= maxSlack && direction > 1) {
+        //     // } else if (currentAngle >= maxSlack) {
+        //     // within upper spring area and moving into spring
+        //         springFeedForward = direction*springResistance;
+        //     }
+        // }
         // System.out.println(" " + pidVal + isZeroed);
+        // Math.
+        double voltage = pidVal + direction*fakeFeedForward;
+        if (voltage < 0) {
+            voltage = Math.max(voltage, -5);
+        } else if (voltage > 0) {
+            voltage = Math.min(voltage, 5);
+        }
         if (isZeroed) {
             turretMotor.setVoltage(pidVal + direction*fakeFeedForward);
         } else {
