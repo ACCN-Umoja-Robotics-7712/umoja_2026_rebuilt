@@ -382,13 +382,13 @@ public class RobotContainer {
     //Intake Arm Motor
     driverController.rightTrigger().whileTrue(
       new ManualIntakeArmCommand(intakeArmSubsystem,
-        () -> -0.19*driverController.getRawAxis(XBoxConstants.RT) // Arm down
+        () -> -0.19*driverController.getRawAxis(XBoxConstants.RT) // Arm up
       )
     );
 
     driverController.leftBumper().whileTrue(
       new ManualIntakeArmCommand(intakeArmSubsystem, 
-        () -> 0.1 // Arm up
+        () -> 0.1 // Arm down
       )
     );
 
