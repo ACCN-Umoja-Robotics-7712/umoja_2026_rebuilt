@@ -18,8 +18,10 @@ import frc.robot.Constants.XBoxConstants;
 import frc.robot.commands.AlignRobotBackWithHubFieldCommand;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
+import frc.robot.commands.CameraIntegratedShooterCommand;
 import frc.robot.commands.IntakeWhileMoving;
 import frc.robot.commands.SetShooterHoodStateCommand;
+import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
@@ -224,14 +226,14 @@ public class RobotContainer {
     operatorController.a()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
           new ManualIndexerCommand(indexerSubsystem, () -> 7.0), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.5).andThen(
         Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
             new ManualIndexerCommand(indexerSubsystem, () -> 7.0)
         )
       )
@@ -353,6 +355,39 @@ public class RobotContainer {
     .whileTrue(
       new ManualClimbCommand(climbSubsystem,
         () -> -1.0
+      )
+    );
+
+    // Camera-integrated shooter: operator Y (without rightTrigger) — pre-spins
+    // flywheel, continuously updates turret/hood from Limelight, and indexes
+    // automatically when all systems are ready. Driver retains full swerve control.
+    operatorController.y().and(operatorController.rightTrigger().negate()).whileTrue(
+      new CameraIntegratedShooterCommand(
+        shooterFlywheelSubsystem,
+        shooterTurretSubsystem,
+        shooterHoodSubsystem,
+        indexerSubsystem
+      )
+    ).whileFalse(
+      Commands.parallel(
+        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
+        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+      )
+    );
+
+    // Shoot-on-the-move: operator rightTrigger + Y — aims and shoots while the
+    // driver freely moves the robot (driver joystick inputs are forwarded through).
+    operatorController.rightTrigger().and(operatorController.y()).whileTrue(
+      new ShootOnTheMoveCommand(
+        swerveSubsystem,
+        shooterFlywheelSubsystem,
+        shooterTurretSubsystem,
+        shooterHoodSubsystem,
+        indexerSubsystem,
+        () -> -RobotContainer.driverController.getLeftY(),
+        () -> -RobotContainer.driverController.getLeftX(),
+        () -> -RobotContainer.driverController.getRightX(),
+        swerveSubsystem::getTurretToTargetRPMValue
       )
     );
   }
