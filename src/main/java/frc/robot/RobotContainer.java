@@ -23,6 +23,7 @@ import frc.robot.commands.SetShooterHoodStateCommand;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
+import frc.robot.commands.ShootOnTheMoveCommand;
 import frc.robot.commands.SwerveJoystick;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
@@ -269,6 +270,24 @@ public class RobotContainer {
       new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
     ).whileFalse(
       new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
+    );
+
+    // Shoot On The Move: drive with joystick while turret/hood align to vision target
+    // and the indexer fires automatically when all systems are ready.
+    operatorController.y().whileTrue(
+      new ShootOnTheMoveCommand(
+        swerveSubsystem,
+        shooterFlywheelSubsystem,
+        shooterTurretSubsystem,
+        shooterHoodSubsystem,
+        indexerSubsystem,
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () -> -driverController.getRightX(),
+        swerveSubsystem::getTurretToTargetRPMValue,
+        swerveSubsystem::getTurretToTargetAngle,
+        swerveSubsystem::getTurretToTargetHoodValue
+      )
     );
 
     // operatorController.x().whileTrue(
