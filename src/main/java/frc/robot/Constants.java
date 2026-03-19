@@ -450,8 +450,8 @@ public final class Constants {
 
         // BLUE SIDE
         public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.6, 4, new Rotation2d(0));
-        public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(2.25, 6, new Rotation2d(0));
-        public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(2.25, 2, new Rotation2d(0));
+        public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(1.25, 6, new Rotation2d(0));
+        public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(1.25, 2, new Rotation2d(0));
         
         public static final Pose2d BLUE_HUB_CENTER = new Pose2d(3.439, 3.987, new Rotation2d(0));
         public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(180));
@@ -477,8 +477,8 @@ public final class Constants {
 
         //RED SIDE
         public static final Pose2d RED_HUB_POSE = new Pose2d(11.9, 4, new Rotation2d(0));
-        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 2, new Rotation2d(0));
-        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
+        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(15.25, 2, new Rotation2d(0));
+        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(15.25, 6, new Rotation2d(0));
 
         public static final Pose2d RED_HUB_CENTER = new Pose2d(13.112, 4.062, new Rotation2d(0));
         public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0));
