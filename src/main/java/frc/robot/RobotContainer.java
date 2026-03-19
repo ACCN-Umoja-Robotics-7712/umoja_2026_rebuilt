@@ -210,7 +210,7 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
-      ).withTimeout(0.75).andThen(
+      ).withTimeout(0.9).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
@@ -231,7 +231,7 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.75).andThen(
+      ).withTimeout(0.9).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
@@ -258,7 +258,7 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.75).andThen(
+      ).withTimeout(0.9).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
@@ -274,14 +274,14 @@ public class RobotContainer {
     operatorController.b()
     .whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
+        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
         new ConditionalCommand(
           new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.75).andThen(
+      ).withTimeout(0.9).andThen(
         Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -4200.0),
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
       )

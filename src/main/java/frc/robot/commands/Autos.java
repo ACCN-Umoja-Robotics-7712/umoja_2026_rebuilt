@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -174,13 +175,16 @@ public class Autos {
         // drive forward/side 1 meter, turn 60 degrees
         // return getPathToPose(swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 1, 1, 60));
         
-        Pose2d endPose = SHOOTING_POSES.BLUE_NEUTRAL_LEFT;
-        Pose2d pickUpPose = SHOOTING_POSES.BLUE_HALF_LEFT;
-        Pose2d returnPose = SHOOTING_POSES.BLUE_TRENCH_DEPOT_AUTO_RETURN;
-        Pose2d trenchPose = SHOOTING_POSES.BLUE_TRENCH_LEFT;
-       
-        List<Waypoint> points = PathPlannerPath.waypointsFromPoses(endPose, pickUpPose, returnPose, trenchPose);
-        
+        PathPlannerPath path1;
+        try {
+            path1 = PathPlannerPath.fromPathFile("1").flipPath().mirrorPath();
+            return AutoBuilder.followPath(path1).andThen(
+                new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeSpeed)
+            );
+        } catch (Exception e) {
+            System.out.println("PATH NOT FOUND, " + e);
+            return new InstantCommand();
+        }
         // PathPlannerPath path;
         // try {
         //     path = PathPlannerPath.fromPathFile("2");
@@ -189,12 +193,12 @@ public class Autos {
         // }
         // Command path1 = getPathToPose(swerveSubsystem.offsetPoint(swerveSubsystem.getPose(), 0, 2));
         // RED_TRENCH_DEPOT_AUTO_RETURN
-        return Commands.sequence(
-            getPathToPose(endPose),
-            getPathToPose(pickUpPose),
-            getPathToPose(returnPose),
-            getPathToPose(trenchPose)
-        );
+        // return Commands.sequence(
+        //     getPathToPose(endPose),
+        //     getPathToPose(pickUpPose),
+        //     getPathToPose(returnPose),
+        //     getPathToPose(trenchPose)
+        // );
         // return path1;
     }
 
@@ -215,7 +219,7 @@ public class Autos {
                 Commands.parallel(
                 new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
                 new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
-                )   
+                )
             ),
             new WaitCommand(2)
                 .andThen(
@@ -228,7 +232,7 @@ public class Autos {
                             // Stop Indexer
                             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                             RobotContainer::isReadyToShoot)
-                    ).withTimeout(0.75).andThen(Commands.parallel(
+                    ).withTimeout(0.9).andThen(Commands.parallel(
                         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
                     )
@@ -252,7 +256,7 @@ public class Autos {
                         // Stop Indexer
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot)
-                ).withTimeout(0.75).andThen(Commands.parallel(
+                ).withTimeout(0.9).andThen(Commands.parallel(
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts))
                 )
@@ -301,7 +305,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -326,7 +330,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
             .andThen(
                 Commands.parallel(
                     // Force shoot 
@@ -371,7 +375,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -393,7 +397,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -431,7 +435,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -478,7 +482,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -524,7 +528,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -548,45 +552,55 @@ public class Autos {
         return Commands.parallel(
             new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeSpeed),
             // Zero hood and lower arm then aim turret
-            new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1)
-                .alongWith(
-                    // Run Intake
-                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5)
-                ).andThen(
+            Commands.sequence(
+                new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1),
+                // Lower arm
+                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
+                Commands.parallel(
                     // Turret auto aim
                     Commands.parallel(
                         new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
                         new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+                    ),
+                            // Pick Up from CENTER and return
+                    AutoBuilder.followPath(redRightTrenchPathBackward)
+                    .andThen(
+                        // shoot
+                        Commands.parallel(
+                            new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
+                            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                            new ConditionalCommand(
+                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
+                                RobotContainer::isReadyToShoot
+                            ),
+                            Commands.repeatingSequence(
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.1).withTimeout(0.2),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.2)
+                            )
+                        ).withTimeout(0.9)
+                        .andThen(
+                            Commands.parallel(
+                                // Force shoot 
+                                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                Commands.repeatingSequence(
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.1).withTimeout(0.1),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.1)
+                                )
+                            )
+                        ).withTimeout(7)
                     )
-                ),
-            // Pick Up from CENTER and return
-            AutoBuilder.followPath(redRightTrenchPathBackward)
-            .andThen(
-                // shoot
-                Commands.parallel(
-                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-                    new ConditionalCommand(
-                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
-                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
-                        RobotContainer::isReadyToShoot
+                    .andThen(
+                        Commands.parallel(
+                            new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                            new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
+                        )
                     )
-                ).withTimeout(0.75)
-                .andThen(
-                    Commands.parallel(
-                        // Force shoot 
-                        new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
+                    .andThen(
+                        AutoBuilder.followPath(redRightTrenchPathBackward)
                     )
                 )
-            ).withTimeout(5.5)
-            .andThen(
-                Commands.parallel(
-                    new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
-                    new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
-                )
-            )
-            .andThen(
-                AutoBuilder.followPath(redRightTrenchPathBackward)
             )
         );
     }
@@ -638,7 +652,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -648,13 +662,8 @@ public class Autos {
                 )
             ).withTimeout(5)
             .andThen(
-                    // Pick Up from CENTER and return
-                Commands.sequence(
-                    getPathToPose(endPose),
-                    getPathToPose(pickUpPose),
-                    getPathToPose(returnPose),
-                    getPathToPose(trenchPose)
-                )
+                // Pick Up from CENTER and return
+                AutoBuilder.followPath(blueLeftTrenchPathBackward)
             )
             .andThen(
                 // shoot
@@ -665,7 +674,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -688,7 +697,7 @@ public class Autos {
 
     
     public Command getBlueRightBumpOutpost() {
-        Pose2d endPose = SHOOTING_POSES.BLUE_OUTPOST_CENTER;
+        Pose2d endPose = SHOOTING_POSES.RED_OUTPOST_CENTER;
         
         return Commands.parallel(
                     // Zero hood and lower arm then aim turret
@@ -715,7 +724,7 @@ public class Autos {
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 RobotContainer::isReadyToShoot
                             )
-                        ).withTimeout(0.75)
+                        ).withTimeout(0.9)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot
@@ -739,7 +748,7 @@ public class Autos {
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 RobotContainer::isReadyToShoot
                             )
-                        ).withTimeout(0.75)
+                        ).withTimeout(0.9)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
@@ -789,7 +798,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -813,7 +822,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -951,7 +960,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -976,7 +985,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.75)
+                ).withTimeout(0.9)
             .andThen(
                 Commands.parallel(
                     // Force shoot 
@@ -1006,7 +1015,7 @@ public class Autos {
         Command shoot = Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
-        ).withTimeout(0.75).andThen(Commands.parallel(
+        ).withTimeout(0.9).andThen(Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
             )

@@ -65,7 +65,7 @@ public final class Constants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // 4 inches
         public static final double kWheelCOF = 1.200; // wheel COF inches
         public static final DCMotor kDriveMotor = DCMotor.getKrakenX60Foc(1).withReduction(MotorConstants.L2gearRatio);
-        public static final int kDriveMotorCurrentLimit = 120;
+        public static final int kDriveMotorCurrentLimit = 100;
         public static final int kNumMotorsPerModule = 1; // number of drive motors per module (not including turning motors)
 
         // gear ratio from thrifty swerve https://thethriftybot.com/products/thrify-swerve gear ratio options (pinion size 12 + second stage gear 16t? (only confirmed pinion))
@@ -236,7 +236,7 @@ public final class Constants {
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeSpeed = -0.31;
+        public static final double intakeSpeed = -0.6;
     }
 
     public static final class IntakeRollerStates {
@@ -295,7 +295,7 @@ public final class Constants {
         // public static final double kIThetaController = 0.2;
         public static final double kPXController = 4.8;// 1.5
         public static final double kPYController = 4.8; // 1.5
-        public static final double kPThetaController = 7.5; // 1
+        public static final double kPThetaController = 2; // 1
 
         public static final double kIXController = 0.0; //0.01 
         public static final double kIYController = 0.0; // 0.01

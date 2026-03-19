@@ -166,10 +166,10 @@ public class SwerveSubsystem extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
         
-        trajectoryConfig = new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                        .setKinematics(DriveConstants.kDriveKinematics);
+        // trajectoryConfig = new TrajectoryConfig(
+        //         AutoConstants.kMaxSpeedMetersPerSecond,
+        //         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        //                 .setKinematics(DriveConstants.kDriveKinematics);
 
         // 3. Define PID controllers for tracking trajectory
         shootController = new PIDController(0.1, 0, 0);
@@ -185,9 +185,9 @@ public class SwerveSubsystem extends SubsystemBase {
         rpmTable.put(1.25, 3100.0);
         rpmTable.put(1.5, 3150.0);
         rpmTable.put(1.75, 3200.0);
-        rpmTable.put(2.0, 3350.0);
+        rpmTable.put(2.0, 3200.0);
         rpmTable.put(2.25, 3400.0);
-        rpmTable.put(2.5, 3700.0);
+        rpmTable.put(2.5, 3650.0);
         rpmTable.put(2.75, 3750.0);
         rpmTable.put(3.0, 3800.0);
         rpmTable.put(3.1, 3900.0);
@@ -199,10 +199,12 @@ public class SwerveSubsystem extends SubsystemBase {
         rpmTable.put(4.5, 4050.0);
         rpmTable.put(4.75, 4100.0);
         rpmTable.put(5.0, 4150.0);
+        rpmTable.put(5.5, 5200.0);
         
         angleTable.put(0.0, 0.0);
         angleTable.put(1.25, 0.0);
-        angleTable.put(1.5, 0.1);
+        angleTable.put(1.5, 0.0);
+        angleTable.put(1.7, 0.1);
         angleTable.put(1.75, 0.217);
         angleTable.put(2.0, 0.42);
         angleTable.put(2.25, 0.7);
@@ -426,7 +428,7 @@ public class SwerveSubsystem extends SubsystemBase {
         
         String limelightRight = LimelightConstants.LIMELIGHT_RIGHT;
         LimelightHelpers.SetRobotOrientation(limelightRight, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetIMUMode(limelightRight, 4);
+        LimelightHelpers.SetIMUMode(limelightRight, 0);
         LimelightHelpers.setCameraPose_RobotSpace(limelightRight, LimelightConstants.limelight4Forward, LimelightConstants.limelight4Side, LimelightConstants.limelight4Height, 0, LimelightConstants.limelight4Angle, 270);
         LimelightHelpers.PoseEstimate rightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightRight);
 
@@ -513,7 +515,7 @@ public class SwerveSubsystem extends SubsystemBase {
         
         String limelightLeft = LimelightConstants.LIMELIGHT_LEFT;
         LimelightHelpers.SetRobotOrientation(limelightLeft, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetIMUMode(limelightLeft, 4);
+        LimelightHelpers.SetIMUMode(limelightLeft, 0);
         LimelightHelpers.setCameraPose_RobotSpace(limelightLeft, LimelightConstants.limelight3Forward, LimelightConstants.limelight3Side, LimelightConstants.limelight3Height, 0, LimelightConstants.limelight3Angle, 90);
         LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightLeft);
 
@@ -694,7 +696,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // double hoodValue = 0;
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
-        if (distanceToTarget >= 1.75 && distanceToTarget <= 5.0) {
+        if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
             rpm = rpm * 1.045;
         }
         
@@ -706,7 +708,7 @@ public class SwerveSubsystem extends SubsystemBase {
             hood = hood + 0.2;
         }
 
-        rpm = Math.min(5200.0, hood);
+        rpm = Math.min(5200.0, rpm);
         hood = Math.min(5.0, hood);
 
         return new double[] {-rpm, hood};
