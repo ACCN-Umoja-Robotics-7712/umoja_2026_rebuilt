@@ -274,7 +274,9 @@ public class RobotContainer {
 
     // Shoot On The Move: drive with joystick while turret/hood align to vision target
     // and the indexer fires automatically when all systems are ready.
-    operatorController.y().whileTrue(
+    // NOTE: excludes leftTrigger to avoid conflicting with the leftTrigger+y reverse-indexer binding
+    // (both commands claim IndexerSubsystem; without the negate() the indexer command would interrupt SOTM).
+    operatorController.y().and(operatorController.leftTrigger().negate()).whileTrue(
       new ShootOnTheMoveCommand(
         swerveSubsystem,
         shooterFlywheelSubsystem,

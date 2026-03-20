@@ -40,11 +40,11 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
-        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(40);
+        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO Vortex rated for 80 A — raises to 80 A for faster spin-up
         leaderConfig.idleMode(IdleMode.kCoast);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);
+        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO Vortex rated for 80 A
         // BUG FIX: was calling leaderConfig.idleMode() a second time — followerConfig never got kCoast.
         followerConfig.idleMode(IdleMode.kCoast);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower runs opposite direction
@@ -74,6 +74,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader.setVoltage(feedforwardFly + pidFly);
 
         // kicker
+        // NOTE: wantedVelocity is always negative in normal operation (motor runs in reverse).
+        // wantedKickerVelocity will therefore be positive, and Math.min correctly caps it at 5000 RPM.
+        // FLAG: If a positive wantedVelocity were ever passed here, the kicker would spin in reverse
+        //       uncapped — Math.min(negative, 5000) = negative. Always pass a negative velocity.
         double wantedKickerVelocity = wantedVelocity*-1.5;
         wantedKickerVelocity = Math.min(wantedKickerVelocity, 5000); // limit to 5000 RPM to prevent the motor from burning out
 

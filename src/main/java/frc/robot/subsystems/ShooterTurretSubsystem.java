@@ -58,11 +58,15 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public void runTurret(double speed) {
-        // if limit switch is pressed, and going same direction as limit switch, STOP
-        // if (turretZeroLimitSwitch.get() && speed < 0) {
-        //     speed = 0;
-        // }
-        
+        // Hard-stop the turret at its physical limits so ManualTurretCommand
+        // cannot overdrive the mechanism into its mechanical stops.
+        if (isZeroed) {
+            if (speed > 0 && getAngleDegrees() > maxAngle) {
+                speed = 0;
+            } else if (speed < 0 && getAngleDegrees() < minAngle) {
+                speed = 0;
+            }
+        }
         turretMotor.set(speed);
     }
 

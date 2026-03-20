@@ -118,7 +118,7 @@ public class ShootOnTheMoveCommand extends Command {
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond
                 * DriveConstants.teleTurnSpeed;
 
-        boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
         int flip = isBlue ? 1 : -1;
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 flip * xSpeed, flip * ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
