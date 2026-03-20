@@ -73,13 +73,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         double pidFly = flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedVelocity);
         flywheelMotorLeader.setVoltage(feedforwardFly + pidFly);
 
-        // kicker
-        // NOTE: wantedVelocity is always negative in normal operation (motor runs in reverse).
-        // wantedKickerVelocity will therefore be positive, and Math.min correctly caps it at 5000 RPM.
-        // FLAG: If a positive wantedVelocity were ever passed here, the kicker would spin in reverse
-        //       uncapped — Math.min(negative, 5000) = negative. Always pass a negative velocity.
-        double wantedKickerVelocity = wantedVelocity*-1.5;
-        wantedKickerVelocity = Math.min(wantedKickerVelocity, 5000); // limit to 5000 RPM to prevent the motor from burning out
+        // kicker — clamp to ±5000 RPM so the limit is enforced regardless of the sign of wantedVelocity.
+        // Math.min alone only caps the positive direction; Math.max(-5000, Math.min(v, 5000)) caps both.
+        double wantedKickerVelocity = wantedVelocity * -1.5;
+        wantedKickerVelocity = Math.max(-5000, Math.min(wantedKickerVelocity, 5000)); // clamp to ±5000 RPM
 
         SmartDashboard.putNumber("WANTED KICKER VELOCITY", wantedKickerVelocity);
 
