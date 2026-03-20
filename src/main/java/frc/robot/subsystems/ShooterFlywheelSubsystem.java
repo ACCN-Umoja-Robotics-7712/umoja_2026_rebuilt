@@ -120,6 +120,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
     
     public void stopFlywheel() {
         flywheelMotorLeader.stopMotor();
+        // BUG FIX: kicker is a separate motor (not a follower of the leader), so it must
+        // be stopped explicitly.  Without this the kicker kept spinning at its last commanded
+        // voltage after ShootOnTheMoveCommand (or any other caller) released the flywheel.
+        kickerMotor.stopMotor();
     }
     
     @Override

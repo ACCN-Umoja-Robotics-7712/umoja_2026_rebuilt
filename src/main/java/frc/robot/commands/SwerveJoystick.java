@@ -106,13 +106,11 @@ public class SwerveJoystick extends Command {
           }
 
           if (RobotContainer.shooterFlywheelSubsystem.isShooting()) {
-            // BUG FIX: Math.min(speed, cap) only clamps positive speeds; negative speeds
-            // (driving backward while shooting) bypassed the cap entirely.
-            // Clamp the magnitude symmetrically in both directions.
-            double cappedX = Math.signum(xSpeed) * Math.min(Math.abs(xSpeed), DriveConstants.shootingSpeedCap);
-            double cappedY = Math.signum(ySpeed) * Math.min(Math.abs(ySpeed), DriveConstants.shootingSpeedCap);
-            xSpeed = xLimiter.calculate(cappedX) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-            ySpeed = yLimiter.calculate(cappedY) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+            // xSpeed/ySpeed are already in m/s at this point (scaled by kTeleDriveMaxSpeedMetersPerSecond
+            // above).  Simply clamp the magnitude symmetrically — do NOT re-apply the limiter or
+            // multiply by max speed again, which would give 0.3 × 4.5 = 1.35 m/s instead of 0.3 m/s.
+            xSpeed = Math.signum(xSpeed) * Math.min(Math.abs(xSpeed), DriveConstants.shootingSpeedCap);
+            ySpeed = Math.signum(ySpeed) * Math.min(Math.abs(ySpeed), DriveConstants.shootingSpeedCap);
           }
       
           // set current angle
