@@ -4,26 +4,13 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig.Presets;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +22,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
     private final DutyCycleEncoder hoodAbsoluteDutyCycleEncoder;
     private final PIDController hoodPidController;
-    private double lastVelocity = 0;
+    private final SimpleMotorFeedforward feedforward;
+    private double lastPositiveVelocity = Double.POSITIVE_INFINITY;
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder network").publish();
 
@@ -55,8 +43,9 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         hoodMotor.getConfigurator().apply(hoodCurrentLimits);
 
         hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
-        hoodPidController = new PIDController(TurretConstants.kPhood, 0, 0);
+        hoodPidController = new PIDController(TurretConstants.kPhood, TurretConstants.kIhood, TurretConstants.kDhood);
         hoodPidController.setTolerance(0.1);
+        feedforward = new SimpleMotorFeedforward(TurretConstants.kShood, 0, 0);
     }
 
     public void setState(double state) {
@@ -78,21 +67,25 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         hoodMotor.set(-0.1);
     }
 
+    public void setCurrentToZero() {
+        hoodMotor.setPosition(-0.2);
+    }
+
     public boolean finishedZeroing() {
-        double currentVelocity = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Hood zeroing velocity", currentVelocity);
-        // BUG FIX: old logic returned true on the SECOND call (lastVelocity was set on call #1,
-        // checked >=0.05 on call #2 — zeroing "finished" after ~40 ms regardless of motor state).
-        // Correct intent: motor was spinning (lastVelocity >= threshold) and has now STALLED
-        // against the mechanical hard stop (currentVelocity dropped below threshold).
-        if (lastVelocity >= 0.05 && currentVelocity < 0.05) {
+        SmartDashboard.putNumber("Hood zeroing velocity", lastPositiveVelocity);
+        
+        if (lastPositiveVelocity <= 0.05) {
             hoodMotor.setPosition(-0.2);
             hoodMotor.set(0);
-            lastVelocity = 0;
+            lastPositiveVelocity = Double.POSITIVE_INFINITY;
             return true;
+        } else {
+            double currVel = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
+            if (currVel > 0) {
+                lastPositiveVelocity = currVel;
+            }
+            return false;
         }
-        lastVelocity = currentVelocity;
-        return false;
     }
 
     // public double getHoodValueFromZero() {
@@ -131,7 +124,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     // wantedHoodValue should be encoder ticks above from 0
     public void setHoodValue(double wantedHoodValueFromZero) {
         // value is from how much increased from our zero value
-        runHood(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValueFromZero));
+        hoodMotor.setVoltage(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValueFromZero) + feedforward.calculate(hoodMotor.getVelocity().getValueAsDouble()));
     }
 
     @Override
@@ -150,14 +143,20 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         // TODO: REMOVE FOR COMP
         double kPHood = SmartDashboard.getNumber("kP hood", TurretConstants.kPhood);
         double kIHood = SmartDashboard.getNumber("kI hood", TurretConstants.kIhood);
+        double kSHood = SmartDashboard.getNumber("kS hood", TurretConstants.kShood);
+        double kDHood = SmartDashboard.getNumber("kD hood", TurretConstants.kDhood);
 
         SmartDashboard.putNumber("kP hood", kPHood);
         SmartDashboard.putNumber("kI hood", kIHood);
+        SmartDashboard.putNumber("kS hood", kSHood);
+        SmartDashboard.putNumber("kD hood", kDHood);
 
-        if (SmartDashboard.getNumber("kP hood", kPHood) != hoodPidController.getP() || SmartDashboard.getNumber("kI hood", kIHood) != hoodPidController.getI()) {
+        if (SmartDashboard.getNumber("kP hood", kPHood) != hoodPidController.getP() || SmartDashboard.getNumber("kI hood", kIHood) != hoodPidController.getI() || SmartDashboard.getNumber("kS hood", kSHood) != feedforward.getKs() || SmartDashboard.getNumber("kD hood", kDHood) != hoodPidController.getD()) {
             hoodPidController.setP(kPHood);
             hoodPidController.setI(kIHood);
-            System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kIHood);
+            hoodPidController.setD(kDHood);
+            feedforward.setKs(kSHood);
+            System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kSHood + "kI = " + kSHood);
         }
     }
 }

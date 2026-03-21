@@ -41,8 +41,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double state = ShooterStates.NONE;
     private boolean isZeroed = false;
 
-    private double minAngle = 55;
-    private double maxAngle = 335;
+    private double minAngle = 30;
+    private double maxAngle = 280;
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
 
@@ -60,6 +60,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     public void runTurret(double speed) {
         // Hard-stop the turret at its physical limits so ManualTurretCommand
         // cannot overdrive the mechanism into its mechanical stops.
+        // if limit switch is pressed, and going same direction as limit switch, STOP
+        // if (turretZeroLimitSwitch.get() && speed < 0) {
+        //     speed = 0;
+        // }
         if (isZeroed) {
             if (speed > 0 && getAngleDegrees() > maxAngle) {
                 speed = 0;
@@ -88,10 +92,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
         double limitToRange = wantedTurretAngleInDegrees % 360;
-        if (wantedTurretAngleInDegrees <= minAngle) { // 55
+        if (wantedTurretAngleInDegrees <= minAngle) { // 25
             limitToRange = minAngle;
         }
-        if (wantedTurretAngleInDegrees >= maxAngle) { // 335
+        if (wantedTurretAngleInDegrees >= maxAngle) { // 280
             limitToRange = maxAngle;
         }
         double fakeFeedForward = SmartDashboard.getNumber("Turret static friction", TurretConstants.turretFakeFeedForward);
@@ -116,22 +120,28 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // System.out.println(getAngleDegrees());
         // System.out.println(limitToRange);
         // System.out.println(pidVal + direction*fakeFeedForward);
-        double springFeedForward = 0;
-        if (!withinSlackRange) {
-            // within lower spring area and moving into spring
-            // if (currentAngle <= minSlack) {
-            if (currentAngle <= minSlack && direction < 1) {
-                springFeedForward = direction*springResistance;
-            } else if (currentAngle >= maxSlack && direction > 1) {
-            // } else if (currentAngle >= maxSlack) {
-            // within upper spring area and moving into spring
-                springFeedForward = direction*springResistance;
-            }
-        }
+        // double springFeedForward = 0;
+        // if (!withinSlackRange) {
+        //     // within lower spring area and moving into spring
+        //     // if (currentAngle <= minSlack) {
+        //     if (currentAngle <= minSlack && direction < 1) {
+        //         springFeedForward = direction*springResistance;
+        //     } else if (currentAngle >= maxSlack && direction > 1) {
+        //     // } else if (currentAngle >= maxSlack) {
+        //     // within upper spring area and moving into spring
+        //         springFeedForward = direction*springResistance;
+        //     }
+        // }
         // System.out.println(" " + pidVal + isZeroed);
+        // Math.
+        double voltage = pidVal + direction*fakeFeedForward;
+        if (voltage < 0) {
+            voltage = Math.max(voltage, -5);
+        } else if (voltage > 0) {
+            voltage = Math.min(voltage, 5);
+        }
         if (isZeroed) {
-            // BUG FIX: springFeedForward was computed but never included in the output voltage.
-            turretMotor.setVoltage(pidVal + direction * fakeFeedForward + springFeedForward);
+            turretMotor.setVoltage(voltage);
         } else {
             turretMotor.set(0);
         }
@@ -174,7 +184,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         }
         // blink limelight if turret not zeroed to indicate to setup
         if (!isZeroed) {
-            LimelightHelpers.setLEDMode_ForceBlink(LimelightConstants.LIMELIGHT_FORWARD);
+            LimelightHelpers.setLEDMode_ForceOn(LimelightConstants.LIMELIGHT_FORWARD);
         } else {
             LimelightHelpers.setLEDMode_ForceOff(LimelightConstants.LIMELIGHT_FORWARD);
         }

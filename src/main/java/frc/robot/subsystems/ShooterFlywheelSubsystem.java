@@ -40,12 +40,12 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
-        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO Vortex rated for 80 A — raises to 80 A for faster spin-up
+        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(40);
         leaderConfig.idleMode(IdleMode.kCoast);
+        leaderConfig.inverted(true);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(80); // NEO Vortex rated for 80 A
-        // BUG FIX: was calling leaderConfig.idleMode() a second time — followerConfig never got kCoast.
+        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);
         followerConfig.idleMode(IdleMode.kCoast);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower runs opposite direction
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
