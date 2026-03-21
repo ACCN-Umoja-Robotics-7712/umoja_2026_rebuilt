@@ -42,10 +42,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
         SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(40);
         leaderConfig.idleMode(IdleMode.kCoast);
+        leaderConfig.inverted(true);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);
-        // BUG FIX: was calling leaderConfig.idleMode() a second time — followerConfig never got kCoast.
         followerConfig.idleMode(IdleMode.kCoast);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower runs opposite direction
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -73,9 +73,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         double pidFly = flywheelPidController.calculate(flywheelMotorLeader.getEncoder().getVelocity(), wantedVelocity);
         flywheelMotorLeader.setVoltage(feedforwardFly + pidFly);
 
-        // kicker
-        double wantedKickerVelocity = wantedVelocity*-1.5;
-        wantedKickerVelocity = Math.min(wantedKickerVelocity, 5000); // limit to 5000 RPM to prevent the motor from burning out
+        // kicker — clamp to ±5000 RPM so the limit is enforced regardless of the sign of wantedVelocity.
+        // Math.min alone only caps the positive direction; Math.max(-5000, Math.min(v, 5000)) caps both.
+        double wantedKickerVelocity = wantedVelocity * -1.5;
+        wantedKickerVelocity = Math.max(-5000, Math.min(wantedKickerVelocity, 5000)); // clamp to ±5000 RPM
 
         SmartDashboard.putNumber("WANTED KICKER VELOCITY", wantedKickerVelocity);
 
@@ -119,6 +120,10 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
     
     public void stopFlywheel() {
         flywheelMotorLeader.stopMotor();
+        // BUG FIX: kicker is a separate motor (not a follower of the leader), so it must
+        // be stopped explicitly.  Without this the kicker kept spinning at its last commanded
+        // voltage after ShootOnTheMoveCommand (or any other caller) released the flywheel.
+        kickerMotor.stopMotor();
     }
     
     @Override

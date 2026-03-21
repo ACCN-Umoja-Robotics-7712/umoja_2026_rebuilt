@@ -8,9 +8,12 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -41,23 +44,30 @@ public final class Constants {
     public final class RobotConstants {
         public static final double robotWidth = 28;
         public static final double robotLength = 26;
-        public static final double kRobotWeightKG = Units.lbsToKilograms(115);
-        public static final double kBumperWeightKG = Units.lbsToKilograms(8);
+        public static final double kRobotWeightKG = Units.lbsToKilograms(114);
+        public static final double kBumperWeightKG = Units.lbsToKilograms(12.3);
         public static final double kBatteryWeightKG = Units.lbsToKilograms(12);
         public static final double kRobotTotalWeightKG = kRobotWeightKG + kBumperWeightKG + kBatteryWeightKG;
-        public static final double kRobotMOI = 6.883; // kg*m^2, moment of inertia about the center of mass
+        public static final double kRobotMOI = (kRobotTotalWeightKG * (Math.pow(Units.inchesToMeters(robotLength), 2)+Math.pow(Units.inchesToMeters(robotWidth), 2))) / 12; // kg*m^2, moment of inertia about the center of mass
+    }
+
+    public final class MotorConstants {
+        // https://cdn.shopify.com/s/files/1/0065/4308/1590/files/14T_Gear_Ratios.png?v=1723760292
+        public static final double L1gearRatio = 8.14;
+        public static final double L2gearRatio = 6.75;
+        public static final double L3gearRatio = 6.12;
     }
 
     public final class ModuleConstants{
         // For RobotConfig + robot setup
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4.5); // 4.5 inches
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // 4 inches
         public static final double kWheelCOF = 1.200; // wheel COF inches
-        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(1);
-        public static final int kDriveMotorCurrentLimit = 60;
+        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60Foc(1).withReduction(MotorConstants.L2gearRatio);
+        public static final int kDriveMotorCurrentLimit = 100;
         public static final int kNumMotorsPerModule = 1; // number of drive motors per module (not including turning motors)
 
         // gear ratio from thrifty swerve https://thethriftybot.com/products/thrify-swerve gear ratio options (pinion size 12 + second stage gear 16t? (only confirmed pinion))
-        public static final double kDriveMotorGearRatio = 1/6.0;
+        public static final double kDriveMotorGearRatio = 1/6.75; // Was 6.0 changed it to 6.75 after updating L2 gear ratio.
         public static final double kTurningMotorGearRatio = 1 / 21.42857142857143;//(12*14)/(72*50) based on #of teeth
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters; // Math.PI * kWheelDiameterMeters = Circumference
         public static final double kTurnEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
@@ -69,10 +79,12 @@ public final class Constants {
     }
 
     public static final class DriveConstants {
-        public static final double kTrackWidth = Units.inchesToMeters(RobotConstants.robotWidth-2.5); // 28 width (motor center 2.5 inches from edge)
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(RobotConstants.robotLength-2.5); // 26 length
+        public static final double kTrackWidth = Units.inchesToMeters(RobotConstants.robotWidth-2.5); // 28 width (motor center 2.5 inches from edge)
+        
         // Distance between front and back wheels
+        public static final double kWheelBase = Units.inchesToMeters(RobotConstants.robotLength-2.5); // 26 length
+        
 
         public static final double kRobotRadius = Math.sqrt(Math.pow(kTrackWidth, 2) + Math.pow(kWheelBase, 2)) / 2;
 
@@ -165,13 +177,15 @@ public final class Constants {
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
-        public static final double kPhood = 0.9;
+        public static final double kPhood = 0.1;
+        public static final double kShood = 0.2295;
         public static final double kIhood = 0.0; 
+        public static final double kDhood = 0.0;
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 1;
-        public static final double kPturretSlack = 0.05;
+        public static final double kPturretSlack = 0.1;
         public static final double kPturretSpring = 0;
         public static final double kIturretSlack = 0.02;
         public static final double kIturretSpring = 0;
@@ -227,6 +241,8 @@ public final class Constants {
         public static final double armkP = 0.00;
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
+
+        public static final double intakeSpeed = -0.6;
     }
 
     public static final class IntakeRollerStates {
@@ -239,6 +255,8 @@ public final class Constants {
         public static final int indexerMotorLeaderID = 3;
         public static final int kickerMotorID = 5;
         public static final int indexerMotorFollowerID = 34;
+
+        public static final double indexVolts = 8.0;
     }
 
     public static final class ClimbConstants {
@@ -268,10 +286,12 @@ public final class Constants {
 
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 2;
-        public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;
-        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
+        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
+        public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond;
+        public static final double kMaxAccelerationMetersPerSecondSquared = DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond;
+        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI;
+
+        public static final double wantedOutpostArea = 0.19;
 
         // public static final double kPXController = 5;
         // public static final double kPYController = 5;
@@ -282,11 +302,11 @@ public final class Constants {
         // public static final double kIThetaController = 0.2;
         public static final double kPXController = 4.8;// 1.5
         public static final double kPYController = 4.8; // 1.5
-        public static final double kPThetaController = 1; // 2.5
+        public static final double kPThetaController = 2; // 1
 
-        public static final double kIXController = 0.01; //0.01 
-        public static final double kIYController = 0.01; // 0.01
-        public static final double kIThetaController = 0.01;
+        public static final double kIXController = 0.0; //0.01 
+        public static final double kIYController = 0.0; // 0.01
+        public static final double kIThetaController = 0.0; // 0.01
 
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
@@ -363,7 +383,7 @@ public final class Constants {
     }
 
     public static final class LimelightConstants {
-        public static final String LIMELIGHT_LEFT = "limelight";
+        public static final String LIMELIGHT_LEFT = "limelight-new";
         public static final String LIMELIGHT_RIGHT = "limelight-four";
         public static final String LIMELIGHT_FORWARD = "limelight-driver";
         public static final int Estimate_Distance = 20;
@@ -400,6 +420,10 @@ public final class Constants {
         public static final int[] BLUE_HUB_CENTER_APRIL_TAG_IDS = new int[]{18,20,21,26};
         public static final int RED_HUB_FRONT_CENTER_APRIL_TAG_ID = 10;
         public static final int BLUE_HUB_FRONT_CENTER_APRIL_TAG_ID = 26;
+        
+        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+        public static double maxAmbiguity = 0.3;
+        public static double maxZError = 0.75;
     }
     
 
@@ -432,56 +456,56 @@ public final class Constants {
     public static final class SHOOTING_POSES {
 
         // BLUE SIDE
-        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.5, 4, new Rotation2d(0));
-        public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(2.25, 6, new Rotation2d(0));
-        public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(2.25, 2, new Rotation2d(0));
+        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.6, 4, new Rotation2d(0));
+        public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(1.25, 6, new Rotation2d(0));
+        public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(1.25, 2, new Rotation2d(0));
         
         public static final Pose2d BLUE_HUB_CENTER = new Pose2d(3.439, 3.987, new Rotation2d(0));
-        public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
+        public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(180));
         public static final Pose2d BLUE_TOWER_CENTER = new Pose2d(1.567, 3.739, new Rotation2d(0));
         public static final Pose2d BLUE_DEPOT_CENTER = new Pose2d(1.212, 5.923, new Rotation2d(0));
         public static final Pose2d BLUE_DEPOT_CORNER = new Pose2d(0.491, 7.074, new Rotation2d(270));
         
-        public static final Pose2d BLUE_NEUTRAL_LEFT = new Pose2d(7.775, 6.902, new Rotation2d(90)); // Check if intake is facing fuel
-        public static final Pose2d BLUE_NEUTRAL_RIGHT = new Pose2d(7.775, 0.877, new Rotation2d(0)); // Check if intake is facing fuel
-        public static final Pose2d BLUE_TRENCH_LEFT = new Pose2d(3.504, 7.559, new Rotation2d(0)); // Check if intake is facing neutral zone
+        public static final Pose2d BLUE_NEUTRAL_LEFT = new Pose2d(7.775, 6.902, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d BLUE_NEUTRAL_RIGHT = new Pose2d(7.775, 0.877, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d BLUE_TRENCH_LEFT = new Pose2d(3.504, 7.559, new Rotation2d(180)); // Check if intake is facing neutral zone
         public static final Pose2d BLUE_TRENCH_RIGHT = new Pose2d(3.504, 0.436, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
         
-        public static final Pose2d BLUE_HALF_LEFT = new Pose2d(2.159, 5.988, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
-        public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(2.159, 2.168, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d BLUE_HALF_LEFT = new Pose2d(7.775, 5.588, new Rotation2d(270)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d BLUE_HALF_RIGHT = new Pose2d(7.775, 2.568, new Rotation2d(90)); // Experimental, we can use these as mid-field shots
 
-        public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
-        public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(270)); // Pose to return to after going to neutral zone for auto
+        public static final Pose2d BLUE_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(6.118, 7.279, new Rotation2d(180)); // Pose to return to after going to neutral zone for auto
+        public static final Pose2d BLUE_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(6.118, 0.780, new Rotation2d(180)); // Pose to return to after going to neutral zone for auto
 
-
+// ---------------------------------------------------------------------------------------------------- RED SIDE -------------------------------------------------------------------------------------------------------------------------------------------- //
 
         public static final Pose2d RED_TRENCH_OUTPOST_AUTO_RETURN = new Pose2d(10.841, 7.300, new Rotation2d(180));
         public static final Pose2d RED_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(10.841, 0.716, new Rotation2d(90));
 
         //RED SIDE
-        public static final Pose2d RED_HUB_POSE = new Pose2d(12, 4, new Rotation2d(0));
-        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(14.25, 6, new Rotation2d(0));
-        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(14.25, 2, new Rotation2d(0));
+        public static final Pose2d RED_HUB_POSE = new Pose2d(11.9, 4, new Rotation2d(0));
+        public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(15.25, 2, new Rotation2d(0));
+        public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(15.25, 6, new Rotation2d(0));
 
         public static final Pose2d RED_HUB_CENTER = new Pose2d(13.112, 4.062, new Rotation2d(0));
-        public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0)); // 180? Intake will either be facing or away from outpost
+        public static final Pose2d RED_OUTPOST_CENTER = new Pose2d(15.500, 7.386, new Rotation2d(0));
         public static final Pose2d RED_TOWER_CENTER = new Pose2d(14.887, 4.352, new Rotation2d(0));
         public static final Pose2d RED_DEPOT_CENTER = new Pose2d(15.296, 2.114, new Rotation2d(0));
         public static final Pose2d RED_DEPOT_CORNER = new Pose2d(15.920, 0.963, new Rotation2d(90));
         
-        public static final Pose2d RED_NEUTRAL_LEFT = new Pose2d(8.905, 1.114, new Rotation2d(90)); // Check if intake is facing fuel
-        public static final Pose2d RED_NEUTRAL_RIGHT = new Pose2d(8.905, 7.096, new Rotation2d(270)); // Check if intake is facing fuel
-        public static final Pose2d RED_NEUTRAL_LEFT_PICKUP = new Pose2d(8.905, 4.740, new Rotation2d(90)); // Check if intake is facing fuel
-        public static final Pose2d RED_NEUTRAL_RIGHT_PICKUP = new Pose2d(8.905, 2.695, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_LEFT = new Pose2d(8.905, 1.114, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_RIGHT = new Pose2d(8.905, 7.096, new Rotation2d(90)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_LEFT_PICKUP = new Pose2d(8.905, 4.740, new Rotation2d(270)); // Check if intake is facing fuel
+        public static final Pose2d RED_NEUTRAL_RIGHT_PICKUP = new Pose2d(8.905, 2.695, new Rotation2d(90)); // Check if intake is facing fuel
         public static final Pose2d RED_TRENCH_LEFT = new Pose2d(12.993, 0.619, new Rotation2d(180)); // Check if intake is facing neutral zone
         public static final Pose2d RED_TRENCH_RIGHT = new Pose2d(12.993, 7.408, new Rotation2d(180)); // Check if intake is facing neutral zone (or could face the opposite direction)
         
-        public static final Pose2d RED_HALF_LEFT = new Pose2d(14.241, 1.835, new Rotation2d(135)); // Experimental, we can use these as mid-field shots
-        public static final Pose2d RED_HALF_RIGHT = new Pose2d(14.241, 5.719, new Rotation2d(45)); // Experimental, we can use these as mid-field shots
-    }
+        public static final Pose2d RED_HALF_LEFT = new Pose2d(8.905, 2.535, new Rotation2d(270)); // Experimental, we can use these as mid-field shots
+        public static final Pose2d RED_HALF_RIGHT = new Pose2d(8.905, 5.519, new Rotation2d(90)); // Experimental, we can use these as mid-field shots
+    } 
 
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
     public static final ModuleConfig moduleConfig = new ModuleConfig(ModuleConstants.kWheelDiameterMeters/2, AutoConstants.kMaxSpeedMetersPerSecond, ModuleConstants.kWheelCOF, ModuleConstants.kDriveMotor, ModuleConstants.kDriveMotorCurrentLimit, ModuleConstants.kNumMotorsPerModule);
     public static final RobotConfig robotConfig = new RobotConfig(RobotConstants.kRobotTotalWeightKG, RobotConstants.kRobotMOI, moduleConfig, DriveConstants.kDriveKinematics.getModules());
-    public static final PathConstraints pathConstraints = new PathConstraints(4.8, 1.3, 540, 720);
+    public static final PathConstraints pathConstraints = new PathConstraints(AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared, AutoConstants.kMaxAngularSpeedRadiansPerSecond, AutoConstants.kMaxAngularAccelerationRadiansPerSecondSquared);
 }

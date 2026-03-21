@@ -103,12 +103,13 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     // Orient ALL Limelights while disabled so MegaTag2 pose fusion is accurate
-    // before the match starts (previously only the right camera was updated).
+    // before the match starts.
     double heading = RobotContainer.swerveSubsystem.getHeading();
     LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_RIGHT, heading, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1); // Seed internal IMU
     LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_FORWARD, heading, 0, 0, 0, 0, 0);
     LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_LEFT, heading, 0, 0, 0, 0, 0);
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1);
+    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_LEFT, 1); // Seed internal IMU
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
