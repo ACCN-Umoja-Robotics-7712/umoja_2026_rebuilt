@@ -1,9 +1,6 @@
 package frc.robot.commands.ZeroCommands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ShooterHoodSubsystem;
 
 public class ZeroHoodCommand extends Command {
@@ -12,6 +9,10 @@ public class ZeroHoodCommand extends Command {
 
     public ZeroHoodCommand(ShooterHoodSubsystem hoodSubsystem){
         this.hoodSubsystem = hoodSubsystem;
+        // BUG FIX: addRequirements was missing — without it the scheduler doesn't know
+        // this command owns the hood subsystem, so other hood commands can run
+        // simultaneously during zeroing and fight for the same motor.
+        addRequirements(hoodSubsystem);
     }
 
     @Override

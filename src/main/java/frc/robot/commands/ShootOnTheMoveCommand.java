@@ -124,6 +124,9 @@ public class ShootOnTheMoveCommand extends Command {
         turningSpeed = turningLimiter.calculate(turningSpeed)
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.teleTurnSpeed;
 
+        // Alliance detection: defaults to Blue when the DS has not yet set an alliance.
+        // "!equals(Red)" is intentionally used so that an unknown alliance behaves the
+        // same as Blue (conservative default — field orientation is correct for Blue side).
         boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
         int flip = isBlue ? 1 : -1;
 

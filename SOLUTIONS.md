@@ -2,42 +2,54 @@
 
 **Companion to:** `BUG_REPORT.md`  
 **Prepared by:** GitHub Copilot (Professional Software Engineering Review)  
-**Date:** 2026-03-21  
-**Policy:** This document contains only instructions and code snippets. **No source files have been modified.**
+**Original date:** 2026-03-21  
+**Revised:** 2026-03-22 — updated after team feedback that some original suggestions didn't
+apply and some measurements are intentional. Eight bugs in the SOTM branch are now
+**fixed directly in code** (see the checklist at the bottom). New bugs found during
+SOTM branch line-by-line review are listed at the end of this file (NEW-01 … NEW-08).
 
 ---
 
 ## How to use this document
 
-Each section below corresponds to one bug in `BUG_REPORT.md` and provides:
+Each section corresponds to one bug, and provides:
 1. **What to change** — the exact file and line(s).
 2. **What the current code looks like** (so you can find it easily).
 3. **What to replace it with** — the corrected code snippet.
 4. **Why the fix works** — a plain-language explanation.
 5. **Testing guidance** — how to verify the fix on the robot or in simulation.
+6. **Status** — ✅ Already fixed in code / ⏳ Still needs fixing / 🚫 Not applicable.
 
-Work through the bugs in priority order: 🔴 Critical first, then 🟠 High, then 🟡 Medium, then 🔵 Low.
+Work through in priority order: 🔴 Critical first, then 🟠 High, then 🟡 Medium, then 🔵 Low.
 
 ---
 
-## Priority Order Cheat-Sheet
+## Priority Order Cheat-Sheet (original 14 + 8 new)
 
-| Priority | Bug ID | One-line title |
-|----------|--------|----------------|
-| 🔴 1 | BUG-01 | Kicker velocity clamp never fires |
-| 🔴 2 | BUG-02 | ZeroHoodCommand missing subsystem requirement |
-| 🔴 3 | BUG-03 | Blue Left Trench auto uses Red-side poses |
-| 🔴 4 | BUG-04 | getPathToPose() returns wrong Command object |
-| 🟠 5 | BUG-05 | AlignWithTrench mutates target angle every loop |
-| 🟠 6 | BUG-06 | ShooterFlywheelVelocityCommand.end() doesn't stop motor |
-| 🟠 7 | BUG-07 | Driver X button aims the wrong direction |
-| 🟠 8 | BUG-08 | Simple auto only drives — never shoots |
-| 🟡 9 | BUG-09 | Flywheel state machine feeds mode codes as RPM |
-| 🟡 10 | BUG-10 | Arm PID/FF gains are all zero |
-| 🟡 11 | BUG-11 | Dead auto methods can never be selected |
-| 🟡 12 | BUG-12 | Blue/Red Full-1 autos end race group at wrong pose |
-| 🔵 13 | BUG-13 | Unused import in ZeroHoodCommand |
-| 🔵 14 | BUG-14 | Duplicate NetworkTable topic names |
+| Priority | Bug ID | One-line title | Status |
+|----------|--------|----------------|--------|
+| 🔴 1 | BUG-01 | Kicker velocity clamp never fires | 🚫 Intentional — flywheel runs reversed; clamp works as designed |
+| 🔴 2 | BUG-02 | ZeroHoodCommand missing subsystem requirement | ✅ Fixed in code |
+| 🔴 3 | BUG-03 | Blue Left Trench auto uses Red-side poses | ⏳ Autos.java still needs fixing |
+| 🔴 4 | BUG-04 | getPathToPose() returns wrong Command object | ⏳ Autos.java still needs fixing |
+| 🟠 5 | BUG-05 | AlignWithTrench mutates target angle every loop | ✅ Fixed in code |
+| 🟠 6 | BUG-06 | ShooterFlywheelVelocityCommand.end() doesn't stop motor | ✅ Fixed in code |
+| 🟠 7 | BUG-07 | Driver X button aims the wrong direction | ⏳ RobotContainer.java — confirm intent with drive team |
+| 🟠 8 | BUG-08 | Simple auto only drives — never shoots | ⏳ Autos.java still needs fixing |
+| 🟡 9 | BUG-09 | Flywheel state machine feeds mode codes as RPM | ⏳ ShooterFlywheelSubsystem still needs fixing |
+| 🟡 10 | BUG-10 | Arm PID/FF gains are all zero | 🚫 Team confirmed manual arm control; PID path unused |
+| 🟡 11 | BUG-11 | Dead auto methods can never be selected | ⏳ Autos.java still needs fixing |
+| 🟡 12 | BUG-12 | Blue/Red Full-1 autos end race group at wrong pose | ⏳ Autos.java still needs fixing |
+| 🔵 13 | BUG-13 | Unused import in ZeroHoodCommand | ✅ Fixed in code |
+| 🔵 14 | BUG-14 | Duplicate NetworkTable topic names | ✅ Fixed in code |
+| 🔴 NEW-01 | NEW-01 | AlginRobotBackWithHubCameraTxCommand never drives when target visible | ✅ Fixed in code |
+| 🟠 NEW-02 | NEW-02 | IntakeWhileMoving uses degreesToRadians on radian value | ✅ Fixed in code |
+| 🟠 NEW-03 | NEW-03 | ShootCommand.end() never stops flywheel | ✅ Fixed in code |
+| 🟠 NEW-04 | NEW-04 | Turret upper-spring resistance never fires (direction > 1 typo) | ✅ Fixed in code |
+| 🟡 NEW-05 | NEW-05 | PickUpFuelCommand.end() never stops swerve modules | ✅ Fixed in code |
+| 🔵 NEW-06 | NEW-06 | PickUpFuelCommand NT topics also duplicate ("x speed"/"y speed") | ✅ Fixed in code |
+| 🔵 NEW-07 | NEW-07 | AlginRobotBackWithHubCameraTxCommand NT topics also duplicate | ✅ Fixed in code |
+| 💡 NEW-08 | NEW-08 | Mechanical suggestion: characterise kProjectileSpeedMPS | ⏳ Needs field measurement |
 
 ---
 
@@ -822,20 +834,30 @@ DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault()
 Use this checklist to track which fixes have been applied and verified.
 
 ```
-[ ] BUG-01  ShooterFlywheelSubsystem.java L77-78   — fix kicker clamp (Math.min → Math.copySign)
-[ ] BUG-02  ZeroHoodCommand.java L14               — add addRequirements(hoodSubsystem)
-[ ] BUG-03  Autos.java L218-219                    — use BLUE_* poses in getBlueTrenchLeftNeutral()
-[ ] BUG-04  Autos.java L646                        — return pathPlannerPath not trajectoryPath
-[ ] BUG-05  AlignWithTrench.java L83-90            — use local variable for red-alliance flip
-[ ] BUG-06  ShooterFlywheelVelocityCommand.java L30 — add flywheelMotorLeader.stopFlywheel() in end()
-[ ] BUG-07  RobotContainer.java L135               — fix driver X button command / angle
-[ ] BUG-08  Autos.java L622                        — restore shooting return in getSimpleAuto()
-[ ] BUG-09  ShooterFlywheelSubsystem.java L128     — use getTurretToTargetRPMValue() not state
-[ ] BUG-10  Constants.java L227-229                — tune arm PID gains from 0.00
-[ ] BUG-11  Autos.java                             — add dead methods to enum/chooser or delete them
-[ ] BUG-12  Autos.java L396, L583                  — change path1 to path4 in race group
-[ ] BUG-13  ZeroHoodCommand.java L5,7              — remove unused imports
-[ ] BUG-14  AlignWithTrench.java, PickUpFuelCommand.java L25-26 — unique NT topic names
+[x] BUG-01  ShooterFlywheelSubsystem.java        — INTENTIONAL: flywheel runs reversed so
+                                                      Math.min(positive_kicker, 5000) IS correct.
+                                                      No change needed.
+[x] BUG-02  ZeroHoodCommand.java                 — FIXED IN CODE: addRequirements(hoodSubsystem) added
+[?] BUG-03  Autos.java L218-219                  — use BLUE_* poses in getBlueTrenchLeftNeutral() — still open
+[?] BUG-04  Autos.java L646                      — return pathPlannerPath not trajectoryPath — still open
+[x] BUG-05  AlignWithTrench.java                 — FIXED IN CODE: local variable targetAngle used
+[x] BUG-06  ShooterFlywheelVelocityCommand.java  — FIXED IN CODE: stopFlywheel() added to end()
+[?] BUG-07  RobotContainer.java L135             — driver X button intent — confirm with drive team
+[?] BUG-08  Autos.java L622                      — restore shooting return in getSimpleAuto() — still open
+[?] BUG-09  ShooterFlywheelSubsystem.java L128   — state machine passes mode code as RPM — still open
+[x] BUG-10  Constants.java L227-229              — INTENTIONAL: arm PID unused, team uses manual control
+[?] BUG-11  Autos.java                           — dead auto methods — still open
+[?] BUG-12  Autos.java L396, L583               — path1 vs path4 in race group — still open
+[x] BUG-13  ZeroHoodCommand.java                 — FIXED IN CODE: unused imports removed
+[x] BUG-14  AlignWithTrench.java + PickUpFuel   — FIXED IN CODE: unique NT topic names
+[x] NEW-01  AlginRobotBackWithHubCameraTxCommand — FIXED IN CODE: setModuleStates moved outside if-else
+[x] NEW-02  IntakeWhileMoving.java               — FIXED IN CODE: radiansToDegrees not degreesToRadians
+[x] NEW-03  ShootCommand.java                    — FIXED IN CODE: stopFlywheel() added to end()
+[x] NEW-04  ShooterTurretSubsystem.java          — FIXED IN CODE: direction > 0 (was > 1, never true)
+[x] NEW-05  PickUpFuelCommand.java               — FIXED IN CODE: stopModules() added to end()
+[x] NEW-06  PickUpFuelCommand.java NT topics     — FIXED IN CODE: unique topic names
+[x] NEW-07  AlginRobotBack... NT topics          — FIXED IN CODE: unique topic names
+[?] NEW-08  Constants.java kProjectileSpeedMPS   — measure real projectile speed on field
 ```
 
 ---
@@ -854,3 +876,249 @@ After each change:
 
 ### Code review
 Each fix should be reviewed by a second team member before being merged into the main branch. Suggest creating a pull request for each group of fixes so changes can be traced individually.
+
+---
+
+---
+
+# New Bugs Found — SOTM Branch Line-by-Line Review
+
+These bugs were found during the full review of the SOTM branch code on 2026-03-22.
+All marked ✅ have been **fixed directly in code** in this same PR.
+
+---
+
+## 🔴 NEW-01 · AlginRobotBackWithHubCameraTxCommand — robot stops when it sees the target ✅ FIXED
+
+### File
+`src/main/java/frc/robot/commands/AlginRobotBackWithHubCameraTxCommand.java`
+
+### What was wrong
+`setModuleStates()` was only called inside the `else` branch (target NOT visible).
+When the camera DID see the AprilTag and computed the correct `chassisSpeeds`, those
+speeds were never sent to the swerve modules — the robot effectively stopped the moment
+it acquired the target.
+
+```java
+// BEFORE (broken)
+if (canSeeTarget) {
+    chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(target_x, 0));
+    // ← setModuleStates never called here!
+} else {
+    chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, 0);
+    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    swerveSubsystem.setModuleStates(moduleStates);   // only called when NOT seeing target
+}
+```
+
+### Fix applied
+`setModuleStates()` is now called unconditionally after the if-else, using whichever
+`chassisSpeeds` was computed:
+
+```java
+// AFTER (fixed)
+if (canSeeTarget) {
+    chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(target_x, 0));
+} else {
+    chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, 0);
+}
+SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+swerveSubsystem.setModuleStates(moduleStates);
+```
+
+### Testing guidance
+1. Bind this command to a test button in RobotContainer.
+2. Hold the button while facing the hub. Confirm the robot drives toward the hub
+   rather than stopping.
+3. Cover the limelight. Confirm the robot continues to drive straight (no rotation).
+
+---
+
+## 🟠 NEW-02 · IntakeWhileMoving — angle conversion applied backwards ✅ FIXED
+
+### File
+`src/main/java/frc/robot/commands/IntakeWhileMoving.java`
+
+### What was wrong
+```java
+wantedAngle = Units.degreesToRadians(Math.atan2(leftYSupplier.get(), leftXSupplier.get()) + 3*Math.PI/4);
+```
+`Math.atan2` already returns **radians** (−π to +π). Calling `Units.degreesToRadians()`
+on a radian value multiplies it by π/180 again, producing angles like 0.04° — essentially
+zero. The drift controller therefore always had an error near zero and never rotated the
+robot toward the joystick direction.
+
+### Fix applied
+Changed to `Units.radiansToDegrees(...)` so `diffFromWantedAngle` receives the correct
+degree value:
+
+```java
+wantedAngle = Units.radiansToDegrees(Math.atan2(leftYSupplier.get(), leftXSupplier.get()) + 3*Math.PI/4);
+```
+
+### Testing guidance
+1. Hold right bumper (IntakeWhileMoving).
+2. Push the left stick in various directions. The robot's intake (front face) should
+   rotate to face the joystick direction.
+3. Verify on Red alliance that the 180° flip applies correctly.
+
+---
+
+## 🟠 NEW-03 · ShootCommand.end() — flywheel left spinning ✅ FIXED
+
+### File
+`src/main/java/frc/robot/commands/ShootCommand.java`
+
+### What was wrong
+`end()` only printed a message. The flywheel motor was left at whatever voltage the last
+`setShooterVelocity()` call commanded, causing it to spin for several seconds after the
+command ended.
+
+### Fix applied
+Added `flywheel.stopFlywheel()` to `end()`.
+
+### Testing guidance
+Run `ShootCommand` for 2 seconds, then release. SmartDashboard `Flywheel Velocity` should
+immediately start dropping toward 0 rather than maintaining speed.
+
+---
+
+## 🟠 NEW-04 · ShooterTurretSubsystem — upper spring resistance never fires ✅ FIXED
+
+### File
+`src/main/java/frc/robot/subsystems/ShooterTurretSubsystem.java`
+
+### What was wrong
+`direction` is computed as `diff / Math.abs(diff)`, which is always exactly `+1.0` or
+`-1.0`. The condition `direction > 1` can therefore **never** be `true` — the upper
+spring resistance (needed when the turret is near angle 215° and rotating further into
+the spring) was silently disabled.
+
+```java
+// BEFORE (broken — condition impossible)
+} else if (currentAngle >= maxSlack && direction > 1) {
+    springFeedForward = direction * springResistance;
+}
+```
+
+### Fix applied
+Changed `> 1` to `> 0` (i.e., direction is `+1`, moving into the upper spring zone):
+
+```java
+// AFTER (fixed)
+} else if (currentAngle >= maxSlack && direction > 0) {
+    springFeedForward = direction * springResistance;
+}
+```
+
+### Testing guidance
+1. Command the turret to an angle above 215°.
+2. Then command it to an angle above 215° from the **same** side (so direction is `+1`).
+3. Observe that the turret output voltage includes the spring resistance offset — the
+   turret should move more smoothly without stalling at the spring boundary.
+
+---
+
+## 🟡 NEW-05 · PickUpFuelCommand.end() — swerve modules never stopped ✅ FIXED
+
+### File
+`src/main/java/frc/robot/commands/PickUpFuelCommand.java`
+
+### What was wrong
+`end()` only restored the limelight pipeline but never called `swerveSubsystem.stopModules()`.
+After the button was released the robot would continue driving at the last-commanded velocity
+until the default command (`SwerveJoystick`) took over — a brief but noticeable drift window.
+
+### Fix applied
+Added `swerveSubsystem.stopModules()` to `end()`.
+
+---
+
+## 🔵 NEW-06 & NEW-07 · Duplicate NT topics in PickUpFuelCommand and AlginRobotBackWithHubCameraTxCommand ✅ FIXED
+
+### Files
+- `src/main/java/frc/robot/commands/PickUpFuelCommand.java`
+- `src/main/java/frc/robot/commands/AlginRobotBackWithHubCameraTxCommand.java`
+
+### What was wrong
+Both used the topic names `"x speed"` and `"y speed"`, already used by `AlignWithTrench`.
+NT4 does not support two publishers on the same topic — whichever command ran last would
+win, interleaving data on the dashboard.
+
+### Fix applied
+Topics renamed:
+- `PickUpFuelCommand`: `"PickUpFuel/xSpeed"` / `"PickUpFuel/ySpeed"`
+- `AlginRobotBackWithHubCameraTxCommand`: `"AlignWithHubTx/xSpeed"` / `"AlignWithHubTx/ySpeed"`
+- `AlignWithTrench` (from previous PR): `"AlignWithTrench/xSpeed"` / `"AlignWithTrench/ySpeed"`
+
+---
+
+## 💡 NEW-08 · kProjectileSpeedMPS needs field measurement — still needs team action
+
+### File
+`src/main/java/frc/robot/Constants.java`
+
+### What is wrong
+```java
+public static final double kProjectileSpeedMPS = 12.0; // TODO: characterise for real value
+```
+This constant is used by `SwerveSubsystem.updateTurretAngleDistanceToTarget()` to compute
+the virtual-target correction for shoot-while-moving. If it is wrong, the virtual target will
+be offset in the wrong direction, causing misses when the robot is moving fast.
+
+`12.0 m/s` is a reasonable placeholder for a flywheel-speed note shooter, but it must be
+confirmed on the actual robot.
+
+### How to measure it
+1. Place a target 3 metres away.
+2. Shoot a note at the target while the robot is stationary.
+3. Record the moment of release (from video) and the moment of impact.
+4. `kProjectileSpeedMPS = distance / flight_time`.
+5. Repeat at 4 m and 5 m and average the values.
+6. Typical range for this type of shooter: 10–16 m/s.
+
+### Mechanical suggestion
+If your notes consistently fall short when moving toward the target and fly long when
+moving away, the constant is too low. Increase it in 0.5 m/s increments and retest until
+the correction zeroes out. A telemetry-based approach: log `SWM Angle Correction (deg)`
+from SmartDashboard — it should be < 3° at typical robot speeds. If it is > 5°, the
+projectile speed estimate is too low.
+
+---
+
+## Mechanical Suggestions (not software)
+
+The following observations are based purely on the code and the robot specification
+recorded in Constants.java. No physical inspection was performed.
+
+### 1. Turret spring tension characterisation
+The code has `turretFakeFeedForward = 0.45` and `turretSpringResistance = 0.5`, both
+adjustable from SmartDashboard. After the NEW-04 fix (upper spring resistance now fires),
+you may find the turret overshoots at the upper boundary. Lower `turretSpringResistance`
+from the dashboard until the turret moves smoothly through both spring zones without
+oscillation. Once tuned, commit the values back to Constants.java.
+
+### 2. Hood zeroing direction
+`zeroHood()` runs the motor at `−0.1` (backward). Confirm physically that backward
+means "toward the lower mechanical stop" on your robot. If the hood moves the wrong
+way when zeroing, change the sign to `+0.1`.
+
+### 3. Intake arm — bump-stop risk
+`IntakeArmSubsystem.setState()` is never called from RobotContainer — all arm movement
+is manual (`ManualIntakeArmCommand`). The arm soft limits (PID set-point enforcement) are
+therefore inactive. If the arm has a physical hard stop, the current limit of 80 A stator /
+30 A supply will protect the motor, but you may want to add software stops that match the
+physical endpoints to avoid repeated hard-stop impacts.
+
+### 4. Wheel diameter confirmation
+`kWheelDiameterMeters = Units.inchesToMeters(4.5)` (4.5 inch wheels). If the robot's
+actual wheels are 4 inches (common in ThriftyBot swerve kits), the drive encoder
+conversion factors will be off by ~12%, causing all odometry distances to be
+over-reported. Measure the wheel diameter with calipers and confirm.
+
+### 5. Camera pitch angles — confirm sign convention
+`limelight2Angle = -10` degrees. WPILib's `setCameraPose_RobotSpace` uses positive pitch
+= looking up. A value of `−10` means the camera looks slightly downward. Confirm this is
+correct for the forward camera placement (if it should look forward/up at AprilTags it
+may need to be positive). `limelight3Angle = 15` and `limelight4Angle = 15` look up at
+15°, which is correct for alliance-wall AprilTags.

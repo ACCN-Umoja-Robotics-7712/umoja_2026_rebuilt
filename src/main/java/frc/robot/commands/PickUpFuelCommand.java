@@ -22,8 +22,8 @@ public class PickUpFuelCommand extends Command{
   private final SlewRateLimiter xLimiter, yLimiter;
   private double wantedAngle;
 
-    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("x speed").publish();
-    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("y speed").publish();
+    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("PickUpFuel/xSpeed").publish();
+    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("PickUpFuel/ySpeed").publish();
   
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
@@ -92,6 +92,9 @@ public class PickUpFuelCommand extends Command{
     public void end(boolean isInterrupted){
         System.out.println("Align with tag end is interrupted:" + isInterrupted);
         LimelightHelpers.setPipelineIndex(LimelightConstants.LIMELIGHT_RIGHT, LimelightConstants.aprilTagPipeline);
+        // BUG FIX: swerve modules were never stopped on end — the robot would keep
+        // coasting in the last commanded direction after the command finished.
+        swerveSubsystem.stopModules();
     }
 
     @Override

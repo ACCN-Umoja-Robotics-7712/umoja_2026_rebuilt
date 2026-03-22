@@ -24,8 +24,8 @@ public class AlginRobotBackWithHubCameraTxCommand extends Command{
   private final SlewRateLimiter xLimiter, yLimiter;
   private double wantedAngle;
 
-    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("x speed").publish();
-    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("y speed").publish();
+    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("AlignWithHubTx/xSpeed").publish();
+    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("AlignWithHubTx/ySpeed").publish();
   
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
@@ -81,10 +81,14 @@ public class AlginRobotBackWithHubCameraTxCommand extends Command{
             double target_x = LimelightHelpers.getTX(limelightName);
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnController.calculate(target_x, 0));
           } else {
+            // Camera lost — hold still (no rotation correction without a target)
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, 0);
-            SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-            swerveSubsystem.setModuleStates(moduleStates);
-        }
+          }
+          // BUG FIX: setModuleStates was only called inside the else branch (no target seen).
+          // When the camera DID see a target the chassisSpeeds was computed but never applied —
+          // the robot would stop driving as soon as it acquired the AprilTag.
+          SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+          swerveSubsystem.setModuleStates(moduleStates);
     }
 
     @Override
