@@ -22,8 +22,8 @@ public class AlignWithTrench extends Command{
   private final SlewRateLimiter xLimiter, yLimiter;
   private double wantedAngle;
 
-    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("x speed").publish();
-    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("y speed").publish();
+    DoublePublisher xSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("AlignWithTrench/xSpeed").publish();
+    DoublePublisher ySpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("AlignWithTrench/ySpeed").publish();
   
   private final PIDController turnController = new PIDController(DriveConstants.kPAlignTrench, DriveConstants.kIAlignTrench, 0);
 
@@ -80,14 +80,16 @@ public class AlignWithTrench extends Command{
           boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
           int flipAlliance = isBlue ? 1 : -1;
           int flipDirection = wantedAngle == 0 ? 1 : -1;
+          // BUG FIX: was writing back to the field 'wantedAngle', causing it to flip between
+          // e.g. 0° and 180° every 20 ms on Red alliance (heading oscillation).
+          // Use a local variable so the field stays constant throughout the command's lifetime.
+          double targetAngle = wantedAngle;
           if (!isBlue) {
-            // flip wantedAngle for redside
-            wantedAngle = (wantedAngle + 180) % 360;
+            // flip targetAngle for red side
+            targetAngle = (wantedAngle + 180) % 360;
           }
-          
-          // xSpeedPublisher.accept(hoodMotor.getAbsoluteEncoder().getPosition());
 
-          chassisSpeeds = new ChassisSpeeds(flipAlliance*flipDirection*xSpeed, flipAlliance*flipDirection*ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(wantedAngle), 0));
+          chassisSpeeds = new ChassisSpeeds(flipAlliance*flipDirection*xSpeed, flipAlliance*flipDirection*ySpeed, turnController.calculate(RobotContainer.diffFromWantedAngle(targetAngle), 0));
           SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
           swerveSubsystem.setModuleStates(moduleStates);
         // }

@@ -28,6 +28,10 @@ public class ShooterFlywheelVelocityCommand extends Command {
     @Override
     public void end(boolean isInterrupted){
         System.out.println("SHOOTER END INTERRUPTED:" + isInterrupted);
+        // BUG FIX: motor was left at whatever voltage was last commanded when this
+        // command ended (button release, timeout, or scheduler interruption).
+        // stopFlywheel() calls SparkFlex.stopMotor() which commands 0 V immediately.
+        flywheelMotorLeader.stopFlywheel();
     }
 
     @Override

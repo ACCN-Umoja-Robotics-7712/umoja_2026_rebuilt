@@ -118,9 +118,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
             // if (currentAngle <= minSlack) {
             if (currentAngle <= minSlack && direction < 1) {
                 springFeedForward = direction*springResistance;
-            } else if (currentAngle >= maxSlack && direction > 1) {
-            // } else if (currentAngle >= maxSlack) {
-            // within upper spring area and moving into spring
+            } else if (currentAngle >= maxSlack && direction > 0) {
+            // within upper spring area and moving into spring (direction == +1)
                 springFeedForward = direction*springResistance;
             }
         }

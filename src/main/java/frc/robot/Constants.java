@@ -239,6 +239,9 @@ public final class Constants {
         public static final int indexerMotorLeaderID = 3;
         public static final int kickerMotorID = 5;
         public static final int indexerMotorFollowerID = 34;
+        // Voltage applied to the indexer when we want to feed a note into the shooter.
+        // Used by ShootOnTheMoveCommand and CameraIntegratedShooterCommand.
+        public static final double indexVolts = 7.0;
     }
 
     public static final class ClimbConstants {

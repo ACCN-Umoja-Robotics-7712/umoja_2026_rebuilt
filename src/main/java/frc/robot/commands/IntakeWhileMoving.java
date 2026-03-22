@@ -55,7 +55,18 @@ public class IntakeWhileMoving extends Command{
         xSpeed = xSpeed + speedOffset;
 
         double wantedAngle = swerveSubsystem.getHeading();
-        wantedAngle = Units.degreesToRadians(Math.atan2(leftYSupplier.get(), leftXSupplier.get()) + 3*Math.PI/4);
+        // BUG FIX: Math.atan2 returns RADIANS (-π to π). The old code called
+        // Units.degreesToRadians() on the radian result, which multiplied it by π/180
+        // again — producing an angle of roughly 0.05°, making the PID correction
+        // effectively zero. Use Units.radiansToDegrees so diffFromWantedAngle receives
+        // the angle in the degrees it expects.
+        wantedAngle = Units.radiansToDegrees(Math.atan2(leftYSupplier.get(), leftXSupplier.get()) + 3*Math.PI/4);
+        // The 3π/4 (135°) offset aligns the joystick's forward direction with the robot's
+        // intake face.  Math.atan2(y, x) with a game-controller stick maps the right side of
+        // the stick (x=+1, y=0) to 0 radians.  The intake is on the robot's front face, which
+        // is 135° away from that reference in the field frame (robot starts facing forward =
+        // 0° field, intake is at 135° of joystick angle).  Adjust this offset if the intake
+        // face is physically mounted at a different angle relative to the robot's forward.
         
         boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
         if (!isBlue) {
