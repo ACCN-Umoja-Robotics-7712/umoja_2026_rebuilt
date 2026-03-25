@@ -223,11 +223,11 @@ public class Autos {
                     // Shoot
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ConditionalCommand(
-                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                        new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.9)
+                ).withTimeout(0.6)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -244,22 +244,22 @@ public class Autos {
                                 new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ConditionalCommand(
-                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
-                            ).withTimeout(0.9)
+                            ).withTimeout(0.6)
                             .andThen(
                                 Commands.parallel(
                                     // Force shoot 
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                     )
                                 )
@@ -305,7 +305,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.9)
+                ).withTimeout(0.6)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -322,22 +322,22 @@ public class Autos {
                                 new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ConditionalCommand(
-                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
-                            ).withTimeout(0.9)
+                            ).withTimeout(0.6)
                             .andThen(
                                 Commands.parallel(
                                     // Force shoot 
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                     )
                                 )
@@ -383,7 +383,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.9)
+                ).withTimeout(0.6)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -400,22 +400,22 @@ public class Autos {
                                 new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ConditionalCommand(
-                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
-                            ).withTimeout(0.9)
+                            ).withTimeout(0.6)
                             .andThen(
                                 Commands.parallel(
                                     // Force shoot 
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                     )
                                 )
@@ -458,22 +458,22 @@ public class Autos {
                             new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                             new ConditionalCommand(
-                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 RobotContainer::isReadyToShoot
                             ),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                 new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                             )
-                        ).withTimeout(0.9)
+                        ).withTimeout(0.6)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
                             )
@@ -520,17 +520,17 @@ public class Autos {
                                 RobotContainer::isReadyToShoot
                             ),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                 new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                             )
-                        ).withTimeout(0.9)
+                        ).withTimeout(0.6)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
                             )
@@ -571,22 +571,22 @@ public class Autos {
                             new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                             new ConditionalCommand(
-                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 RobotContainer::isReadyToShoot
                             ),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                 new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                             )
-                        ).withTimeout(0.9)
+                        ).withTimeout(0.6)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
                             )
@@ -632,17 +632,17 @@ public class Autos {
                                 RobotContainer::isReadyToShoot
                             ),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                 new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                             )
-                        ).withTimeout(0.9)
+                        ).withTimeout(0.6)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
                             )
@@ -703,7 +703,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.9)
+                ).withTimeout(0.6)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -720,22 +720,22 @@ public class Autos {
                                 new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ConditionalCommand(
-                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
+                                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                 )
-                            ).withTimeout(0.9)
+                            ).withTimeout(0.6)
                             .andThen(
                                 Commands.parallel(
                                     // Force shoot 
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.3),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                                     )
                                 )
@@ -785,7 +785,7 @@ public class Autos {
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 RobotContainer::isReadyToShoot
                             )
-                        ).withTimeout(0.9)
+                        ).withTimeout(0.6)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot
@@ -809,7 +809,7 @@ public class Autos {
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                                 RobotContainer::isReadyToShoot
                             )
-                        ).withTimeout(0.9)
+                        ).withTimeout(0.6)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
@@ -859,7 +859,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.9)
+                ).withTimeout(0.6)
                 .andThen(
                     Commands.parallel(
                         // Force shoot
@@ -883,7 +883,7 @@ public class Autos {
                         new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0),
                         RobotContainer::isReadyToShoot
                     )
-                ).withTimeout(0.9)
+                ).withTimeout(0.6)
                 .andThen(
                     Commands.parallel(
                         // Force shoot 
@@ -989,18 +989,15 @@ public class Autos {
     }
     
     public Command getSimpleAuto() {
-        Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts);
+        Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
         Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0);
         Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
 
-        Command lowerArm = Commands.parallel(
-            new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.6),
-            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeSpeed)
-        ).withTimeout(0.5);
+        Command lowerArm = new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5);
         Command shoot = Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
-        ).withTimeout(0.9).andThen(Commands.parallel(
+        ).withTimeout(0.6).andThen(Commands.parallel(
             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
             )
@@ -1012,6 +1009,7 @@ public class Autos {
             new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
         );
         return Commands.parallel(
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeSpeed),
             zeroHood.withTimeout(1).alongWith(lowerArm).andThen(alignTurret),
             new WaitCommand(2)
                 .andThen(shoot)

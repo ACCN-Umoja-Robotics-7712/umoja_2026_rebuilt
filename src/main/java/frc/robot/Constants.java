@@ -236,7 +236,7 @@ public final class Constants {
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeSpeed = -0.6;
+        public static final double intakeSpeed = -0.5;
     }
 
     public static final class IntakeRollerStates {
@@ -250,7 +250,7 @@ public final class Constants {
         public static final int kickerMotorID = 5;
         public static final int indexerMotorFollowerID = 34;
 
-        public static final double indexVolts = 8.0;
+        public static final double indexVolts = 10.0;
     }
 
     public static final class ClimbConstants {

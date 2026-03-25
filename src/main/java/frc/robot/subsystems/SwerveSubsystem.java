@@ -182,24 +182,24 @@ public class SwerveSubsystem extends SubsystemBase {
         
         holonomicDriveController = new HolonomicDriveController(xController, yController, thetaController);
 
-        rpmTable.put(1.25, 3100.0);
-        rpmTable.put(1.5, 3150.0);
-        rpmTable.put(1.75, 3200.0);
-        rpmTable.put(2.0, 3200.0);
-        rpmTable.put(2.25, 3400.0);
-        rpmTable.put(2.5, 3650.0);
-        rpmTable.put(2.75, 3750.0);
-        rpmTable.put(3.0, 3800.0);
-        rpmTable.put(3.1, 3900.0);
-        rpmTable.put(3.25, 3900.0);
-        rpmTable.put(3.5, 3925.0);
-        rpmTable.put(3.75, 3950.0);
-        rpmTable.put(4.0, 4050.0);
-        rpmTable.put(4.25, 4050.0);
-        rpmTable.put(4.5, 4050.0);
-        rpmTable.put(4.75, 4100.0);
-        rpmTable.put(5.0, 4150.0);
-        rpmTable.put(5.5, 5200.0);
+        rpmTable.put(1.25, 3250.0);
+        rpmTable.put(1.5, 3300.0);
+        rpmTable.put(1.75, 3350.0);
+        rpmTable.put(2.0, 3350.0);
+        rpmTable.put(2.25, 3550.0);
+        rpmTable.put(2.5, 3800.0);
+        rpmTable.put(2.75, 3900.0);
+        rpmTable.put(3.0, 3950.0);
+        rpmTable.put(3.1, 4050.0);
+        rpmTable.put(3.25, 4050.0);
+        rpmTable.put(3.5, 4075.0);
+        rpmTable.put(3.75, 4100.0);
+        rpmTable.put(4.0, 4200.0);
+        rpmTable.put(4.25, 4200.0);
+        rpmTable.put(4.5, 4200.0);
+        rpmTable.put(4.75, 4250.0);
+        rpmTable.put(5.0, 4300.0);
+        rpmTable.put(5.5, 5350.0);
         
         angleTable.put(0.0, 0.0);
         angleTable.put(1.25, 0.0);
@@ -211,15 +211,16 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(2.5, 0.9);
         angleTable.put(2.75, 1.0);
         angleTable.put(3.0, 1.2);
-        angleTable.put(3.1, 1.7);
-        angleTable.put(3.25, 1.8);
-        angleTable.put(3.5, 1.9);
-        angleTable.put(3.75, 2.0);
-        angleTable.put(4.0, 2.5);
-        angleTable.put(4.25, 3.5);
-        angleTable.put(4.5, 3.8);
-        angleTable.put(4.75, 4.4);
-        angleTable.put(5.0, 4.7);
+        angleTable.put(3.05, 1.85);
+        angleTable.put(3.1, 1.90);
+        angleTable.put(3.25, 2.0);
+        angleTable.put(3.5, 2.2);
+        angleTable.put(3.75, 2.45);
+        angleTable.put(4.0, 3.15);
+        angleTable.put(4.25, 3.65);
+        angleTable.put(4.5, 3.95);
+        angleTable.put(4.75, 4.55);
+        angleTable.put(5.0, 4.85);
         // angleTable.put(5.25, 00.0);
     }
     // Assuming this is a method in your drive subsystem
@@ -696,16 +697,16 @@ public class SwerveSubsystem extends SubsystemBase {
         // double hoodValue = 0;
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
-        if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
-            rpm = rpm * 1.045;
-        }
+        // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
+        rpm = rpm * 1.065;
+        // }
         
         if (distanceToTarget < 2.3 ) {
-            hood = hood + 0.075;
+            hood = hood + 0.65;
         }
         
         if (distanceToTarget >= 2.3 && distanceToTarget <= 5.0) {
-            hood = hood + 0.2;
+            hood = hood + 0.85;
         }
 
         rpm = Math.min(5200.0, rpm);

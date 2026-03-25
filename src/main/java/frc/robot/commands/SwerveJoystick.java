@@ -92,7 +92,7 @@ public class SwerveJoystick extends Command {
           
           SmartDashboard.putNumber("Wanted angle", RobotContainer.wantedAngle);
       
-          boolean isRobotOrientatedDrive = RobotContainer.driverController.getRawAxis(XBoxConstants.RT) >= 0.5;
+          boolean isRobotOrientatedDrive = false;
           // 3. Make the driving smoother
           // if (!(RobotContainer.driverController.rightBumper().getAsBoolean()) || isRobotOrientatedDrive){
           //   xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);

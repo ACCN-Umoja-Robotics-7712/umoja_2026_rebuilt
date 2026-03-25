@@ -14,10 +14,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.GameConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.ShooterFlywheelVelocityCommand;
 import frc.robot.commands.SwerveJoystick;
+import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
+import frc.robot.commands.ManualCommands.TestIndexerCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -107,6 +112,7 @@ public class Robot extends TimedRobot {
     RobotContainer.shooterFlywheelSubsystem.runShooter(0);
     RobotContainer.shooterTurretSubsystem.runTurret(0);
     RobotContainer.shooterFlywheelSubsystem.setState(Constants.ShooterStates.NONE);
+    RobotContainer.indexerSubsystem.stopIndexer();
   }
 
   @Override
@@ -200,6 +206,15 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    Command testIndex = Commands.sequence(
+      new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -2000.0).withTimeout(0.6),
+      Commands.parallel(
+        new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () ->  -2000.0),
+        new TestIndexerCommand(RobotContainer.indexerSubsystem)
+      )
+    );
+    Trigger trigger = new Trigger(() -> true);
+    trigger.whileTrue(testIndex);
   }
 
   /** This function is called periodically during test mode. */

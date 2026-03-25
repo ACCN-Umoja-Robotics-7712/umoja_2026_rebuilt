@@ -32,6 +32,14 @@ public class IndexerSubsystem extends SubsystemBase {
         indexerMotorOriginal.setVoltage(voltage);
         beltMotor.setVoltage(voltage/2.25); // 3.0
     }
+
+    public void runIndexerUsingTestvoltage() {
+        double indexVoltage = SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
+        double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10/2.25);
+        indexerMotorOriginal.setVoltage(indexVoltage);
+        beltMotor.setVoltage(indexBeltVoltage);
+
+    }
     
     public void stopIndexer() {
         indexerMotorOriginal.stopMotor();
@@ -42,6 +50,11 @@ public class IndexerSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Indexer velocity", indexerMotorOriginal.getEncoder().getVelocity());
         SmartDashboard.putNumber("Indexer Belt velocity", beltMotor.getEncoder().getVelocity());
+
+        double indexVoltage = SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
+        double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10/2.25);
+        SmartDashboard.putNumber("TEST Indexer with applied voltage", indexVoltage);
+        SmartDashboard.putNumber("TEST Indexer belt with applied voltage", indexBeltVoltage);
     }
 
 }

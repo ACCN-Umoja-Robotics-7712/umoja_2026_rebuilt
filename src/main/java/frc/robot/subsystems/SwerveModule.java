@@ -46,9 +46,9 @@ public class SwerveModule {
         CurrentLimitsConfigs driveCurrentLimits = new CurrentLimitsConfigs();
         driveCurrentLimits.StatorCurrentLimit = 100; // Original 60
         driveCurrentLimits.StatorCurrentLimitEnable = true;
-        driveCurrentLimits.SupplyCurrentLimit = 60; // Original 50
+        driveCurrentLimits.SupplyCurrentLimit = 50; // Original 50
         driveCurrentLimits.SupplyCurrentLimitEnable = true;
-        driveCurrentLimits.SupplyCurrentLowerLimit = 50; // defaults drops to lower limit after 1s
+        driveCurrentLimits.SupplyCurrentLowerLimit = 40; // defaults drops to lower limit after 1s
         driveMotor.getConfigurator().apply(driveCurrentLimits);
 
 

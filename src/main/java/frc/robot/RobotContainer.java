@@ -209,8 +209,8 @@ public class RobotContainer {
       // runIndexer
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-        new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
-      ).withTimeout(0.9).andThen(
+        new ConditionalCommand(new ManualIndexerCommand(indexerSubsystem, () -> 0.0), stopIndexer, RobotContainer::isReadyToShoot)
+      ).withTimeout(0.6).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
