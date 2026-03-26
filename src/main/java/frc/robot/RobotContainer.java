@@ -309,20 +309,20 @@ public class RobotContainer {
     );
 
     operatorController.povDown().whileTrue(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 0.0)
+        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 1.0)
     ).whileFalse(
       new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
     );
     
 
     operatorController.povLeft().whileTrue(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 2.0)
+        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 2.5)
     ).whileFalse(
       new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
     );
 
     operatorController.povUp().whileTrue(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 5.0)
+        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 4.0)
     ).whileFalse(
       new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
     );

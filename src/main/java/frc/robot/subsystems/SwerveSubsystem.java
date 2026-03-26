@@ -670,8 +670,15 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     
     public double[] updateTurretAngleDistanceToTarget(Pose2d targetPose) {
-        targetPosePublisher.set(targetPose);
-        Translation2d toTag = targetPose.getTranslation().minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
+
+        // for shooting on the move update target position based off of TOF with current velocity
+        // use chassis speeds for now, update to using gyro speeds
+        ChassisSpeeds speeds = ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
+        double tof = 1.0; // should get from table instead of hardcoded value temp 1s TOF for testing
+        Translation2d movingTarget = targetPose.getTranslation().plus(new Translation2d(-speeds.vxMetersPerSecond*tof, -speeds.vxMetersPerSecond*tof));
+
+        targetPosePublisher.set(new Pose2d(movingTarget, new Rotation2d(0)));
+        Translation2d toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
         return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
@@ -697,7 +704,6 @@ public class SwerveSubsystem extends SubsystemBase {
         // https://www.desmos.com/calculator/80g65lmlho
         // double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
         // double hoodValue = 0;
-        ChassisSpeeds speeds = getRobotRelativeSpeeds();
         
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
