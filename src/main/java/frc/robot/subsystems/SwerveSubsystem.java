@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModuleState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -372,6 +373,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("FR", frontRight.getAbsoluteEncoderDegree());
         SmartDashboard.putNumber("BL", backLeft.getAbsoluteEncoderDegree());
         SmartDashboard.putNumber("BR", backRight.getAbsoluteEncoderDegree());
+        
 
         SmartDashboard.putNumber("GAME STATE", RobotContainer.gameState);
 
@@ -695,6 +697,8 @@ public class SwerveSubsystem extends SubsystemBase {
         // https://www.desmos.com/calculator/80g65lmlho
         // double rpm = (626.9976*Math.exp(0.3316560*distanceToTarget))+2279.18;
         // double hoodValue = 0;
+        ChassisSpeeds speeds = getRobotRelativeSpeeds();
+        
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {

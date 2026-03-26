@@ -73,6 +73,9 @@ public class RobotContainer {
   public final static CommandXboxController driverController = new CommandXboxController(USB.DRIVER_CONTROLLER);
   public final static CommandXboxController operatorController = new CommandXboxController(USB.OPERATOR_CONTROLLER);
 
+  // Battery Voltage
+  // public static double batteryVoltage = 
+
   public static double wantedAngle = -1;
   public static int shouldAutoFixDrift = 0; // 1 = auto drift, 0 = none
   public static int gameState = GameConstants.Disabled;
