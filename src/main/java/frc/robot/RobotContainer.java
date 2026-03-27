@@ -170,14 +170,14 @@ public class RobotContainer {
 
     //Manual Commands (Just for Now)
     // Intake Roller
-    driverController.b().whileTrue(
-      new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
-        () -> Constants.IntakeConstants.intakeSpeed,
-        () -> RobotContainer.driverController.getLeftX(),
-        () -> -RobotContainer.driverController.getLeftY(),
-        () -> -RobotContainer.driverController.getRightY()
-      )
-    );
+    // driverController.b().whileTrue(
+    //   new IntakeWhileMoving(intakeRollerSubsystem, swerveSubsystem,
+    //     () -> Constants.IntakeConstants.intakeSpeed,
+    //     () -> RobotContainer.driverController.getLeftX(),
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> -RobotContainer.driverController.getRightY()
+    //   )
+    // );
 
 
 

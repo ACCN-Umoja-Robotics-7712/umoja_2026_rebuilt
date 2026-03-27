@@ -212,7 +212,7 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(2.5, 0.9);
         angleTable.put(2.75, 1.0);
         angleTable.put(3.0, 1.2);
-        angleTable.put(3.05, 1.85);
+        angleTable.put(3.01, 1.85);
         angleTable.put(3.1, 1.90);
         angleTable.put(3.25, 2.0);
         angleTable.put(3.5, 2.2);
@@ -674,8 +674,8 @@ public class SwerveSubsystem extends SubsystemBase {
         // for shooting on the move update target position based off of TOF with current velocity
         // use chassis speeds for now, update to using gyro speeds
         ChassisSpeeds speeds = ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
-        double tof = 1.0; // should get from table instead of hardcoded value temp 1s TOF for testing
-        Translation2d movingTarget = targetPose.getTranslation().plus(new Translation2d(-speeds.vxMetersPerSecond*tof, -speeds.vxMetersPerSecond*tof));
+        double tof = 1.25; // should get from table instead of hardcoded value temp 1.25s TOF for testing
+        Translation2d movingTarget = targetPose.getTranslation().plus(new Translation2d(-speeds.vxMetersPerSecond*tof, speeds.vxMetersPerSecond*tof));
 
         targetPosePublisher.set(new Pose2d(movingTarget, new Rotation2d(0)));
         Translation2d toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());

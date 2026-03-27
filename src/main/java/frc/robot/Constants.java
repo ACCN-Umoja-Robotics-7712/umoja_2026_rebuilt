@@ -142,6 +142,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
+        public static final double shootDriveSpeed = 0.5; // m/s
+        public static final double shootTurnSpeed = 0.5;
         public static final double kSlowButtonDriveModifier = 0.5;
         public static final double kSlowButtonTurnModifier = 0.50;
         public static final double teleSpeed = 0.7;
@@ -180,7 +182,7 @@ public final class Constants {
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
         public static final double kPhood = 0.1;
-        public static final double kShood = 0.2295;
+        public static final double kShood = 0.2;
         public static final double kIhood = 0.0; 
         public static final double kDhood = 0.0;
 

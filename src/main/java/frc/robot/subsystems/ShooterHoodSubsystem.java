@@ -124,10 +124,10 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         boolean lowerLimitHit = position <= 0.0;
         boolean upperLimitHit = position >= maxMovement;
 
-        if (lowerLimitHit && speed < 0) {
-            System.out.println("Lower Limit Hit! hood hit zero" + lowerLimitHit);
-            speed = 0;
-        }
+        // if (lowerLimitHit && speed < 0) {
+        //     System.out.println("Lower Limit Hit! hood hit zero" + lowerLimitHit);
+        //     speed = 0;
+        // }
         if (upperLimitHit && speed > 0) {
             System.out.println("Upper Limit Hit! hood hit max" + upperLimitHit);
             speed = 0;
@@ -148,7 +148,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("hood absolute encoder from zero", getHoodValueFromZero());
         SmartDashboard.putNumber("hood motor position", hoodMotor.getPosition().getValueAsDouble());    
         SmartDashboard.putNumber("hood motor velocity", hoodMotor.getVelocity().getValueAsDouble());     
-        SmartDashboard.putNumber("hood maxMovement", maxMovement);
+        SmartDashboard.putNumber("hood stall current", hoodMotor.getSupplyCurrent().getValueAsDouble());
 
         if (state != ShooterStates.NONE) {
             setHoodValue(RobotContainer.swerveSubsystem.getTurretToTargetHoodValue());
