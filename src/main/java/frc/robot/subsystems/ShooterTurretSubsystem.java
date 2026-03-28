@@ -17,9 +17,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,7 +115,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         double diff = wantedTurretAngleInDegrees - currentAngle;
         double direction = diff != 0 ? diff/Math.abs(diff) : 1;
         if (direction != lastDirection) {
-            turretSlackPidController.reset();
+            // turretSlackPidController.reset();
             lastDirection = direction;
         }
         // System.out.println(getAngleDegrees());
@@ -135,12 +137,12 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // Math.
         double voltage = pidVal + direction*fakeFeedForward;
         if (voltage < 0) {
-            voltage = Math.max(voltage, -5);
+            voltage = Math.max(voltage, -3);
         } else if (voltage > 0) {
-            voltage = Math.min(voltage, 5);
+            voltage = Math.min(voltage, 3);
         }
         if (isZeroed) {
-            turretMotor.setVoltage(pidVal + direction*fakeFeedForward);
+            turretMotor.setVoltage(voltage);
         } else {
             turretMotor.set(0);
         }

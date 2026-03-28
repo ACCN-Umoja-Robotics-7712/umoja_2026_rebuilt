@@ -37,7 +37,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
         intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, rio);
         intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, rio);
         CurrentLimitsConfigs armCurrentLimits = new CurrentLimitsConfigs();
-        armCurrentLimits.StatorCurrentLimit = 80;
+        armCurrentLimits.StatorCurrentLimit = 60;
         armCurrentLimits.StatorCurrentLimitEnable = true;
         armCurrentLimits.SupplyCurrentLimit = 30;
         armCurrentLimits.SupplyCurrentLimitEnable = true;
@@ -94,6 +94,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
     public void periodic() {
         // Pulish values on Elastic, this goes to SmartDashboard - Lewi
         SmartDashboard.putNumber("Intake Arm position", intakeArmMotorLeader.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Intake arm current stall", intakeArmMotorLeader.getStatorCurrent().getValueAsDouble());
         
         if (state == IntakeArmStates.NONE) {
         } else {

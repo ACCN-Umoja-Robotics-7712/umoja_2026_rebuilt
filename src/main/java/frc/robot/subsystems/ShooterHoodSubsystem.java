@@ -83,21 +83,17 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     }
 
     public void setCurrentToZero() {
-        hoodMotor.setPosition(-0.2);
+        hoodMotor.setPosition(-0.3);
     }
 
     public boolean finishedZeroing() {
-        System.out.println(lastPositiveVelocity);
+        System.out.println(hoodMotor.getSupplyCurrent().getValueAsDouble());
         
-        if (lastPositiveVelocity  <= 0.05) {
+        if (hoodMotor.getSupplyCurrent().getValueAsDouble() >= 0.6) {
             hoodMotor.setPosition(-0.2);
             hoodMotor.set(0);
             return true;
         } else {
-            double currVel = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
-            if (currVel > 0) {
-                lastPositiveVelocity = Math.abs(hoodMotor.getVelocity().getValueAsDouble());
-            }
             return false;
         }
     }
@@ -124,10 +120,10 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         boolean lowerLimitHit = position <= 0.0;
         boolean upperLimitHit = position >= maxMovement;
 
-        // if (lowerLimitHit && speed < 0) {
-        //     System.out.println("Lower Limit Hit! hood hit zero" + lowerLimitHit);
-        //     speed = 0;
-        // }
+        if (lowerLimitHit && speed < 0) {
+            System.out.println("Lower Limit Hit! hood hit zero" + lowerLimitHit);
+            speed = 0;
+        }
         if (upperLimitHit && speed > 0) {
             System.out.println("Upper Limit Hit! hood hit max" + upperLimitHit);
             speed = 0;

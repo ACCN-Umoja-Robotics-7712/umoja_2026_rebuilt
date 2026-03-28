@@ -119,7 +119,8 @@ public class SwerveModule {
     }
 
     public void setDesiredState(SwerveModuleState state) {
-        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
+        boolean isXLocked = state.angle.getDegrees() == -135 || state.angle.getDegrees() == -45 || state.angle.getDegrees() == 45 || state.angle.getDegrees() == 135; 
+        if (Math.abs(state.speedMetersPerSecond) < 0.001 && !isXLocked) {
             stop();
             return;
         }

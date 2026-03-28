@@ -99,7 +99,7 @@ public class SwerveJoystick extends Command {
           //   ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
           //   turningSpeed = turningLimiter.calculate(turningSpeed) * (DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.kSlowButtonTurnModifier);
           // } elseif
-          if (RobotContainer.driverController.rightBumper().getAsBoolean()){
+          if (RobotContainer.driverController.b().getAsBoolean()){
             xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
             ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
             turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond; 
@@ -110,7 +110,7 @@ public class SwerveJoystick extends Command {
             turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.teleTurnSpeed; 
           }
 
-          if (RobotContainer.driverController.b().getAsBoolean()) {
+          if (RobotContainer.driverController.rightBumper().getAsBoolean()) {
             xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.shootDriveSpeed;
             ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.shootDriveSpeed;
             turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.shootTurnSpeed; 

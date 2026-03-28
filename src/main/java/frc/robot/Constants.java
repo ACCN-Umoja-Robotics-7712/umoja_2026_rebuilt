@@ -19,6 +19,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -142,8 +143,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
-        public static final double shootDriveSpeed = 0.5; // m/s
-        public static final double shootTurnSpeed = 0.5;
+        public static final double shootDriveSpeed = 0.5; // 5 m/s
+        public static final double shootTurnSpeed = 1.0;
         public static final double kSlowButtonDriveModifier = 0.5;
         public static final double kSlowButtonTurnModifier = 0.50;
         public static final double teleSpeed = 0.7;
@@ -181,8 +182,8 @@ public final class Constants {
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
-        public static final double kPhood = 0.1;
-        public static final double kShood = 0.2;
+        public static final double kPhood = 0.8;
+        public static final double kShood = 0.1;
         public static final double kIhood = 0.0; 
         public static final double kDhood = 0.0;
 
@@ -191,8 +192,10 @@ public final class Constants {
         public static final int turretLimitSwitchID = 1;
         public static final double kPturretSlack = 0.1;
         public static final double kPturretSpring = 0;
-        public static final double kIturretSlack = 0.02;
+        public static final double kIturretSlack = 0;
         public static final double kIturretSpring = 0;
+
+        public static final Constraints turretConstraints = new Constraints(50, 100);
         // public static final double kIhood = 0; 
         public static final double turretFakeFeedForward = 0.45;
         public static final double turretSpringResistance = 0.5;

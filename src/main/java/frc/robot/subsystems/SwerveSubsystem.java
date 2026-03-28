@@ -240,6 +240,16 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStatesFromSpeeds(speeds);
     }
 
+    public void xLockWheels() {
+        SwerveModuleState[] states = {
+            new SwerveModuleState(0.0, new Rotation2d(45)),
+            new SwerveModuleState(0.0, new Rotation2d(135)),
+            new SwerveModuleState(0.0, new Rotation2d(-45)),
+            new SwerveModuleState(0.0, new Rotation2d(-135))
+        };
+        setModuleStates(states);
+    }
+
     public void resetEncoders(){
         frontLeft.resetEncoders();
         frontRight.resetEncoders();
@@ -712,11 +722,11 @@ public class SwerveSubsystem extends SubsystemBase {
         // }
         
         if (distanceToTarget < 2.3 ) {
-            hood = hood + 0.65;
+            hood = hood + 0.55;
         }
         
-        if (distanceToTarget >= 2.3 && distanceToTarget <= 5.0) {
-            hood = hood + 0.85;
+        if (distanceToTarget >= 2.3 && distanceToTarget <= 6.0) {
+            hood = hood + 0.75;
         }
 
         rpm = Math.min(5200.0, rpm);

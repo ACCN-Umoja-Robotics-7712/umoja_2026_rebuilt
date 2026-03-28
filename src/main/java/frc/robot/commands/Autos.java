@@ -1,21 +1,11 @@
 package frc.robot.commands;
 
-import java.nio.file.Path;
-import java.util.List;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,17 +16,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SHOOTING_POSES;
-import frc.robot.Constants.TurretConstants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
@@ -44,8 +28,6 @@ import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
 import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 // ---------------------------------------------------------- AUTO COMMANDS -------------------------------------------------- //
@@ -267,7 +249,7 @@ public class Autos {
                         )
                         .andThen(
                             Commands.parallel(
-                                new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                             )
                         )
@@ -345,7 +327,7 @@ public class Autos {
                         )
                         .andThen(
                             Commands.parallel(
-                                new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                             )
                         )
@@ -423,7 +405,7 @@ public class Autos {
                         )
                         .andThen(
                             Commands.parallel(
-                                new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                             )
                         )
@@ -481,7 +463,7 @@ public class Autos {
                     )
                     .andThen(
                         Commands.parallel(
-                            new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                             new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                         )
                     )
@@ -538,7 +520,7 @@ public class Autos {
                     )
                     .andThen(
                         Commands.parallel(
-                            new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                             new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                         )
                     )
@@ -594,7 +576,7 @@ public class Autos {
                     )
                     .andThen(
                         Commands.parallel(
-                            new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                             new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                         )
                     )
@@ -650,7 +632,7 @@ public class Autos {
                     )
                     .andThen(
                         Commands.parallel(
-                            new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                             new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                         )
                     )
@@ -743,7 +725,7 @@ public class Autos {
                         )
                         .andThen(
                             Commands.parallel(
-                                new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                             )
                         )
@@ -820,7 +802,7 @@ public class Autos {
                     ).withTimeout(5.5)
                     .andThen(
                         Commands.parallel(
-                            new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                             new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                         )
                     )
@@ -894,7 +876,7 @@ public class Autos {
             ).withTimeout(5.5)
             .andThen(
                 Commands.parallel(
-                    new InstantCommand(() -> RobotContainer.shooterFlywheelSubsystem.stopFlywheel(), RobotContainer.shooterFlywheelSubsystem),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, () -> -3000.0),
                     new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem)
                 )
             )
