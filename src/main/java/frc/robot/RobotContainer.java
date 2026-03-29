@@ -35,6 +35,7 @@ import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
 import frc.robot.commands.ZeroCommands.EnableZeroTurretCommand;
 import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
+import frc.robot.commands.ZeroCommands.zeroIntakeArm;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -107,7 +108,7 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     
-    RobotContainer.swerveSubsystem.setDefaultCommand(
+    swerveSubsystem.setDefaultCommand(
       Commands.parallel(
         new SwerveJoystick(
             RobotContainer.swerveSubsystem,
@@ -116,6 +117,22 @@ public class RobotContainer {
             () -> -RobotContainer.driverController.getRightX()
         )
       )
+    );
+
+    shooterFlywheelSubsystem.setDefaultCommand(
+      new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3000.0)
+    );
+
+    indexerSubsystem.setDefaultCommand(
+      new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+    );
+
+    shooterHoodSubsystem.setDefaultCommand(
+      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
+    );
+
+    shooterTurretSubsystem.setDefaultCommand(
+      new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     );
 
     // Align with trench
@@ -164,9 +181,13 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> Constants.IntakeConstants.intakeSpeed
+        () -> Constants.IntakeConstants.intakeVoltage
       )
     );
+
+    // driverController.leftStick().whileTrue(
+    //   new ManualIntakeRoller(intakeRollerSubsystem, null))
+    // )
 
     //Manual Commands (Just for Now)
     // Intake Roller
@@ -219,33 +240,23 @@ public class RobotContainer {
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
       )
-    ).whileFalse(
-      Commands.parallel(
-        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
-        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
-      )
     );
     
-    operatorController.a()
-    .whileTrue(
-      Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
-        new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
-          new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
-          , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.9).andThen(
-        Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
-            new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
-        )
-      )
-    ).whileFalse(
-      Commands.parallel(
-        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
-        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
-      )
-    );
+    // operatorController.a()
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+    //     new ConditionalCommand(
+    //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
+    //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+    //       , RobotContainer::isReadyToShoot)
+    //   ).withTimeout(0.6).andThen(
+    //     Commands.parallel(
+    //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
+    //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
+    //     )
+    //   )
+    // );
     
     // operatorController.a().whileTrue(
       // new ShooterHoodValueCommand(shooterHoodSubsystem, shooterHoodSubsystem::getDashboardHoodValue)
@@ -261,16 +272,11 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.9).andThen(
+      ).withTimeout(0.6).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
-      )
-    ).whileFalse(
-      Commands.parallel(
-        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
-        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
     
@@ -282,16 +288,11 @@ public class RobotContainer {
           new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
           , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.9).andThen(
+      ).withTimeout(0.6).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
             new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts)
         )
-      )
-    ).whileFalse(
-      Commands.parallel(
-        new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0),
-        new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
       )
     );
 
@@ -301,35 +302,22 @@ public class RobotContainer {
         new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
         new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
       )
-    ).whileFalse(
-      Commands.parallel(
-      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0),
-      new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
-    )
     );
 
     operatorController.povDown().whileTrue(
         new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 1.0)
-    ).whileFalse(
-      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
     );
     
 
     operatorController.povLeft().whileTrue(
         new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 2.5)
-    ).whileFalse(
-      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
     );
 
     operatorController.povUp().whileTrue(
         new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 4.0)
-    ).whileFalse(
-      new ManualShooterHoodCommand(shooterHoodSubsystem, () -> 0.0)
     );
     // operatorController.x().whileTrue(
     //   new ShooterTurretAngleCommand(shooterTurretSubsystem, shooterTurretSubsystem::getCustomAngle)
-    // ).whileFalse(
-    //   new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     // );
 
     // operatorController.a().whileTrue(
@@ -377,6 +365,9 @@ public class RobotContainer {
       new ZeroHoodCommand(shooterHoodSubsystem).withTimeout(1)
     );
     
+    driverController.button(XBoxConstants.MENU).onTrue(
+      new zeroIntakeArm(intakeArmSubsystem)
+    );
 
     operatorController.button(XBoxConstants.PAGE).whileTrue(
       new EnableZeroTurretCommand(shooterTurretSubsystem)
@@ -396,20 +387,20 @@ public class RobotContainer {
     );
 
    // Climber
-    driverController.leftStick()
-    .whileTrue(
-      new ManualClimbCommand(climbSubsystem,
-        () -> 1.0
-      )
-    );
+    // driverController.leftStick()
+    // .whileTrue(
+    //   new ManualClimbCommand(climbSubsystem,
+    //     () -> 1.0
+    //   )
+    // );
 
     // Climber (Other way)
-    driverController.rightStick()
-    .whileTrue(
-      new ManualClimbCommand(climbSubsystem,
-        () -> -1.0
-      )
-    );
+    // driverController.rightStick()
+    // .whileTrue(
+    //   new ManualClimbCommand(climbSubsystem,
+    //     () -> -1.0
+    //   )
+    // );
   }
 
   public static double diffFromWantedAngle(double wantedAngle) {

@@ -37,8 +37,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private final SparkMax turretMotor;
     private final DigitalInput turretZeroLimitSwitch;
 
-    private final PIDController turretSlackPidController;
-    private final PIDController turretSpringPidController;
+    private final PIDController turretPidController;
+    private final SimpleMotorFeedforward turretFeedforward;
 
     private double state = ShooterStates.NONE;
     private boolean isZeroed = false;
@@ -47,7 +47,6 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double maxAngle = 280;
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
-    private PIDController lastPIController = null;
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
@@ -56,8 +55,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
         
-        turretSlackPidController = new PIDController(TurretConstants.kPturretSlack, TurretConstants.kIturretSlack, 0);
-        turretSpringPidController = new PIDController(TurretConstants.kPturretSpring, TurretConstants.kIturretSpring, 0);
+        turretPidController = new PIDController(TurretConstants.kPturretSlack, TurretConstants.kIturretSlack, 0);
+        turretFeedforward = new SimpleMotorFeedforward(TurretConstants.turretFakeFeedForward, 0);
     }
 
     public void runTurret(double speed) {
@@ -111,7 +110,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         boolean withinSlackRange = currentAngle <= maxSlack && currentAngle >= minSlack; 
         SmartDashboard.putNumber("new angle that we want", limitToRange);
         wantedTurretAngle = limitToRange;
-        double pidVal = turretSlackPidController.calculate(getAngleDegrees(), limitToRange);
+        double pidVal = turretPidController.calculate(getAngleDegrees(), limitToRange);
+        double feedforward = turretFeedforward.calculate(turretMotor.getEncoder().getVelocity());
         double diff = wantedTurretAngleInDegrees - currentAngle;
         double direction = diff != 0 ? diff/Math.abs(diff) : 1;
         if (direction != lastDirection) {
@@ -135,7 +135,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         // }
         // System.out.println(" " + pidVal + isZeroed);
         // Math.
-        double voltage = pidVal + direction*fakeFeedForward;
+        // double voltage = pidVal + feedforward;
+        double voltage = feedforward;
         if (voltage < 0) {
             voltage = Math.max(voltage, -3);
         } else if (voltage > 0) {
@@ -196,27 +197,19 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         
         // TODO: REMOVE FOR COMP
         double kPturretSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack);
-        double kPturretSpring = SmartDashboard.getNumber("kP Turret spring", TurretConstants.kPturretSpring);
         double kIturretSlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack);
-        double kIturretSpring = SmartDashboard.getNumber("kI Turret spring", TurretConstants.kIturretSpring);
 
         SmartDashboard.putNumber("kP Turret slack", kPturretSlack);
-        SmartDashboard.putNumber("kP Turret spring", kPturretSpring);
 
         SmartDashboard.putNumber("kI Turret slack", kIturretSlack);
-        SmartDashboard.putNumber("kI Turret spring", kIturretSpring);
 
-        boolean kPSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack) != turretSlackPidController.getP();
-        boolean kPSpring = SmartDashboard.getNumber("kP Turret spring", TurretConstants.kPturretSpring) != turretSpringPidController.getP();
-        boolean kISlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack) != turretSlackPidController.getI();
-        boolean kISpring = SmartDashboard.getNumber("kI Turret spring", TurretConstants.kIturretSlack) != turretSpringPidController.getI();
+        boolean kPSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack) != turretPidController.getP();
+        boolean kISlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack) != turretPidController.getI();
 
-        if (kPSlack || kPSpring || kISlack || kISpring) {
-            turretSlackPidController.setP(kPturretSlack);
-            turretSpringPidController.setP(kPturretSpring);
-            turretSlackPidController.setI(kIturretSlack);
-            turretSpringPidController.setI(kIturretSpring);
-            System.out.println("Updated turret PID and FF values: kP slack = " + kPturretSlack + "kP spring = " + kPturretSpring + "kI slack " + kIturretSlack + "kI spring = " + kIturretSpring + kPSlack + kPSpring + kISlack + kISpring + turretSpringPidController.getP());
+        if (kPSlack || kISlack) {
+            turretPidController.setP(kPturretSlack);
+            turretPidController.setI(kIturretSlack);
+            System.out.println("Updated turret PID and FF values: kP slack = " + kPturretSlack + "kI slack " + kIturretSlack + kPSlack + kISlack + turretPidController.getP());
         }
     }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
@@ -37,6 +38,7 @@ public class SwerveJoystick extends Command {
   Joystick j = new Joystick(USB.DRIVER_CONTROLLER);
 
   private final PIDController driftController = new PIDController(DriveConstants.kPDrift, DriveConstants.kIDrift, 0);
+  private final Timer xLockTimer = new Timer();
   
   
   /** Creates a new SwerveJoystick with x and y being field oriented. */
@@ -97,23 +99,23 @@ public class SwerveJoystick extends Command {
           // if (!(RobotContainer.driverController.rightBumper().getAsBoolean()) || isRobotOrientatedDrive){
           //   xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
           //   ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
-          //   turningSpeed = turningLimiter.calculate(turningSpeed) * (DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.kSlowButtonTurnModifier);
+          //   turningSpeed = turningLimiter.calculate(turningSpeed) * (DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond * DriveConstants.kSlowButtonTurnModifier);
           // } elseif
           if (RobotContainer.driverController.b().getAsBoolean()){
-            xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-            ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-            turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond; 
+            xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+            ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+            turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond); 
           }
           else{
-            xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond  * DriveConstants.teleSpeed;
-            ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.teleSpeed;
-            turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond * DriveConstants.teleTurnSpeed; 
+            xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond  * DriveConstants.teleSpeed);
+            ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.teleSpeed);
+            turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond * DriveConstants.teleTurnSpeed); 
           }
 
           if (RobotContainer.driverController.rightBumper().getAsBoolean()) {
-            xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.shootDriveSpeed;
-            ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.shootDriveSpeed;
-            turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.shootTurnSpeed; 
+            xSpeed = xLimiter.calculate(xSpeed * DriveConstants.shootDriveSpeed);
+            ySpeed = yLimiter.calculate(ySpeed * DriveConstants.shootDriveSpeed);
+            turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.shootTurnSpeed); 
           //   xSpeed = xLimiter.calculate(Math.min(xSpeed, DriveConstants.shootingSpeedCap)) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
           //   ySpeed = yLimiter.calculate(Math.min(ySpeed, DriveConstants.shootingSpeedCap)) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
           }
@@ -148,10 +150,19 @@ public class SwerveJoystick extends Command {
           } else {
             chassisSpeeds = new ChassisSpeeds(flip*xSpeed, flip*ySpeed, turningSpeed);
           }
-
+          
           // 5. Convert chassis speeds to individual module states
           SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
           swerveSubsystem.setModuleStates(moduleStates);
+
+          if (xSpeed == 0 && ySpeed == 0) {
+            xLockTimer.start();
+            if (xLockTimer.hasElapsed(1)) {
+              swerveSubsystem.xLockWheels();
+            }
+          } else {
+            xLockTimer.stop();
+          }
 
           if(j.getRawButtonPressed(XBoxConstants.PAGE)){
             swerveSubsystem.setHeading(0);

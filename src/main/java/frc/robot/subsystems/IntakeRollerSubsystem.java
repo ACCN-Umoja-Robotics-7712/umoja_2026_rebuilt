@@ -30,7 +30,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     public IntakeRollerSubsystem() {
         intakeRollerMotor = new SparkFlex(IntakeConstants.rollerMotorID, MotorType.kBrushless);
         
-        SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(40);
+        SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(20); // Was 40
         intakeRollerMotor.configure(intakeRollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         intakeRollerPidController = new PIDController(IntakeConstants.rollerkP, 0, 0);
     }
@@ -48,6 +48,10 @@ public class IntakeRollerSubsystem extends SubsystemBase {
     public void runIntake(double speed) {
         SmartDashboard.putNumber("intake speed", speed);
         intakeRollerMotor.set(speed);
+    }
+
+    public void setIntakeVoltage(double voltage) {
+        intakeRollerMotor.setVoltage(voltage);
     }
 
     public void setIntakeSpeed(double wantedSpeed) {

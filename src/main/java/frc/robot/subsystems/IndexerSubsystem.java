@@ -19,18 +19,18 @@ public class IndexerSubsystem extends SubsystemBase {
     
     public IndexerSubsystem() {
         indexerMotorOriginal = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
-        SparkBaseConfig indexerOriginalConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
+        SparkBaseConfig indexerOriginalConfig = new SparkFlexConfig().smartCurrentLimit(35); // NEO_Vortex (80 A but was 40 A)
         indexerMotorOriginal.configure(indexerOriginalConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         beltMotor = new SparkFlex(IndexerConstants.indexerMotorFollowerID, MotorType.kBrushless);
-        SparkBaseConfig beltConfig = new SparkFlexConfig().smartCurrentLimit(40); // NEO_Vortex
+        SparkBaseConfig beltConfig = new SparkFlexConfig().smartCurrentLimit(35); // NEO_Vortex
         beltConfig.inverted(true);
         beltMotor.configure(beltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void runIndexerAtVoltage(double voltage) { // Can change the speed for each motor independently
         indexerMotorOriginal.setVoltage(voltage);
-        beltMotor.setVoltage(voltage/2.25); // 3.0
+        beltMotor.setVoltage(5.5); // 3.0
     }
 
     public void runIndexerUsingTestvoltage() {
@@ -50,6 +50,8 @@ public class IndexerSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Indexer velocity", indexerMotorOriginal.getEncoder().getVelocity());
         SmartDashboard.putNumber("Indexer Belt velocity", beltMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Indexer Belt current", beltMotor.getOutputCurrent());
+
 
         double indexVoltage = SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
         double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10/2.25);

@@ -25,10 +25,8 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeArmSubsystem extends SubsystemBase {
     private final TalonFX intakeArmMotorLeader;
     private final TalonFX intakeArmMotorFollower;
-    private final DigitalInput intakeArmZeroLimitSwitch;
     private final ArmFeedforward intakeArmFeedforward;
     private final PIDController intakeArmPidController;
-    private final Trigger intakeArmTrigger;
 
     private double state = IntakeArmStates.NONE;
 
@@ -49,16 +47,16 @@ public class IntakeArmSubsystem extends SubsystemBase {
         // intakeArmMotorLeader.getConfigurator().apply(armConfig);
         intakeArmMotorFollower.setControl(new Follower(intakeArmMotorLeader.getDeviceID(), MotorAlignmentValue.Opposed));
 
-        intakeArmZeroLimitSwitch = new DigitalInput(IntakeConstants.intakeArmZeroLimitSwitchID);
+        // intakeArmZeroLimitSwitch = new DigitalInput(IntakeConstants.intakeArmZeroLimitSwitchID);
         intakeArmPidController = new PIDController(IntakeConstants.armkP, 0, 0);
         intakeArmFeedforward = new ArmFeedforward(0, IntakeConstants.armkG, IntakeConstants.armkV, 0);
 
-        intakeArmTrigger = new Trigger(intakeArmZeroLimitSwitch::get);
+        // intakeArmTrigger = new Trigger(intakeArmZeroLimitSwitch::get);
         setBrakeMode(NeutralModeValue.Coast);
     }
 
     public void zeroIntakeArm() {
-        runIntakeArm(state);
+        intakeArmMotorLeader.setPosition(0);
     }
 
     public void setBrakeMode(NeutralModeValue mode) {

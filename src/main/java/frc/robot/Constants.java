@@ -140,7 +140,7 @@ public final class Constants {
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 4.3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
         public static final double shootDriveSpeed = 0.5; // 5 m/s
@@ -182,7 +182,7 @@ public final class Constants {
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
-        public static final double kPhood = 0.8;
+        public static final double kPhood = 0.85;
         public static final double kShood = 0.1;
         public static final double kIhood = 0.0; 
         public static final double kDhood = 0.0;
@@ -234,14 +234,12 @@ public final class Constants {
         public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
-        public static final int intakeArmZeroLimitSwitchID = 5;
-
         public static final double rollerkP = 0.01;
         public static final double armkP = 0.00;
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeSpeed = -0.5;
+        public static final double intakeVoltage = -7;
     }
 
     public static final class IntakeRollerStates {

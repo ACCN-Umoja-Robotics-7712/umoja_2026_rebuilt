@@ -222,7 +222,7 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(4.5, 3.95);
         angleTable.put(4.75, 4.55);
         angleTable.put(5.0, 4.85);
-        // angleTable.put(5.25, 00.0);
+        angleTable.put(5.25, 5.0);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
