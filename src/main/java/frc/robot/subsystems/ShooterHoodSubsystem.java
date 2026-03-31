@@ -38,7 +38,6 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     private final DutyCycleEncoder hoodAbsoluteDutyCycleEncoder;
     private final PIDController hoodPidController;
     private final SimpleMotorFeedforward feedforward;
-    private double lastPositiveVelocity = Double.POSITIVE_INFINITY;
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder network").publish();
 
@@ -48,6 +47,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     // private double maxMovement = 0.955 - 0.61;
     // private double zeroLimit = 0.375;
     private double maxMovement = 5.0;
+    private double wantedHoodValue = 0;
 
     public ShooterHoodSubsystem() {
         CANBus rio = new CANBus("rio");
@@ -111,7 +111,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     // }
 
     public boolean didReachValue() {
-        return hoodPidController.atSetpoint();
+        return Math.abs(hoodMotor.getPosition().getValueAsDouble() - wantedHoodValue) < 0.01;
     }
 
     public void runHood(double speed) {
@@ -133,6 +133,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     
     // wantedHoodValue should be encoder ticks above from 0
     public void setHoodValue(double wantedHoodValueFromZero) {
+        wantedHoodValue = wantedHoodValueFromZero;
         // value is from how much increased from our zero value
         hoodMotor.setVoltage(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValueFromZero) + feedforward.calculate(hoodMotor.getVelocity().getValueAsDouble()));
     }

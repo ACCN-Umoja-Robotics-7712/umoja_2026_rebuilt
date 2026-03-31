@@ -192,7 +192,7 @@ public final class Constants {
         public static final int turretLimitSwitchID = 1;
         public static final double kPturretSlack = 0.1;
         public static final double kPturretSpring = 0;
-        public static final double kIturretSlack = 0;
+        public static final double kIturretSlack = 0.25;
         public static final double kIturretSpring = 0;
 
         public static final Constraints turretConstraints = new Constraints(50, 100);
@@ -254,6 +254,8 @@ public final class Constants {
         public static final int indexerMotorFollowerID = 34;
 
         public static final double indexVolts = 10.0;
+        public static final double beltVolts = 5.5;
+        public static final double idleBeltVolts = 0;
     }
 
     public static final class ClimbConstants {
@@ -452,7 +454,7 @@ public final class Constants {
     public static final class SHOOTING_POSES {
 
         // BLUE SIDE
-        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.6, 4, new Rotation2d(0));
+        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.626, 4.035, new Rotation2d(0));
         public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(1.25, 6, new Rotation2d(0));
         public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(1.25, 2, new Rotation2d(0));
         
@@ -479,7 +481,7 @@ public final class Constants {
         public static final Pose2d RED_TRENCH_DEPOT_AUTO_RETURN = new Pose2d(10.841, 0.716, new Rotation2d(90));
 
         //RED SIDE
-        public static final Pose2d RED_HUB_POSE = new Pose2d(11.9, 4, new Rotation2d(0));
+        public static final Pose2d RED_HUB_POSE = new Pose2d(16.541 - 4.626, 4.035, new Rotation2d(0));
         public static final Pose2d RED_PASS_DEPOT_POSE = new Pose2d(15.25, 2, new Rotation2d(0));
         public static final Pose2d RED_PASS_OUTPOST_POSE = new Pose2d(15.25, 6, new Rotation2d(0));
 

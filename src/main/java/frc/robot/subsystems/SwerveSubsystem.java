@@ -132,15 +132,15 @@ public class SwerveSubsystem extends SubsystemBase {
     
         // Load the RobotConfig from the GUI settings. You should probably
         // store this in your Constants file
-        try{
+        // try{
             config = Constants.robotConfig;
             // config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-        // Handle exception as needed
-            e.printStackTrace();
-            System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
-            return;
-        }
+        // } catch (Exception e) {
+        // // Handle exception as needed
+        //     e.printStackTrace();
+        //     System.out.println("ROBOT GAVE UP PLEASE FIX CONFIG");
+        //     return;
+        // }
 
         // Configure AutoBuilder last
         AutoBuilder.configure(
@@ -469,6 +469,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         || rightMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || rightMT2.pose.getY() < 0
                                         || rightMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
+                isOutsideField = false;
                 if (isOutsideField) {
                     rejectRightUpdate = true;
                 }
@@ -511,7 +512,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 boolean isOutsideField = forwardMT2.pose.getX() < 0
                                         || forwardMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || forwardMT2.pose.getY() < 0
-                                        || forwardMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();                // boolean isAmbigious = forwardMT2.
+                                        || forwardMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
+                isOutsideField = false;
                 if (isCloserThan1m || isOutsideField) {
                     rejectForwardUpdate = true;
                 }
@@ -555,7 +557,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 boolean isOutsideField = leftMT2.pose.getX() < 0
                                         || leftMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || leftMT2.pose.getY() < 0
-                                        || leftMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth(); 
+                                        || leftMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
+                isOutsideField = false;
                 if (isOutsideField) {
                     rejectLeftUpdate = true;
                 }
@@ -707,7 +710,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getTurretToTargetHoodValue() {
-        return turretToTargetHoodValue;
+        // return SmartDashboard.getNumber(getName(), flatHoodIncrease)
+        return RobotContainer.shooterHoodSubsystem.getDashboardHoodValue();
+        // return turretToTargetHoodValue;
     }
 
     public double[] updateRPMHoodValues(double distanceToTarget) {

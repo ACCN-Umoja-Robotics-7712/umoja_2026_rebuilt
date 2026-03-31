@@ -155,14 +155,14 @@ public class SwerveJoystick extends Command {
           SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
           swerveSubsystem.setModuleStates(moduleStates);
 
-          if (xSpeed == 0 && ySpeed == 0) {
-            xLockTimer.start();
-            if (xLockTimer.hasElapsed(1)) {
-              swerveSubsystem.xLockWheels();
-            }
-          } else {
-            xLockTimer.stop();
-          }
+          // if (xSpeed == 0 && ySpeed == 0 && turningSpeed == 0)
+          //   xLockTimer.start();
+          //   if (xLockTimer.hasElapsed(1)) {
+          //     swerveSubsystem.xLockWheels();
+          //   }
+          // } else {
+          //   xLockTimer.stop();
+          // }
 
           if(j.getRawButtonPressed(XBoxConstants.PAGE)){
             swerveSubsystem.setHeading(0);

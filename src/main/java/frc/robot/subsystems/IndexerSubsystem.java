@@ -28,9 +28,9 @@ public class IndexerSubsystem extends SubsystemBase {
         beltMotor.configure(beltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void runIndexerAtVoltage(double voltage) { // Can change the speed for each motor independently
-        indexerMotorOriginal.setVoltage(voltage);
-        beltMotor.setVoltage(5.5); // 3.0
+    public void runIndexerAtVoltage(double indexVoltage, double beltVoltage) { // Can change the speed for each motor independently
+        indexerMotorOriginal.setVoltage(indexVoltage);
+        beltMotor.setVoltage(beltVoltage); // 3.0
     }
 
     public void runIndexerUsingTestvoltage() {
