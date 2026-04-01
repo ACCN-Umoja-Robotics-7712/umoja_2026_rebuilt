@@ -380,6 +380,11 @@ public final class Constants {
         public static final int RY = 5;
     }
 
+    public static final class TOFConstants {
+        public static final double convergenceEpislon = 0.01;
+        public static final double maxIterations = 10;
+    }
+
     public static final class LimelightConstants {
         public static final String LIMELIGHT_LEFT = "limelight-new";
         public static final String LIMELIGHT_RIGHT = "limelight-four";

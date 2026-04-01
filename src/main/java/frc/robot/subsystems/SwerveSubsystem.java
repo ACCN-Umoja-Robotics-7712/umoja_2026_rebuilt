@@ -102,6 +102,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
     private static final InterpolatingDoubleTreeMap rpmTable = new InterpolatingDoubleTreeMap();
     private static final InterpolatingDoubleTreeMap angleTable = new InterpolatingDoubleTreeMap();
+    private static final InterpolatingDoubleTreeMap tofTable = new InterpolatingDoubleTreeMap();
 
     private double headingOffset = 0;
     
@@ -229,6 +230,9 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(5.1, 4.6);
         angleTable.put(5.3, 4.7);
         angleTable.put(5.5, 4.9);
+
+        tofTable.put(0.0, 1.1);
+        tofTable.put(5.0, 1.1);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -711,13 +715,28 @@ public class SwerveSubsystem extends SubsystemBase {
         // for shooting on the move update target position based off of TOF with current velocity
         // use chassis speeds for now, update to using gyro speeds
         ChassisSpeeds speeds = ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
-        double tof = 1.25; // should get from table instead of hardcoded value temp 1.25s TOF for testing
-        Translation2d movingTarget = targetPose.getTranslation().plus(new Translation2d(-speeds.vxMetersPerSecond*tof, speeds.vxMetersPerSecond*tof));
-
-        targetPosePublisher.set(new Pose2d(movingTarget, new Rotation2d(0)));
+        Translation2d movingTarget = targetPose.getTranslation();
         Translation2d toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
+        double tof = tofTable.get(distanceToTarget);
+
+        targetPosePublisher.set(new Pose2d(movingTarget, new Rotation2d(0)));
+        double maxIterations = Constants.TOFConstants.maxIterations;
+        double convergenceEpsilon = Constants.TOFConstants.convergenceEpislon;
+        for (int i = 0; i < maxIterations; ++i) {
+            double lastTOF = tof;
+            
+            // recalculate with new TOF
+            movingTarget = targetPose.getTranslation().plus(new Translation2d(-speeds.vxMetersPerSecond*tof, speeds.vxMetersPerSecond*tof));
+            toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
+            turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
+            distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
+            tof = tofTable.get(distanceToTarget);
+
+            // stop when TOF delta is less than epsilon, or after max iterations to prevent infinite loop
+            if (Math.abs(lastTOF - tof) < convergenceEpsilon) break;
+        }
         return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
 
