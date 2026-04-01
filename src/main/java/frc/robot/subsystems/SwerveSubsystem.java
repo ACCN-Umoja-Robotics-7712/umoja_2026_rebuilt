@@ -475,7 +475,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         || rightMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || rightMT2.pose.getY() < 0
                                         || rightMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
-                isOutsideField = false;
+                // isOutsideField = false;
                 if (isOutsideField) {
                     rejectRightUpdate = true;
                 }
@@ -519,7 +519,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         || forwardMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || forwardMT2.pose.getY() < 0
                                         || forwardMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
-                isOutsideField = false;
+                // isOutsideField = false;
                 if (isCloserThan1m || isOutsideField) {
                     rejectForwardUpdate = true;
                 }
@@ -564,7 +564,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                         || leftMT2.pose.getX() > Constants.LimelightConstants.aprilTagLayout.getFieldLength()
                                         || leftMT2.pose.getY() < 0
                                         || leftMT2.pose.getY() > Constants.LimelightConstants.aprilTagLayout.getFieldWidth();
-                isOutsideField = false;
+                // isOutsideField = false;
                 if (isOutsideField) {
                     rejectLeftUpdate = true;
                 }
@@ -716,9 +716,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getTurretToTargetHoodValue() {
-        // return SmartDashboard.getNumber(getName(), flatHoodIncrease)
+        return turretToTargetHoodValue;
+    }
+
+    public double getDashboardHoodValue() {
         return RobotContainer.shooterHoodSubsystem.getDashboardHoodValue();
-        // return turretToTargetHoodValue;
     }
 
     public double[] updateRPMHoodValues(double distanceToTarget) {
@@ -729,18 +731,10 @@ public class SwerveSubsystem extends SubsystemBase {
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
-        rpm = rpm * 1.065;
-        // }
-        
-        if (distanceToTarget < 2.3 ) {
-            hood = hood + 0.55;
-        }
-        
-        if (distanceToTarget >= 2.3 && distanceToTarget <= 6.0) {
-            hood = hood + 0.75;
-        }
 
         rpm = Math.min(5200.0, rpm);
+        rpm = rpm * 0.975;
+        // hood = hood * 0.9;
         hood = Math.min(5.0, hood);
 
         return new double[] {-rpm, hood};

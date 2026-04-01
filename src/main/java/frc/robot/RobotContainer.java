@@ -252,19 +252,26 @@ public class RobotContainer {
       )
     );
     
-    operatorController.b()
-    .whileTrue(
+    // operatorController.b()
+    // .whileTrue(
+    //   Commands.parallel(
+    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
+    //     new ConditionalCommand(
+    //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts), 
+    //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+    //       , RobotContainer::isReadyToShoot)
+    //   ).withTimeout(0.6).andThen(
+    //     Commands.parallel(
+    //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
+    //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
+    //     )
+    //   )
+    // );
+    
+    operatorController.b().whileTrue(
       Commands.parallel(
-        new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
-        new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts), 
-          new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
-          , RobotContainer::isReadyToShoot)
-      ).withTimeout(0.6).andThen(
-        Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
-        )
+        new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
+        new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getDashboardHoodValue)
       )
     );
 
