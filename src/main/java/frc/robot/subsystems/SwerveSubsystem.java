@@ -183,28 +183,28 @@ public class SwerveSubsystem extends SubsystemBase {
         
         holonomicDriveController = new HolonomicDriveController(xController, yController, thetaController);
 
-        rpmTable.put(1.25, 3250.0);
-        rpmTable.put(1.5, 3310.0);
-        rpmTable.put(1.7, 3510.0);
-        rpmTable.put(1.9, 3600.0);
-        rpmTable.put(2.1, 3690.0);
-        rpmTable.put(2.3, 3780.0);
-        rpmTable.put(2.5, 3860.0);
-        rpmTable.put(2.7, 3950.0);
-        rpmTable.put(2.9, 4030.0);
-        rpmTable.put(3.1, 4110.0);
-        rpmTable.put(3.3, 4190.0);
-        rpmTable.put(3.5, 4270.0);
-        rpmTable.put(3.7, 4350.0);
-        rpmTable.put(3.9, 4420.0);
-        rpmTable.put(4.1, 4500.0);
-        rpmTable.put(4.3, 4570.0);
-        rpmTable.put(4.5, 4650.0);
-        rpmTable.put(4.7, 4720.0);
-        rpmTable.put(4.9, 4790.0);
-        rpmTable.put(5.1, 4860.0);
-        rpmTable.put(5.3, 4930.0);
-        rpmTable.put(5.5, 5000.0);
+        rpmTable.put(1.25, 3168.75);
+        rpmTable.put(1.5, 3227.25);
+        rpmTable.put(1.7, 3422.25);
+        rpmTable.put(1.9, 3510.0);
+        rpmTable.put(2.1, 3597.75);
+        rpmTable.put(2.3, 3685.5);
+        rpmTable.put(2.5, 3763.5);
+        rpmTable.put(2.7, 3851.25);
+        rpmTable.put(2.9, 3929.25);
+        rpmTable.put(3.1, 4007.25);
+        rpmTable.put(3.3, 4085.25);
+        rpmTable.put(3.5, 4163.25);
+        rpmTable.put(3.7, 4241.25);
+        rpmTable.put(3.9, 4309.5);
+        rpmTable.put(4.1, 4387.5);
+        rpmTable.put(4.3, 4455.75);
+        rpmTable.put(4.5, 4533.75);
+        rpmTable.put(4.7, 4602.0);
+        rpmTable.put(4.9, 4670.25);
+        rpmTable.put(5.1, 4738.5);
+        rpmTable.put(5.3, 4806.75);
+        rpmTable.put(5.5, 4875.0);
         
         angleTable.put(0.0, 0.0);
         angleTable.put(1.25, 0.0);
@@ -458,15 +458,15 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectRightUpdate = true;
         }
 
-        double visionTrustRightValue = 0.7;
+        // https://github.com/Mechanical-Advantage/RobotCode2025Public/blob/main/src/main/java/org/littletonrobotics/frc2025/subsystems/vision/Vision.java
+        double xyStdDevCoefficient = 0.01;
         if (rightMT2 != null) {
+            double visionTrustValue = 0.7;
             if (rightMT2.tagCount == 0) {
                 rejectRightUpdate = true;
-            } else if (rightMT2.tagCount == 1) {
-                visionTrustRightValue += 2;
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
-                visionTrustRightValue = 0;
+                visionTrustValue = 0;
             } else {
                 // // reject if > 1 m away
                 boolean isCloserThan1m = rightMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
@@ -480,10 +480,16 @@ public class SwerveSubsystem extends SubsystemBase {
                     rejectRightUpdate = true;
                 }
             }
+            double avgDistance = rightMT2.avgTagDist;
+            double xyStdDev =
+                xyStdDevCoefficient
+                    * Math.pow(avgDistance, 1.2)
+                    / Math.pow(rightMT2.tagCount, 2.0)
+                    * visionTrustValue;
             if (!rejectRightUpdate)
             {
                 limelightPoses.add(rightMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustRightValue,visionTrustRightValue,Double.POSITIVE_INFINITY));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStdDev,xyStdDev,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     rightMT2.pose,
                     rightMT2.timestampSeconds);
@@ -502,15 +508,13 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectForwardUpdate = true;
         }
 
-        double visionTrustForwardValue = 2.7;
         if (forwardMT2 != null) {
+            double visionTrustValue = 2.7;
             if (forwardMT2.tagCount == 0) {
                 rejectForwardUpdate = true;
-            } else if (forwardMT2.tagCount == 1) {
-                visionTrustForwardValue += 2;
             }
             if (RobotContainer.gameState == GameConstants.Disabled) {
-                visionTrustForwardValue = 0;
+                visionTrustValue = 0;
             } else {
                 // reject if > 1 m away
                 boolean isCloserThan1m = forwardMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
@@ -524,10 +528,18 @@ public class SwerveSubsystem extends SubsystemBase {
                     rejectForwardUpdate = true;
                 }
             }
+            
+            double avgDistance = forwardMT2.avgTagDist;
+            double xyStdDev =
+                xyStdDevCoefficient
+                    * Math.pow(avgDistance, 1.2)
+                    / Math.pow(forwardMT2.tagCount, 2.0)
+                    * visionTrustValue;
+
             if (!rejectForwardUpdate)
             {
                 limelightPoses.add(forwardMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustForwardValue,visionTrustForwardValue,Double.POSITIVE_INFINITY));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStdDev,xyStdDev,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     forwardMT2.pose,
                     forwardMT2.timestampSeconds);
@@ -547,15 +559,14 @@ public class SwerveSubsystem extends SubsystemBase {
             rejectLeftUpdate = true;
         }
 
-        double visionTrustLeftValue = 0.7;
         if (leftMT2 != null) {
+            double visionTrustValue = 0.7;
             if (leftMT2.tagCount == 0) {
                 rejectLeftUpdate = true;
-            } else if (leftMT2.tagCount == 1) {
-                visionTrustLeftValue += 2;
             }
+
             if (RobotContainer.gameState == GameConstants.Disabled) {
-                visionTrustLeftValue = 0;
+                visionTrustValue = 0;
             } else {
                 // // reject if > 1 m away
                 boolean isCloserThan1m = leftMT2.pose.getTranslation().getDistance(getPose().getTranslation()) > 1.0;
@@ -569,10 +580,17 @@ public class SwerveSubsystem extends SubsystemBase {
                     rejectLeftUpdate = true;
                 }
             }
+            
+            double avgDistance = leftMT2.avgTagDist;
+            double xyStdDev =
+                xyStdDevCoefficient
+                    * Math.pow(avgDistance, 1.2)
+                    / Math.pow(leftMT2.tagCount, 2.0)
+                    * visionTrustValue;
             if (!rejectLeftUpdate)
             {
                 limelightPoses.add(leftMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(visionTrustLeftValue,visionTrustLeftValue,Double.POSITIVE_INFINITY));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStdDev,xyStdDev,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     leftMT2.pose,
                     leftMT2.timestampSeconds);
@@ -733,8 +751,6 @@ public class SwerveSubsystem extends SubsystemBase {
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
 
         rpm = Math.min(5200.0, rpm);
-        rpm = rpm * 0.975;
-        // hood = hood * 0.9;
         hood = Math.min(5.0, hood);
 
         return new double[] {-rpm, hood};
