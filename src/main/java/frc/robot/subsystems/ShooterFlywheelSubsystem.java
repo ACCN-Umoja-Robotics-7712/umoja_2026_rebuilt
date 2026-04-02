@@ -52,7 +52,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
         flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, TurretConstants.kDfly);
         flywheelFFController = new SimpleMotorFeedforward(TurretConstants.kSfly, TurretConstants.kVfly,0);
-        kickerPidController = new PIDController(TurretConstants.kPkicker, TurretConstants.kIkicker, 0);
+        kickerPidController = new PIDController(TurretConstants.kPkicker, TurretConstants.kIkicker, TurretConstants.kDkicker);
         kickerFFController = new SimpleMotorFeedforward(TurretConstants.kSkicker, TurretConstants.kVkicker,0);
         
         kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
@@ -136,23 +136,29 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         double kSkicker = SmartDashboard.getNumber("kS Kicker", TurretConstants.kSkicker);
         double kVkicker = SmartDashboard.getNumber("kV Kicker", TurretConstants.kVkicker);
         double kPkicker = SmartDashboard.getNumber("kP Kicker", TurretConstants.kPkicker);
+        double kDkicker = SmartDashboard.getNumber("kD Kicker", TurretConstants.kDkicker);
         double kSfly = SmartDashboard.getNumber("kS fly", TurretConstants.kSfly);
         double kVfly = SmartDashboard.getNumber("kV fly", TurretConstants.kVfly);
         double kPfly = SmartDashboard.getNumber("kP fly", TurretConstants.kPfly);
+        double kDfly = SmartDashboard.getNumber("kD fly", TurretConstants.kDfly);
 
         SmartDashboard.putNumber("kS Kicker", kSkicker);
         SmartDashboard.putNumber("kV Kicker", kVkicker);
         SmartDashboard.putNumber("kP Kicker", kPkicker);
+        SmartDashboard.putNumber("kD Kicker", kDkicker);
         SmartDashboard.putNumber("kS fly", kSfly);
         SmartDashboard.putNumber("kV fly", kVfly);
         SmartDashboard.putNumber("kP fly", kPfly);
+        SmartDashboard.putNumber("kD fly", kDfly);
 
-        if (SmartDashboard.getNumber("kS Kicker", TurretConstants.kSkicker) != kickerFFController.getKs() || SmartDashboard.getNumber("kV Kicker", TurretConstants.kVkicker) != kickerFFController.getKv() || SmartDashboard.getNumber("kP Kicker", TurretConstants.kPkicker) != kickerPidController.getP() || SmartDashboard.getNumber("kP fly", kPfly) != flywheelPidController.getP()) {
+        if (SmartDashboard.getNumber("kS Kicker", TurretConstants.kSkicker) != kickerFFController.getKs() || SmartDashboard.getNumber("kV Kicker", TurretConstants.kVkicker) != kickerFFController.getKv() || SmartDashboard.getNumber("kP Kicker", TurretConstants.kPkicker) != kickerPidController.getP() || SmartDashboard.getNumber("kP fly", kPfly) != flywheelPidController.getP() || SmartDashboard.getNumber("kD fly", kDfly) != flywheelPidController.getD() || SmartDashboard.getNumber("kD kicker", kDkicker) != kickerPidController.getD()) {
 
             kickerFFController.setKs(kSkicker);
             kickerFFController.setKv(kVkicker);
             kickerPidController.setP(kPkicker);
+            kickerPidController.setD(kDkicker);
             flywheelPidController.setP(kPfly);
+            flywheelPidController.setD(kDfly);
             System.out.println("Updated Kicker PID and FF values: kS = " + kSkicker + ", kV = " + kVkicker + ", kP = " + kPkicker);
         }
     }

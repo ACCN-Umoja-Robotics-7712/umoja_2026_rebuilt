@@ -175,9 +175,10 @@ public final class Constants {
         public static final double kIfly = 0;
         public static final double kDfly = 0;
         public static final double kSkicker = 0;
-        public static final double kVkicker = 0.0019;
+        public static final double kVkicker = 0.002;
         public static final double kPkicker = 0.00001;
         public static final double kIkicker = 0;
+        public static final double kDkicker = 0;
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;

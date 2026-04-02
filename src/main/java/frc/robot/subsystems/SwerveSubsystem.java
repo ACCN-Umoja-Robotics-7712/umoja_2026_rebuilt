@@ -232,7 +232,10 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(5.5, 4.9);
 
         tofTable.put(0.0, 1.1);
-        tofTable.put(5.0, 1.1);
+        tofTable.put(1.8, 1.1);
+        tofTable.put(2.0, 1.1);
+        tofTable.put(2.2, 1.15);
+        tofTable.put(5.0, 1.5);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -540,10 +543,11 @@ public class SwerveSubsystem extends SubsystemBase {
                     / Math.pow(forwardMT2.tagCount, 2.0)
                     * visionTrustValue;
 
+            rejectForwardUpdate = true;
             if (!rejectForwardUpdate)
             {
                 limelightPoses.add(forwardMT2.pose);
-                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStdDev,xyStdDev,Double.POSITIVE_INFINITY));
+                poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(xyStdDev + 25,xyStdDev + 25,Double.POSITIVE_INFINITY));
                 poseEstimator.addVisionMeasurement(
                     forwardMT2.pose,
                     forwardMT2.timestampSeconds);
@@ -736,6 +740,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
             // stop when TOF delta is less than epsilon, or after max iterations to prevent infinite loop
             if (Math.abs(lastTOF - tof) < convergenceEpsilon) break;
+            if (i == maxIterations - 1) {
+                System.out.println("TOF DIDN'T CONVERGE");
+            }
         }
         return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
