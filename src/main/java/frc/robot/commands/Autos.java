@@ -422,16 +422,16 @@ public class Autos {
         return Commands.parallel(
             // always intake, aim shooter and hood too but after 1s to allow for zeroing while moving
             new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVoltage),
+            new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1).andThen(
+                new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+            ),
             new WaitCommand(1).andThen(
-                new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue),
                 new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
             ),
             // Zero hood and lower arm then aim turret
             Commands.sequence(
                 // Pick Up from CENTER and return, zero hood and lower arm while moving
                 AutoBuilder.followPath(blueLeftTrenchPathBackward).deadlineFor(
-                    Commands.parallel(
-                        new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1),
                         // Lower arm
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
                         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
@@ -460,7 +460,6 @@ public class Autos {
             .andThen(
                 AutoBuilder.followPath(blueLeftTrenchPathBackward).alongWith(   
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
-                )
             )
         );
     }

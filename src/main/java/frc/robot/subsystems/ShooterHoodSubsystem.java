@@ -79,7 +79,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
 
 
     public void zeroHood() {
-        hoodMotor.set(-0.1);
+        hoodMotor.set(-0.05);
     }
 
     public void setCurrentToZero() {

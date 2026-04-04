@@ -255,10 +255,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void xLockWheels() {
         SwerveModuleState[] states = {
-            new SwerveModuleState(0.0, new Rotation2d(45)),
-            new SwerveModuleState(0.0, new Rotation2d(135)),
             new SwerveModuleState(0.0, new Rotation2d(-45)),
-            new SwerveModuleState(0.0, new Rotation2d(-135))
+            new SwerveModuleState(0.0, new Rotation2d(-135)),
+            new SwerveModuleState(0.0, new Rotation2d(45)),
+            new SwerveModuleState(0.0, new Rotation2d(135))
         };
         setModuleStates(states);
     }
@@ -543,7 +543,9 @@ public class SwerveSubsystem extends SubsystemBase {
                     / Math.pow(forwardMT2.tagCount, 2.0)
                     * visionTrustValue;
 
-            rejectForwardUpdate = true;
+            if (avgDistance > 1.0) {
+                rejectForwardUpdate = true;
+            }
             if (!rejectForwardUpdate)
             {
                 limelightPoses.add(forwardMT2.pose);
@@ -773,6 +775,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // double hoodValue = 0;
         
         double rpm = rpmTable.get(distanceToTarget);
+        rpm = rpm/0.975;
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
 

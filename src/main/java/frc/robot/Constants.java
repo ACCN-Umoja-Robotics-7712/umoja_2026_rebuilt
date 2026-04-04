@@ -171,9 +171,9 @@ public final class Constants {
         public static final boolean flywheelMotorReversed = false;
         public static final double kSfly = 0.13;
         public static final double kVfly = 0.0018;
-        public static final double kPfly = 0.0001;
+        public static final double kPfly = 0.001;
         public static final double kIfly = 0;
-        public static final double kDfly = 0;
+        public static final double kDfly = 0.00001;
         public static final double kSkicker = 0;
         public static final double kVkicker = 0.002;
         public static final double kPkicker = 0.00001;
@@ -193,7 +193,7 @@ public final class Constants {
         public static final int turretLimitSwitchID = 1;
         public static final double kPturretSlack = 0.1;
         public static final double kPturretSpring = 0;
-        public static final double kIturretSlack = 0.25;
+        public static final double kIturretSlack = 0;
         public static final double kIturretSpring = 0;
 
         public static final Constraints turretConstraints = new Constraints(50, 100);
@@ -240,7 +240,7 @@ public final class Constants {
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeVoltage = -7;
+        public static final double intakeVoltage = -5;
     }
 
     public static final class IntakeRollerStates {
@@ -299,9 +299,9 @@ public final class Constants {
         // public static final double kIXController = 0.35; //0.06
         // public static final double kIYController = 0.35; // 0.06
         // public static final double kIThetaController = 0.2;
-        public static final double kPXController = 4.8;// 1.5
-        public static final double kPYController = 4.8; // 1.5
-        public static final double kPThetaController = 2; // 1
+        public static final double kPXController = 1.5;// 1.5
+        public static final double kPYController = 1.5; // 1.5
+        public static final double kPThetaController = 1; // 1
 
         public static final double kIXController = 0.0; //0.01 
         public static final double kIYController = 0.0; // 0.01
