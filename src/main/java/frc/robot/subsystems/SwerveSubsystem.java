@@ -236,6 +236,7 @@ public class SwerveSubsystem extends SubsystemBase {
         tofTable.put(2.0, 1.1);
         tofTable.put(2.2, 1.15);
         tofTable.put(5.0, 1.5);
+        tofTable.put(5.5, 1.7);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {

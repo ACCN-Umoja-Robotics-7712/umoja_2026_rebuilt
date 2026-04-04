@@ -174,9 +174,9 @@ public final class Constants {
         public static final double kPfly = 0.001;
         public static final double kIfly = 0;
         public static final double kDfly = 0.00001;
-        public static final double kSkicker = 0;
-        public static final double kVkicker = 0.002;
-        public static final double kPkicker = 0.00001;
+        public static final double kSkicker = 0.13; // set to same as kSfly due to single motor and less friction so this should be fine
+        public static final double kVkicker = 0.0018;
+        public static final double kPkicker = 0.0000;
         public static final double kIkicker = 0;
         public static final double kDkicker = 0;
 
