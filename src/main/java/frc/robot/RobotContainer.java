@@ -33,6 +33,7 @@ import frc.robot.commands.ManualCommands.ManualIntakeRoller;
 import frc.robot.commands.ManualCommands.ManualShooterFlywheelCommand;
 import frc.robot.commands.ManualCommands.ManualShooterHoodCommand;
 import frc.robot.commands.ManualCommands.ManualTurretCommand;
+import frc.robot.commands.ManualCommands.TestIndexerCommand;
 import frc.robot.commands.ZeroCommands.EnableZeroTurretCommand;
 import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
 import frc.robot.commands.ZeroCommands.zeroIntakeArm;
@@ -340,7 +341,8 @@ public class RobotContainer {
     );
 
     operatorController.button(XBoxConstants.PAGE).whileTrue(
-      new EnableZeroTurretCommand(shooterTurretSubsystem)
+      // new EnableZeroTurretCommand(shooterTurretSubsystem)
+      new TestIndexerCommand(indexerSubsystem)
     );
 
     //Intake Arm Motor

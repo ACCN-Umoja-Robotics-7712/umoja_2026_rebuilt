@@ -124,6 +124,18 @@ public class SwerveModule {
             stop();
             return;
         }
+
+           //Just in case -LEWI             // private boolean isXLockAngle(double degrees) {
+                        //     double[] xLockAngles = {45, -45, 135, -135};
+                        //     for (double target : xLockAngles) {
+                        //         if (Math.abs(degrees - target) < 2.0) { // 2-degree tolerance
+                        //             return true;
+                        //         }
+                        //     }
+                        //     return false;
+                        // }
+
+        
         state.optimize(getState().angle);
         SmartDashboard.putNumber("Swerve wanted angle:" + absoluteEncoderID, state.angle.getDegrees());
         SmartDashboard.putNumber("Swerve current speed:" + absoluteEncoderID, getState().speedMetersPerSecond);

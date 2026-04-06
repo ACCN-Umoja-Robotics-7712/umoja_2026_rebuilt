@@ -162,6 +162,7 @@ public class SwerveJoystick extends Command {
             }
           } else {
             xLockTimer.stop();
+            xLockTimer.reset();
           }
 
           if(j.getRawButtonPressed(XBoxConstants.PAGE)){

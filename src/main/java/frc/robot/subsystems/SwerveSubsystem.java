@@ -256,10 +256,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void xLockWheels() {
         SwerveModuleState[] states = {
-            new SwerveModuleState(0.0, new Rotation2d(-45)),
-            new SwerveModuleState(0.0, new Rotation2d(-135)),
-            new SwerveModuleState(0.0, new Rotation2d(45)),
-            new SwerveModuleState(0.0, new Rotation2d(135))
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(-45))),
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(-135))),
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(45))),
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(135)))
         };
         setModuleStates(states);
     }
