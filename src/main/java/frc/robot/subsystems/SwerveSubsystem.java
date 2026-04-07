@@ -212,7 +212,7 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(1.5, 0.0);
         angleTable.put(1.7, 0.0);
         angleTable.put(1.9, 0.0);
-        angleTable.put(2.1, 0.1);
+        angleTable.put(2.1, 0.0);
         angleTable.put(2.3, 0.7);
         angleTable.put(2.5, 1.1);
         angleTable.put(2.7, 1.6);
@@ -256,10 +256,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void xLockWheels() {
         SwerveModuleState[] states = {
-            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(-45))),
-            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(-135))),
             new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(45))),
-            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(135)))
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(135))),
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(135))),
+            new SwerveModuleState(0.0, new Rotation2d(Units.degreesToRadians(45)))
         };
         setModuleStates(states);
     }
@@ -728,7 +728,6 @@ public class SwerveSubsystem extends SubsystemBase {
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
         double tof = tofTable.get(distanceToTarget);
 
-        targetPosePublisher.set(new Pose2d(movingTarget, new Rotation2d(0)));
         double maxIterations = Constants.TOFConstants.maxIterations;
         double convergenceEpsilon = Constants.TOFConstants.convergenceEpislon;
         for (int i = 0; i < maxIterations; ++i) {
@@ -747,6 +746,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 System.out.println("TOF DIDN'T CONVERGE");
             }
         }
+        targetPosePublisher.set(new Pose2d(movingTarget, new Rotation2d(0)));
         return new double[] { turretAngleToTarget, distanceToTarget};// subtract robot heading to get turret angle relative to robot forward
     }
 
@@ -776,7 +776,6 @@ public class SwerveSubsystem extends SubsystemBase {
         // double hoodValue = 0;
         
         double rpm = rpmTable.get(distanceToTarget);
-        rpm = rpm/0.975;
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
 

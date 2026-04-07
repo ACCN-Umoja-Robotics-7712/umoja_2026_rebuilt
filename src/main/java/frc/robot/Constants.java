@@ -65,7 +65,7 @@ public final class Constants {
         // For RobotConfig + robot setup
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4); // 4 inches
         public static final double kWheelCOF = 1.200; // wheel COF inches
-        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60Foc(1).withReduction(MotorConstants.L2gearRatio);
+        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(1).withReduction(MotorConstants.L2gearRatio);
         public static final int kDriveMotorCurrentLimit = 100;
         public static final int kNumMotorsPerModule = 1; // number of drive motors per module (not including turning motors)
 
@@ -171,14 +171,14 @@ public final class Constants {
         public static final boolean flywheelMotorReversed = false;
         public static final double kSfly = 0.13;
         public static final double kVfly = 0.0018;
-        public static final double kPfly = 0.001;
+        public static final double kPfly = 0.002;
         public static final double kIfly = 0;
-        public static final double kDfly = 0.00001;
+        public static final double kDfly = 0.00000;
         public static final double kSkicker = 0.13; // set to same as kSfly due to single motor and less friction so this should be fine
         public static final double kVkicker = 0.0018;
-        public static final double kPkicker = 0.0000;
+        public static final double kPkicker = 0.000;
         public static final double kIkicker = 0;
-        public static final double kDkicker = 0;
+        public static final double kDkicker = 0.00000;
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
@@ -240,7 +240,7 @@ public final class Constants {
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeVoltage = -5;
+        public static final double intakeVoltage = 7;
     }
 
     public static final class IntakeRollerStates {
@@ -255,7 +255,7 @@ public final class Constants {
         public static final int indexerMotorFollowerID = 34;
 
         public static final double indexVolts = 10.0;
-        public static final double beltVolts = 5.5;
+        public static final double beltVolts = 8.5;
         public static final double idleBeltVolts = 0;
     }
 

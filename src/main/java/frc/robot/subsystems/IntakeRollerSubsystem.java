@@ -10,6 +10,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkFlexConfig.Presets;
 
@@ -31,6 +32,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         intakeRollerMotor = new SparkFlex(IntakeConstants.rollerMotorID, MotorType.kBrushless);
         
         SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(40); // Was 40
+        intakeRollerConfig.idleMode(IdleMode.kCoast);
         intakeRollerMotor.configure(intakeRollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         intakeRollerPidController = new PIDController(IntakeConstants.rollerkP, 0, 0);
     }
@@ -64,5 +66,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         } else {
             setIntakeSpeed(state);
         }
+        SmartDashboard.putNumber("Intake Velocity", intakeRollerMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Intake Current", intakeRollerMotor.getOutputCurrent());
     }
 }

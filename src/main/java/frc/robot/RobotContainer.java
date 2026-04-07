@@ -341,8 +341,8 @@ public class RobotContainer {
     );
 
     operatorController.button(XBoxConstants.PAGE).whileTrue(
-      // new EnableZeroTurretCommand(shooterTurretSubsystem)
-      new TestIndexerCommand(indexerSubsystem)
+      new EnableZeroTurretCommand(shooterTurretSubsystem)
+      // new TestIndexerCommand(indexerSubsystem)
     );
 
     //Intake Arm Motor

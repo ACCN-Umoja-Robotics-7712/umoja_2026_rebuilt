@@ -125,7 +125,7 @@ public class SwerveModule {
             return;
         }
 
-           //Just in case -LEWI             // private boolean isXLockAngle(double degrees) {
+        //Just in case -LEWI// private boolean isXLockAngle(double degrees) {
                         //     double[] xLockAngles = {45, -45, 135, -135};
                         //     for (double target : xLockAngles) {
                         //         if (Math.abs(degrees - target) < 2.0) { // 2-degree tolerance
