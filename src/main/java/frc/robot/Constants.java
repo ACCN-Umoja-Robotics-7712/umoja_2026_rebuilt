@@ -171,12 +171,12 @@ public final class Constants {
         public static final boolean flywheelMotorReversed = false;
         public static final double kSfly = 0.13;
         public static final double kVfly = 0.0018;
-        public static final double kPfly = 0.002;
+        public static final double kPfly = 0.001;
         public static final double kIfly = 0;
-        public static final double kDfly = 0.00000;
+        public static final double kDfly = 0.00003;
         public static final double kSkicker = 0.13; // set to same as kSfly due to single motor and less friction so this should be fine
         public static final double kVkicker = 0.0018;
-        public static final double kPkicker = 0.000;
+        public static final double kPkicker = 0.0001;
         public static final double kIkicker = 0;
         public static final double kDkicker = 0.00000;
 
@@ -240,7 +240,7 @@ public final class Constants {
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeVoltage = 7;
+        public static final double intakeVoltage = 8;
     }
 
     public static final class IntakeRollerStates {
@@ -255,7 +255,7 @@ public final class Constants {
         public static final int indexerMotorFollowerID = 34;
 
         public static final double indexVolts = 10.0;
-        public static final double beltVolts = 8.5;
+        public static final double beltVolts = 10.0;
         public static final double idleBeltVolts = 0;
     }
 

@@ -184,28 +184,30 @@ public class SwerveSubsystem extends SubsystemBase {
         
         holonomicDriveController = new HolonomicDriveController(xController, yController, thetaController);
 
-        rpmTable.put(1.25, 3168.75);
-        rpmTable.put(1.5, 3227.25);
-        rpmTable.put(1.7, 3422.25);
-        rpmTable.put(1.9, 3510.0);
-        rpmTable.put(2.1, 3597.75);
-        rpmTable.put(2.3, 3685.5);
-        rpmTable.put(2.5, 3763.5);
-        rpmTable.put(2.7, 3851.25);
-        rpmTable.put(2.9, 3929.25);
-        rpmTable.put(3.1, 4007.25);
-        rpmTable.put(3.3, 4085.25);
-        rpmTable.put(3.5, 4163.25);
-        rpmTable.put(3.7, 4241.25);
-        rpmTable.put(3.9, 4309.5);
-        rpmTable.put(4.1, 4387.5);
-        rpmTable.put(4.3, 4455.75);
-        rpmTable.put(4.5, 4533.75);
-        rpmTable.put(4.7, 4602.0);
-        rpmTable.put(4.9, 4670.25);
-        rpmTable.put(5.1, 4738.5);
-        rpmTable.put(5.3, 4806.75);
-        rpmTable.put(5.5, 4875.0);
+        // rpmTable.put(1.25, 3168.75);
+        // rpmTable.put(1.5, 3227.25);
+        // rpmTable.put(1.7, 3422.25);
+        // rpmTable.put(1.9, 3510.0);
+        // rpmTable.put(2.1, 3597.75);
+        // rpmTable.put(2.3, 3685.5);
+        // rpmTable.put(2.5, 3763.5);
+        rpmTable.put(1.25, 2850.0);
+        rpmTable.put(2.7, 3375.0);
+        rpmTable.put(2.9, 3425.0);
+        rpmTable.put(3.1, 3500.0);
+        rpmTable.put(3.3, 3550.0);
+        rpmTable.put(3.5, 3600.0);
+        rpmTable.put(3.7, 3675.0);
+        rpmTable.put(3.9, 3750.0);
+        rpmTable.put(4.1, 3850.0);
+        rpmTable.put(5.5, 5400.0);
+        // rpmTable.put(4.3, 4455.75);
+        // rpmTable.put(4.5, 4533.75);
+        // rpmTable.put(4.7, 4602.0);
+        // rpmTable.put(4.9, 4670.25);
+        // rpmTable.put(5.1, 4738.5);
+        // rpmTable.put(5.3, 4806.75);
+        // rpmTable.put(5.5, 4875.0);
         
         angleTable.put(0.0, 0.0);
         angleTable.put(1.25, 0.0);
@@ -236,7 +238,7 @@ public class SwerveSubsystem extends SubsystemBase {
         tofTable.put(2.0, 1.1);
         tofTable.put(2.2, 1.15);
         tofTable.put(5.0, 1.5);
-        tofTable.put(5.5, 1.7);
+        tofTable.put(5.5, 1.4);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -461,7 +463,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         boolean rejectRightUpdate = false;
 
-        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 180) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
             rejectRightUpdate = true;
         }
@@ -469,7 +471,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // https://github.com/Mechanical-Advantage/RobotCode2025Public/blob/main/src/main/java/org/littletonrobotics/frc2025/subsystems/vision/Vision.java
         double xyStdDevCoefficient = 0.01;
         if (rightMT2 != null) {
-            double visionTrustValue = 0.7;
+            double visionTrustValue = 1.0;
             if (rightMT2.tagCount == 0) {
                 rejectRightUpdate = true;
             }
@@ -511,7 +513,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         boolean rejectForwardUpdate = false;
 
-        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 180) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
             rejectForwardUpdate = true;
         }
@@ -565,13 +567,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
         boolean rejectLeftUpdate = false;
 
-        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 360) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        if (Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble()) > 180) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
         {
             rejectLeftUpdate = true;
         }
 
         if (leftMT2 != null) {
-            double visionTrustValue = 0.7;
+            double visionTrustValue = 1.0;
             if (leftMT2.tagCount == 0) {
                 rejectLeftUpdate = true;
             }
@@ -779,7 +781,9 @@ public class SwerveSubsystem extends SubsystemBase {
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
 
-        rpm = Math.min(5200.0, rpm);
+        // rpm = rpm * 0.85;
+        hood = hood + 0.75;
+        rpm = Math.min(5400.0, rpm);
         hood = Math.min(5.0, hood);
 
         return new double[] {-rpm, hood};

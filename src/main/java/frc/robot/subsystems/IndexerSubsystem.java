@@ -19,7 +19,7 @@ public class IndexerSubsystem extends SubsystemBase {
     
     public IndexerSubsystem() {
         indexerMotorOriginal = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
-        SparkBaseConfig indexerOriginalConfig = new SparkFlexConfig().smartCurrentLimit(45); // NEO_Vortex (80 A but was 40 A)
+        SparkBaseConfig indexerOriginalConfig = new SparkFlexConfig().smartCurrentLimit(55); // NEO_Vortex (80 A but was 40 A)
         indexerMotorOriginal.configure(indexerOriginalConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         beltMotor = new SparkFlex(IndexerConstants.indexerMotorFollowerID, MotorType.kBrushless);

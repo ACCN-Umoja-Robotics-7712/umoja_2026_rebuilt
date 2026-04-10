@@ -217,6 +217,25 @@ public class RobotContainer {
     
     // operatorController.a()
     // .whileTrue(
+    //   // runIndexer
+    //   Commands.parallel(
+    //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+    //     new ConditionalCommand(new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts), new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts), RobotContainer::isReadyToShoot)
+    //   ).withTimeout(0.6).andThen(
+    //     Commands.parallel(
+    //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+    //       Commands.repeatingSequence(
+    //         new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> 0.0).withTimeout(0.5),
+    //         new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts).withTimeout(0.5)
+    //       )
+    //     )
+    //   )
+    // ).whileFalse(
+    //     new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+    // );
+    
+    // operatorController.a()
+    // .whileTrue(
     //   Commands.parallel(
     //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
     //     new ConditionalCommand(

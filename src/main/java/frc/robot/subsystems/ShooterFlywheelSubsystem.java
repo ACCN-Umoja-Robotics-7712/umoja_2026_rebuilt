@@ -40,12 +40,12 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorLeader = new SparkFlex(TurretConstants.flywheelMotorLeaderID, MotorType.kBrushless);
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
-        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(40);
+        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(70);
         leaderConfig.idleMode(IdleMode.kCoast);
         leaderConfig.inverted(true);
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(40);
+        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(70);
         leaderConfig.idleMode(IdleMode.kCoast);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower is opposite of leader
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -130,6 +130,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Flywheel Velocity", flywheelMotorLeader.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Flywheel Temperature", flywheelMotorLeader.getMotorTemperature());
         SmartDashboard.putNumber("Kicker Velocity", kickerMotor.getEncoder().getVelocity());
 
         // TODO: REMOVE FOR COMP

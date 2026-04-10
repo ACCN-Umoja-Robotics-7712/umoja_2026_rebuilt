@@ -465,7 +465,7 @@ public class Autos {
             // Zero hood and lower arm then aim turret
             Commands.sequence(
                 // Pick Up from CENTER and return, zero hood and lower arm while moving
-                AutoBuilder.followPath(path).deadlineFor(
+                AutoBuilder.followPath(blueLeftTrenchPathForward).deadlineFor(
                     // Lower arm
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
@@ -483,11 +483,11 @@ public class Autos {
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                     )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
                 )
-            ),
-            new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
-            AutoBuilder.followPath(path).alongWith(   
-                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
             )
         );
     }
@@ -770,7 +770,7 @@ public class Autos {
             // Zero hood and lower arm then aim turret
             Commands.sequence(
                 // Pick Up from CENTER and return, zero hood and lower arm while moving
-                AutoBuilder.followPath(path).deadlineFor(
+                AutoBuilder.followPath(blueRightTrenchPathForward).deadlineFor(
                     // Lower arm
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
@@ -788,11 +788,11 @@ public class Autos {
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                     )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
                 )
-            ),
-            new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
-            AutoBuilder.followPath(path).alongWith(   
-                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
             )
         );
     }
@@ -811,7 +811,7 @@ public class Autos {
             // Zero hood and lower arm then aim turret
             Commands.sequence(
                 // Pick Up from CENTER and return, zero hood and lower arm while moving
-                AutoBuilder.followPath(path).deadlineFor(
+                AutoBuilder.followPath(redLeftTrenchPathForward).deadlineFor(
                     // Lower arm
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
@@ -829,11 +829,11 @@ public class Autos {
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                     )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
                 )
-            ),
-            new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
-            AutoBuilder.followPath(path).alongWith(   
-                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
             )
         );
     }
@@ -852,7 +852,7 @@ public class Autos {
             // Zero hood and lower arm then aim turret
             Commands.sequence(
                 // Pick Up from CENTER and return, zero hood and lower arm while moving
-                AutoBuilder.followPath(path).deadlineFor(
+                AutoBuilder.followPath(redRightTrenchPathForward).deadlineFor(
                     // Lower arm
                     new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5),
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
@@ -870,11 +870,11 @@ public class Autos {
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
                         new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
                     )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
                 )
-            ),
-            new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
-            AutoBuilder.followPath(path).alongWith(   
-                new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
             )
         );
     }
