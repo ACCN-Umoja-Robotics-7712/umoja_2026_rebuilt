@@ -50,7 +50,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
-        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15);
+        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15, 15);
         turretConfig.inverted(true);
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         turretZeroLimitSwitch = new DigitalInput(TurretConstants.turretLimitSwitchID);
@@ -158,7 +158,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
     
     public void setBrakeMode(IdleMode mode) {
-        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15);
+        SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15, 15);
         turretConfig.idleMode(mode);
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

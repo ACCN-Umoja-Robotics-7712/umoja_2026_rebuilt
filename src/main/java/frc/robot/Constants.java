@@ -169,11 +169,12 @@ public final class Constants {
         public static final int flywheelMotorLeaderID = 2;
         public static final int flywheelMotorFollowerID = 1;
         public static final boolean flywheelMotorReversed = false;
-        public static final double kSfly = 0.13;
+        public static final double kSfly = 0;
         public static final double kVfly = 0.0018;
-        public static final double kPfly = 0.001;
+        public static final double kPfly = 0.0002;
         public static final double kIfly = 0;
-        public static final double kDfly = 0.00003;
+        public static final double kDfly = 0.01;
+        public static final double flyMaxAccel = 10000;
         public static final double kSkicker = 0.13; // set to same as kSfly due to single motor and less friction so this should be fine
         public static final double kVkicker = 0.0018;
         public static final double kPkicker = 0.0001;

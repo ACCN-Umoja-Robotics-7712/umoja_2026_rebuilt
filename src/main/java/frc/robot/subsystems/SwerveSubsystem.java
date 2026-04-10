@@ -725,6 +725,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // use chassis speeds for now, update to using gyro speeds
         ChassisSpeeds speeds = ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
         Translation2d movingTarget = targetPose.getTranslation();
+        // Translation2d rotatingTarget = new Translation2d(speeds.omegaRadiansPerSecond;
         Translation2d toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
@@ -786,6 +787,6 @@ public class SwerveSubsystem extends SubsystemBase {
         rpm = Math.min(5400.0, rpm);
         hood = Math.min(5.0, hood);
 
-        return new double[] {-rpm, hood};
+        return new double[] {rpm, hood};
     }
 }

@@ -25,7 +25,7 @@ public class ClimbSubsystem extends SubsystemBase {
     
     public ClimbSubsystem(){
 
-        SparkBaseConfig climbConfig = new SparkFlexConfig().smartCurrentLimit(15); // Neo_550: Current Limit is 15
+        SparkBaseConfig climbConfig = new SparkFlexConfig().smartCurrentLimit(15, 15); // Neo_550: Current Limit is 15
         climbConfig.idleMode(IdleMode.kBrake);
         climbConfig.inverted(false);
 
