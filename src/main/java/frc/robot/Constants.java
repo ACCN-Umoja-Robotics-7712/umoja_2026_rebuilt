@@ -175,11 +175,12 @@ public final class Constants {
         public static final double kIfly = 0;
         public static final double kDfly = 0.01;
         public static final double flyMaxAccel = 10000;
-        public static final double kSkicker = 0.13; // set to same as kSfly due to single motor and less friction so this should be fine
-        public static final double kVkicker = 0.0018;
-        public static final double kPkicker = 0.0001;
+        public static final double kSkicker = 0.35;
+        public static final double kVkicker = 0.001826;
+        public static final double kPkicker = 0.00008938;
         public static final double kIkicker = 0;
-        public static final double kDkicker = 0.00000;
+        public static final double kDkicker = 0.0000015;
+        public static final double kickerMaxAccel = 10000;
 
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;

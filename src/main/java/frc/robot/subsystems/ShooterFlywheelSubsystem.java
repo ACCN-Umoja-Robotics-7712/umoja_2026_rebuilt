@@ -34,9 +34,9 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
     // private final PIDController flywheelPidController;
     // private final SimpleMotorFeedforward flywheelFFController;
-    private final SparkClosedLoopController flywheelController;
-    private final PIDController kickerPidController;
-    private final SimpleMotorFeedforward kickerFFController;
+    private final SparkClosedLoopController flywheelController, kickerController;
+    // private final PIDController kickerPidController;
+    // private final SimpleMotorFeedforward kickerFFController;
 
     private double state = ShooterStates.NONE;
     private double wantedShooterRPM = 0;
@@ -48,7 +48,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
         SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(70, 20);
-        leaderConfig.idleMode(IdleMode.kCoast); 
+        leaderConfig.idleMode(IdleMode.kCoast);
         leaderConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
             .p(TurretConstants.kPfly)
@@ -69,15 +69,25 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
         // flywheelPidController = new PIDController(TurretConstants.kPfly, TurretConstants.kIfly, TurretConstants.kDfly);
         // flywheelFFController = new SimpleMotorFeedforward(TurretConstants.kSfly, TurretConstants.kVfly,0);
-        kickerPidController = new PIDController(TurretConstants.kPkicker, TurretConstants.kIkicker, TurretConstants.kDkicker);
-        kickerFFController = new SimpleMotorFeedforward(TurretConstants.kSkicker, TurretConstants.kVkicker,0);
+        // kickerPidController = new PIDController(TurretConstants.kPkicker, TurretConstants.kIkicker, TurretConstants.kDkicker);
+        // kickerFFController = new SimpleMotorFeedforward(TurretConstants.kSkicker, TurretConstants.kVkicker,0);
         
         kickerMotor = new SparkFlex(IndexerConstants.kickerMotorID, MotorType.kBrushless);
         SparkBaseConfig kickerConfig = new SparkFlexConfig().smartCurrentLimit(40, 20); // NEO_Vortex (Current Limit is 80) 
+        kickerConfig.closedLoop
+            .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+            .p(TurretConstants.kPkicker)
+            .i(TurretConstants.kIkicker)
+            .d(TurretConstants.kDkicker)
+            .outputRange(-1, 1)
+            .feedForward.kV(TurretConstants.kVkicker);
+
+        kickerConfig.closedLoop.maxMotion
+            .maxAcceleration(TurretConstants.kickerMaxAccel);
         kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
         // flywheelPidController.setTolerance(100, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
-        kickerPidController.setTolerance(100, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
+        // kickerPidController.setTolerance(100, 50); // 50 RPM tolerance and 50 RPM/s velocity tolerance
     }
     
     public void runShooter(double speed) {
@@ -93,13 +103,14 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
         // kicker
         double wantedKickerVelocity = wantedVelocity*1.5;
-        wantedKickerVelocity = Math.min(wantedKickerVelocity, 5000); // limit to 5000 RPM to prevent the motor from burning out
+        wantedKickerVelocity = Math.min(wantedKickerVelocity, 4000); // limit to 4000 RPM to prevent the motor from burning out
 
         SmartDashboard.putNumber("WANTED KICKER VELOCITY", wantedKickerVelocity);
 
-        double feedforwardKicker = kickerFFController.calculate(wantedKickerVelocity);
-        double pidKicker = kickerPidController.calculate(kickerMotor.getEncoder().getVelocity(), wantedKickerVelocity);
-        kickerMotor.setVoltage(feedforwardKicker + pidKicker);
+        // double feedforwardKicker = kickerFFController.calculate(wantedKickerVelocity);
+        // double pidKicker = kickerPidController.calculate(kickerMotor.getEncoder().getVelocity(), wantedKickerVelocity);
+        // kickerMotor.setVoltage(feedforwardKicker + pidKicker);
+        kickerController.setSetpoint(wantedKickerVelocity, ControlType.kMAXMotionVelocityControl);
         
         wantedShooterRPM = wantedVelocity;
         wantedKickerRPM = wantedKickerVelocity;
@@ -118,11 +129,12 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
 
     public boolean didReachVelocity() {
         // return flywheelPidController.atSetpoint() && kickerPidController.atSetpoint();
-        boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity() - wantedKickerRPM) <= 100;
+        // boolean kickerAtRPM = Math.abs(kickerMotor.getEncoder().getVelocity() - wantedKickerRPM) <= 100;
         // boolean shooterAtRPM = Math.abs(flywheelMotorLeader.getEncoder().getVelocity() - wantedShooterRPM) <= 100;
         boolean shooterAtRPM = flywheelController.isAtSetpoint();
-        boolean kickerRPMChange = kickerPidController.atSetpoint();
-        boolean shooterRPMChange = flywheelController.isAtSetpoint();
+        boolean kickerAtRPM = kickerController.isAtSetpoint();
+        // boolean kickerRPMChange = ;
+        // boolean shooterRPMChange = flywheelController.isAtSetpoint();
         System.out.println("Kicker" + kickerAtRPM + "shooter" + shooterAtRPM);
         System.out.println(kickerMotor.getEncoder().getVelocity() - wantedKickerRPM);
         return kickerAtRPM && shooterAtRPM;
