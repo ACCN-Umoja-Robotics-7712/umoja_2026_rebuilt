@@ -102,7 +102,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public void resetTurret() {
-        turretMotor.getEncoder().setPosition(180*TurretConstants.motorToTurretRatio);  // Max angle is 335 and min is 55
+        turretMotor.getEncoder().setPosition(180/TurretConstants.motorToTurretRatio);  // Max angle is 335 and min is 55
     }
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
@@ -113,10 +113,10 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         if (wantedTurretAngleInDegrees >= maxAngle) { // 280
             limitToRange = maxAngle;
         }
-        double fakeFeedForward = SmartDashboard.getNumber("Turret static friction", TurretConstants.turretFakeFeedForward);
-        double springResistance = SmartDashboard.getNumber("Turret spring resistance", TurretConstants.turretSpringResistance);
-        SmartDashboard.putNumber("Turret static friction", fakeFeedForward);
-        SmartDashboard.putNumber("Turret spring resistance", springResistance);
+        // double fakeFeedForward = SmartDashboard.getNumber("Turret static friction", TurretConstants.turretFakeFeedForward);
+        // double springResistance = SmartDashboard.getNumber("Turret spring resistance", TurretConstants.turretSpringResistance);
+        // SmartDashboard.putNumber("Turret static friction", fakeFeedForward);
+        // SmartDashboard.putNumber("Turret spring resistance", springResistance);
 
         double currentAngle = getAngleDegrees();
         // within slack range
@@ -158,7 +158,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         //     voltage = Math.min(voltage, 3);
         // }
         if (isZeroed) {
-            turretController.setSetpoint(wantedTurretAngle*TurretConstants.motorToTurretRatio, ControlType.kPosition);
+            turretController.setSetpoint(wantedTurretAngle/TurretConstants.motorToTurretRatio, ControlType.kPosition);
             // turretMotor.setVoltage(voltage);
         } else {
             turretMotor.set(0);
