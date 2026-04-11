@@ -48,7 +48,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
         SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(70, 20);
-        leaderConfig.idleMode(IdleMode.kCoast);
+        leaderConfig.idleMode(IdleMode.kCoast); 
         leaderConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
             .p(TurretConstants.kPfly)

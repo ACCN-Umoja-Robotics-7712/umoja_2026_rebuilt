@@ -192,10 +192,9 @@ public final class Constants {
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 1;
-        public static final double kPturretSlack = 0.1;
-        public static final double kPturretSpring = 0;
-        public static final double kIturretSlack = 0;
-        public static final double kIturretSpring = 0;
+        public static final double kPturret = 0.045;
+        public static final double turretAllowedClosedLoopError = 0.1;
+        public static final double kSturret = 0.325;
 
         public static final Constraints turretConstraints = new Constraints(50, 100);
         // public static final double kIhood = 0; 
