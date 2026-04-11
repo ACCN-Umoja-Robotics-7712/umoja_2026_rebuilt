@@ -61,7 +61,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
 
         turretConfig.idleMode(IdleMode.kCoast); 
         turretConfig.closedLoop
-            .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .allowedClosedLoopError(TurretConstants.turretAllowedClosedLoopError, ClosedLoopSlot.kSlot0)
             .p(TurretConstants.kPturret)
             .feedForward.kS(TurretConstants.kSturret);

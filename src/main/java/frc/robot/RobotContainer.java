@@ -37,6 +37,9 @@ import frc.robot.commands.ManualCommands.TestIndexerCommand;
 import frc.robot.commands.ZeroCommands.EnableZeroTurretCommand;
 import frc.robot.commands.ZeroCommands.ZeroHoodCommand;
 import frc.robot.commands.ZeroCommands.zeroIntakeArm;
+
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -45,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -204,13 +208,20 @@ public class RobotContainer {
       // runIndexer
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-        new ConditionalCommand(runIndexer, idleIndexer, RobotContainer::isReadyToShoot)
-      ).withTimeout(0.6).andThen(
-        Commands.parallel(
-          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
+        new SelectCommand<>(
+          Map.of(
+            true, runIndexer,
+            false, idleIndexer
+          ), () -> RobotContainer.isReadyToShoot()
         )
       )
+        // new ConditionalCommand(runIndexer, idleIndexer, RobotContainer::isReadyToShoot)
+      // ).withTimeout(0.6).andThen(
+      //   Commands.parallel(
+      //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+      //     new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
+      //   )
+      // )
     ).whileFalse(
         new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
     );
@@ -432,7 +443,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("flywheel ready", flywheelReady);
     SmartDashboard.putBoolean("turret ready", turretReady);
     SmartDashboard.putBoolean("hood ready", hoodReady);
-    return flywheelReady && hoodReady && turretReady;
+    return flywheelReady;
   }
 
   public static double diffFromWantedAngleField(double wantedAngle) {
