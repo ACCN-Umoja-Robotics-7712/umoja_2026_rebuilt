@@ -177,9 +177,9 @@ public final class Constants {
         public static final double flyMaxAccel = 10000;
         public static final double kSkicker = 0.35;
         public static final double kVkicker = 0.001826;
-        public static final double kPkicker = 0.00008938;
+        public static final double kPkicker = 0.000095;
         public static final double kIkicker = 0;
-        public static final double kDkicker = 0.0000015;
+        public static final double kDkicker = 0.002;
         public static final double kickerMaxAccel = 10000;
 
         public static final int hoodMotorID = 60;
@@ -253,7 +253,7 @@ public final class Constants {
     public static final class IndexerConstants {
         public static final int indexerMotorLeaderID = 3;
         public static final int kickerMotorID = 5;
-        public static final int indexerMotorFollowerID = 34;
+        public static final int beltMotorID = 34;
 
         public static final double indexVolts = 10.0;
         public static final double beltVolts = 10.0;
