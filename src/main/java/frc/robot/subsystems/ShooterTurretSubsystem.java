@@ -102,12 +102,13 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     }
 
     public void resetTurret() {
-        turretMotor.getEncoder().setPosition(180/TurretConstants.motorToTurretRatio);  // Max angle is 335 and min is 55
+        turretMotor.getEncoder().setPosition(0.5/TurretConstants.motorToTurretRatio);  // Max angle is 335 and min is 55
     }
 
     public void setTurretAngle(double wantedTurretAngleInDegrees) {
         double limitToRange = wantedTurretAngleInDegrees % 360;
         if (wantedTurretAngleInDegrees <= minAngle) { // 25
+            
             limitToRange = minAngle;
         }
         if (wantedTurretAngleInDegrees >= maxAngle) { // 280
@@ -158,7 +159,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         //     voltage = Math.min(voltage, 3);
         // }
         if (isZeroed) {
-            turretController.setSetpoint(wantedTurretAngle/TurretConstants.motorToTurretRatio, ControlType.kPosition);
+            turretController.setSetpoint(wantedTurretAngle/360/TurretConstants.motorToTurretRatio, ControlType.kPosition);
             // turretMotor.setVoltage(voltage);
         } else {
             turretMotor.set(0);
