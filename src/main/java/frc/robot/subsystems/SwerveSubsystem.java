@@ -185,53 +185,54 @@ public class SwerveSubsystem extends SubsystemBase {
         holonomicDriveController = new HolonomicDriveController(xController, yController, thetaController);
 
         // rpmTable.put(1.25, 3168.75);
-        // rpmTable.put(1.5, 3227.25);
-        // rpmTable.put(1.7, 3422.25);
-        // rpmTable.put(1.9, 3510.0);
-        // rpmTable.put(2.1, 3597.75);
-        // rpmTable.put(2.3, 3685.5);
-        // rpmTable.put(2.5, 3763.5);
-        rpmTable.put(1.25, 2850.0);
-        rpmTable.put(2.7, 3375.0);
+        rpmTable.put(1.5, 3100.25);
+        rpmTable.put(1.7, 3100.25);
+        rpmTable.put(1.9, 3150.0);
+        rpmTable.put(2.1, 3200.75);
+        rpmTable.put(2.3, 3250.5);
+        rpmTable.put(2.5, 3300.5);
+        rpmTable.put(2.7, 3350.0);
         rpmTable.put(2.9, 3425.0);
-        rpmTable.put(3.1, 3500.0);
-        rpmTable.put(3.3, 3550.0);
-        rpmTable.put(3.5, 3600.0);
-        rpmTable.put(3.7, 3675.0);
-        rpmTable.put(3.9, 3750.0);
-        rpmTable.put(4.1, 3850.0);
-        rpmTable.put(5.5, 5400.0);
-        // rpmTable.put(4.3, 4455.75);
-        // rpmTable.put(4.5, 4533.75);
-        // rpmTable.put(4.7, 4602.0);
-        // rpmTable.put(4.9, 4670.25);
-        // rpmTable.put(5.1, 4738.5);
-        // rpmTable.put(5.3, 4806.75);
-        // rpmTable.put(5.5, 4875.0);
+        rpmTable.put(3.1, 3475.0);
+        rpmTable.put(3.3, 3525.0);
+        rpmTable.put(3.5, 3575.0);
+        rpmTable.put(3.7, 3625.0);
+        rpmTable.put(3.9, 3675.0);
+        rpmTable.put(4.1, 3775.0);
+        rpmTable.put(4.3, 3825.75);
+        rpmTable.put(4.5, 3950.75);
+        rpmTable.put(4.7, 4000.0);
+        rpmTable.put(4.9, 4050.25);
+        rpmTable.put(5.1, 4100.5);
+        rpmTable.put(5.3, 4160.75);
+        rpmTable.put(5.5, 4200.0);
+        rpmTable.put(10.0, 5200.0);
+        rpmTable.put(15.0, 5200.0);
         
         angleTable.put(0.0, 0.0);
         angleTable.put(1.25, 0.0);
         angleTable.put(1.5, 0.0);
-        angleTable.put(1.7, 0.0);
-        angleTable.put(1.9, 0.0);
-        angleTable.put(2.1, 0.0);
-        angleTable.put(2.3, 0.7);
-        angleTable.put(2.5, 1.1);
-        angleTable.put(2.7, 1.6);
-        angleTable.put(2.9, 1.9);
-        angleTable.put(3.1, 2.3);
-        angleTable.put(3.3, 2.6);
-        angleTable.put(3.5, 2.9);
-        angleTable.put(3.7, 3.2);
-        angleTable.put(3.9, 3.4);
-        angleTable.put(4.1, 3.7);
-        angleTable.put(4.3, 3.9);
-        angleTable.put(4.5, 4.1);
-        angleTable.put(4.7, 4.3);
-        angleTable.put(4.9, 4.4);
-        angleTable.put(5.1, 4.6);
-        angleTable.put(5.3, 4.7);
-        angleTable.put(5.5, 4.9);
+        angleTable.put(1.7, 0.1);
+        angleTable.put(1.9, 0.45);
+        angleTable.put(2.1, 0.75);
+        angleTable.put(2.3, 1.2);
+        angleTable.put(2.5, 1.4);
+        angleTable.put(2.7, 1.8);
+        angleTable.put(2.9, 2.2);
+        angleTable.put(3.1, 2.6);
+        angleTable.put(3.3, 2.9);
+        angleTable.put(3.5, 3.1);
+        angleTable.put(3.7, 3.35);
+        angleTable.put(3.9, 3.6);
+        angleTable.put(4.1, 4.2);
+        angleTable.put(4.3, 4.5);
+        angleTable.put(4.5, 4.75);
+        angleTable.put(4.7, 5.0);
+        angleTable.put(4.9, 5.0);
+        angleTable.put(5.1, 5.0);
+        angleTable.put(5.3, 5.0);
+        angleTable.put(5.5, 5.0);
+        angleTable.put(20.0, 5.0);
 
         tofTable.put(0.0, 1.1);
         tofTable.put(1.8, 1.1);
@@ -318,6 +319,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public Pose2d getTurretPose() {
+        return getPose().plus(getCenterToTurretLine());
+    }
+
+    public Transform2d getCenterToTurretLine() {
+        double forward = TurretConstants.turretCenterFromRobotCenterForwardLength;
+        double side = TurretConstants.turretCenterFromRobotCenterSideLength;
+        return new Transform2d(forward, side, new Rotation2d(Units.degreesToRadians(RobotContainer.shooterTurretSubsystem.getAngleDegrees())));
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -471,7 +482,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // https://github.com/Mechanical-Advantage/RobotCode2025Public/blob/main/src/main/java/org/littletonrobotics/frc2025/subsystems/vision/Vision.java
         double xyStdDevCoefficient = 0.01;
         if (rightMT2 != null) {
-            double visionTrustValue = 1.0;
+            double visionTrustValue = 1.5;
             if (rightMT2.tagCount == 0) {
                 rejectRightUpdate = true;
             }
@@ -573,7 +584,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         if (leftMT2 != null) {
-            double visionTrustValue = 1.0;
+            double visionTrustValue = 1.5;
             if (leftMT2.tagCount == 0) {
                 rejectLeftUpdate = true;
             }
@@ -619,7 +630,7 @@ public class SwerveSubsystem extends SubsystemBase {
             LimelightHelpers.SetThrottle(limelightLeft, 0);
             LimelightHelpers.SetThrottle(limelightRight, 0);
         }
-        Pose2d turretFieldPose = currentPose.plus(new Transform2d(TurretConstants.turretCenterFromRobotCenterForwardLength, TurretConstants.turretCenterFromRobotCenterSideLength, new Rotation2d(Units.degreesToRadians(RobotContainer.shooterTurretSubsystem.getAngleDegrees()))));
+        Pose2d turretFieldPose = getTurretPose();
         turretPublisher.set(turretFieldPose);
         limelightPublishers.set(limelightPoses.toArray(new Pose2d[0]));
         posePublisher.set(currentPose);
@@ -723,10 +734,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // for shooting on the move update target position based off of TOF with current velocity
         // use chassis speeds for now, update to using gyro speeds
+        Pose2d turretPose = RobotContainer.swerveSubsystem.getTurretPose();
+        Pose2d centerPose = RobotContainer.swerveSubsystem.getPose();
         ChassisSpeeds speeds = ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
         Translation2d movingTarget = targetPose.getTranslation();
-        // Translation2d rotatingTarget = new Translation2d(speeds.omegaRadiansPerSecond;
-        Translation2d toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
+        Pose2d rotationVectorPose;
+        Translation2d toTag = movingTarget.minus(turretPose.getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
         double tof = tofTable.get(distanceToTarget);
@@ -737,8 +750,14 @@ public class SwerveSubsystem extends SubsystemBase {
             double lastTOF = tof;
             
             // recalculate with new TOF
-            movingTarget = targetPose.getTranslation().plus(new Translation2d(-speeds.vxMetersPerSecond*tof, speeds.vxMetersPerSecond*tof));
-            toTag = movingTarget.minus(RobotContainer.swerveSubsystem.getPose().getTranslation());
+            movingTarget = targetPose.getTranslation().minus(new Translation2d(speeds.vxMetersPerSecond*tof, speeds.vxMetersPerSecond*tof));
+            // Want velocity vector from turret rotation
+            // vector is based on direction of turret, take heading and rotate by turret degree offset
+            // then add 0 forward movement, centerToTurretTotalLength*radiansPerSecond*TOF side offset, and 0 rotation)
+            // that is vector added to object so subtract that to compensate
+            rotationVectorPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(getHeading())).rotateBy(new Rotation2d(Units.degreesToRadians(TurretConstants.robotFrontToTurretAngleDegree)))).plus(new Transform2d(0.0, speeds.omegaRadiansPerSecond*TurretConstants.turretCenterFromRobotCenterTotalLength*tof, new Rotation2d(0.0)));
+            movingTarget = movingTarget.minus(rotationVectorPose.getTranslation());
+            toTag = movingTarget.minus(turretPose.getTranslation());
             turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
             distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
             tof = tofTable.get(distanceToTarget);

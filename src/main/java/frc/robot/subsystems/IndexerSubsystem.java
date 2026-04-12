@@ -35,7 +35,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
     public void runIndexerUsingTestvoltage() {
         double indexVoltage = SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
-        double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10/2.25);
+        double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10);
         indexerMotorOriginal.setVoltage(indexVoltage);
         beltMotor.setVoltage(indexBeltVoltage);
 

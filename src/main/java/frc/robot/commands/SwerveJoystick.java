@@ -159,7 +159,6 @@ public class SwerveJoystick extends Command {
             xLockTimer.start();
             if (xLockTimer.hasElapsed(0.5)) {
               swerveSubsystem.xLockWheels();
-              System.out.println("IS XLOCKED");
             }
           } else {
             xLockTimer.stop();

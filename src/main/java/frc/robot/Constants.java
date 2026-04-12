@@ -215,6 +215,8 @@ public final class Constants {
         public static final double turretCenterToCameraCentreLength = Math.sqrt(forwardOffset * forwardOffset + sideOffset * sideOffset); // meters (Pythagorean theorem)
         public static final double turretCenterFromRobotCenterForwardLength = Units.inchesToMeters(-(RobotConstants.robotWidth/2) + 2 + (11.5/2)); // meters (negative cause turret is behind the robot center) 
         public static final double turretCenterFromRobotCenterSideLength = Units.inchesToMeters(-(RobotConstants.robotLength/2) + 2 + (11.5/2)); // meters (positive cause turret is to the left of the robot center)
+        public static final double turretCenterFromRobotCenterTotalLength = Math.sqrt(turretCenterFromRobotCenterForwardLength*turretCenterFromRobotCenterForwardLength + turretCenterFromRobotCenterSideLength*turretCenterFromRobotCenterSideLength);
+        public static final double robotFrontToTurretAngleDegree = Units.radiansToDegrees(Math.atan(turretCenterFromRobotCenterForwardLength/turretCenterFromRobotCenterSideLength))+90;
     }
 
     public static final class IntakeArmStates {

@@ -78,17 +78,8 @@ public class Autos {
     // StructPublisher<PathPlannerPath> pathPublisher = NetworkTableInstance.getDefault().getStructTopic("path", PathPlannerPath.struct).publish();
     
     public Autos(){ // ALWAYS ENSURE ARM LOWERS THE MOMENT GAME STARTS PARALLEL TO SHOOTING (~2 balls must be shot by the time the arm is down)
-
-    try {
-        // simple_auto = PathPlannerPath/
-
-    } catch (Exception e) {
-        DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-    }
-
         // Create the auto chooser
         chooser = new SendableChooser<AUTO>();
-        System.out.println("AUTO SETUP ~~~~~~~~~~~~~~~~~~~");
         // Add options to the chooser
         chooser.addOption("Blue Left Trench to Neutral", AUTO.BLUE_TRENCH_LEFT_NEUTRAL);
         chooser.addOption("FAST Blue Left Trench to Neutral", AUTO.FAST_BLUE_TRENCH_LEFT_NEUTRAL);
@@ -197,7 +188,7 @@ public class Autos {
                 new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVoltage)
             );
         } catch (Exception e) {
-            System.out.println("PATH NOT FOUND, " + e);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PATH NOT FOUND, " + e);
             return new InstantCommand();
         }
         // PathPlannerPath path;

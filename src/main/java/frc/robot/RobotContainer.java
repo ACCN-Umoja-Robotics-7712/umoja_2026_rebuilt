@@ -210,18 +210,17 @@ public class RobotContainer {
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new SelectCommand<>(
           Map.of(
-            true, runIndexer,
+            true, new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts),
             false, idleIndexer
           ), () -> RobotContainer.isReadyToShoot()
         )
-      )
         // new ConditionalCommand(runIndexer, idleIndexer, RobotContainer::isReadyToShoot)
-      // ).withTimeout(0.6).andThen(
-      //   Commands.parallel(
-      //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-      //     new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
-      //   )
-      // )
+      ).withTimeout(0.6).andThen(
+        Commands.parallel(
+          new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
+        )
+      )
     ).whileFalse(
         new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
     );
@@ -272,7 +271,7 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts), 
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.idleBeltVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.6).andThen(
