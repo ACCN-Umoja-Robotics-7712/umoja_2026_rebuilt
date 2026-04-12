@@ -167,7 +167,7 @@ public final class Constants {
 
     public static final class TurretConstants {
         public static final int flywheelMotorLeaderID = 2;
-        public static final int flywheelMotorFollowerID = 1;
+        public static final int flywheelMotorFollowerID = 4;
         public static final boolean flywheelMotorReversed = false;
         public static final double kSfly = 0;
         public static final double kVfly = 0.0018;
@@ -239,8 +239,9 @@ public final class Constants {
         public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
-        public static final double rollerkP = 0.01;
-        public static final double rollerkV = 0.0;
+        public static final double rollerkP = 0.00;
+        public static final double rollerkV = 0.002;
+        public static final double rollerkD = 0.0;
         public static final double armkP = 0.00;
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
@@ -259,12 +260,13 @@ public final class Constants {
         public static final int kickerMotorID = 5;
         public static final int beltMotorID = 34;
 
-        public static final double indexVolts = 10.0;
+        public static final double indexRPM = 5400.0;
         public static final double beltVolts = 10.0;
         public static final double idleBeltVolts = 0;
 
-        public static final double kPIndex = 0.0;
-        public static final double kVIndex = 0.0;
+        public static final double kPIndex = 0.0001;
+        public static final double kVIndex = 0.00185;
+        public static final double kDIndex = 0.0005;
     }
 
     public static final class ClimbConstants {

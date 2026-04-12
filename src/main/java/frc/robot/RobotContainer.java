@@ -19,6 +19,8 @@ import frc.robot.commands.AlignRobotBackWithHubFieldCommand;
 import frc.robot.commands.AlignWithOutpost;
 import frc.robot.commands.AlignWithTrench;
 import frc.robot.commands.Autos;
+import frc.robot.commands.IndexerVelocityCommand;
+import frc.robot.commands.IntakeRollerVelocityCommand;
 import frc.robot.commands.IntakeWhileMoving;
 import frc.robot.commands.SetShooterHoodStateCommand;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
@@ -127,6 +129,10 @@ public class RobotContainer {
       // new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3000.0)
       new ManualShooterFlywheelCommand(shooterFlywheelSubsystem, () -> 0.0)
     );
+    
+    intakeRollerSubsystem.setDefaultCommand(
+      new ManualIntakeRoller(intakeRollerSubsystem, () -> 0.0)
+    );
 
     indexerSubsystem.setDefaultCommand(
       new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
@@ -189,8 +195,8 @@ public class RobotContainer {
     //Manual Commands (Just for Now)
     // Intake Roller
     driverController.leftTrigger().whileTrue(
-      new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> Constants.IntakeConstants.intakeVoltage
+      new IntakeRollerVelocityCommand(intakeRollerSubsystem,
+        () -> SmartDashboard.getNumber("Wanted Intake RPM", 3000.0)
       )
     );
 
@@ -200,7 +206,7 @@ public class RobotContainer {
       )
     );
 
-    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts);
+    Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts);
     Command idleIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
 
     operatorController.rightTrigger()
@@ -218,7 +224,7 @@ public class RobotContainer {
       ).withTimeout(0.6).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts)
         )
       )
     ).whileFalse(
@@ -271,13 +277,13 @@ public class RobotContainer {
       Commands.parallel(
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.idleBeltVolts), 
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.idleBeltVolts), 
           new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.6).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts)
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts)
         )
       )
     );
@@ -369,9 +375,15 @@ public class RobotContainer {
       new zeroIntakeArm(intakeArmSubsystem)
     );
 
+    // operatorController.button(XBoxConstants.PAGE).whileTrue(
+    //   new EnableZeroTurretCommand(shooterTurretSubsystem)
+    //   // new TestIndexerCommand(indexerSubsystem)
+    // );
+
     operatorController.button(XBoxConstants.PAGE).whileTrue(
-      new EnableZeroTurretCommand(shooterTurretSubsystem)
-      // new TestIndexerCommand(indexerSubsystem)
+      new IndexerVelocityCommand(indexerSubsystem,
+        () -> 5400.0
+      )
     );
 
     //Intake Arm Motor

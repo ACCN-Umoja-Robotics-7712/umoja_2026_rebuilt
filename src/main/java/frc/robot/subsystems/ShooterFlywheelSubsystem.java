@@ -47,7 +47,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         flywheelController = flywheelMotorLeader.getClosedLoopController();
         flywheelMotorFollower = new SparkFlex(TurretConstants.flywheelMotorFollowerID, MotorType.kBrushless);
 
-        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(70, 20);
+        SparkBaseConfig leaderConfig = new SparkFlexConfig().smartCurrentLimit(60, 20);
         leaderConfig.idleMode(IdleMode.kCoast);
         leaderConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -62,7 +62,7 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         
         flywheelMotorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(70, 20);
+        SparkBaseConfig followerConfig = new SparkFlexConfig().smartCurrentLimit(60, 20);
         followerConfig.idleMode(IdleMode.kCoast);
         followerConfig.follow(TurretConstants.flywheelMotorLeaderID, true); // follower is opposite of leader
         flywheelMotorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

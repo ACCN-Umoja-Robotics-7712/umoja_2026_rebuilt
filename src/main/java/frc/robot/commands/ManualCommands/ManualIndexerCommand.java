@@ -24,13 +24,13 @@ public class ManualIndexerCommand extends Command {
 
     @Override
     public void execute(){
-        indexerSubsystem.runIndexerAtVoltage(indexerMotorVoltageSupplier.get(), indexerBeltVoltageSupplier.get());
+        indexerSubsystem.runIndexerAtRPMVoltage(indexerMotorVoltageSupplier.get(), indexerBeltVoltageSupplier.get());
     }
 
     @Override
     public void end(boolean isInterrupted){
         System.out.println("Manual Indexer end interrupted:" + isInterrupted);
-        indexerSubsystem.runIndexerAtVoltage(0, 0);
+        indexerSubsystem.runIndexerAtRPMVoltage(0, 0);
     }
 
     @Override

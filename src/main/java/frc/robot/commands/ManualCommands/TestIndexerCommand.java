@@ -27,7 +27,7 @@ public class TestIndexerCommand extends Command {
     @Override
     public void end(boolean isInterrupted){
         System.out.println("TEST Indexer end interrupted:" + isInterrupted);
-        indexerSubsystem.runIndexerAtVoltage(0, 0);
+        indexerSubsystem.runIndexerAtRPMVoltage(0, 0);
     }
 
     @Override

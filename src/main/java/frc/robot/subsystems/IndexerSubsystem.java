@@ -2,10 +2,14 @@
 
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -17,16 +21,27 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class IndexerSubsystem extends SubsystemBase {
+    private SparkClosedLoopController indexerPIDController;
     private SparkFlex indexerMotor;
     private SparkFlex beltMotor;
 
     private double lastKP = 0.0;
+    private double lastKD = 0.0;
     private double lastKV = 0.0;
+    
     
     public IndexerSubsystem() {
         indexerMotor = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
-        SparkBaseConfig indexerOriginalConfig = new SparkFlexConfig().smartCurrentLimit(55, 20); // NEO_Vortex (80 A but was 40 A)
-        indexerMotor.configure(indexerOriginalConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        indexerPIDController = indexerMotor.getClosedLoopController();
+        SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(55, 20); // NEO_Vortex (80 A but was 40 A)
+        indexerConfig.idleMode(IdleMode.kCoast);
+        indexerConfig.closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .p(IndexerConstants.kPIndex)
+            .d(IndexerConstants.kDIndex)
+            .outputRange(-1, 1)
+            .feedForward.kV(IndexerConstants.kVIndex);
+        indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         beltMotor = new SparkFlex(IndexerConstants.beltMotorID, MotorType.kBrushless);
         SparkBaseConfig beltConfig = new SparkFlexConfig().smartCurrentLimit(35, 20); // NEO_Vortex
@@ -34,8 +49,8 @@ public class IndexerSubsystem extends SubsystemBase {
         beltMotor.configure(beltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void runIndexerAtVoltage(double indexVoltage, double beltVoltage) { // Can change the speed for each motor independently
-        indexerMotor.setVoltage(indexVoltage);
+    public void runIndexerAtRPMVoltage(double indexerRPM, double beltVoltage) { // Can change the speed for each motor independently
+        indexerPIDController.setSetpoint(indexerRPM, ControlType.kVelocity);
         beltMotor.setVoltage(beltVoltage); // 3.0
     }
 
@@ -45,6 +60,10 @@ public class IndexerSubsystem extends SubsystemBase {
         indexerMotor.setVoltage(indexVoltage);
         beltMotor.setVoltage(indexBeltVoltage);
 
+    }
+
+    public void setIndexerVelocity(double indexerRPM) {
+        indexerPIDController.setSetpoint(indexerRPM, ControlType.kVelocity);
     }
     
     public void stopIndexer() {
@@ -60,18 +79,24 @@ public class IndexerSubsystem extends SubsystemBase {
         
         
         double kPIndex = SmartDashboard.getNumber("kP Index", IndexerConstants.kPIndex);
+        double kDIndex = SmartDashboard.getNumber("kD Index", IndexerConstants.kDIndex);
         double kVIndex = SmartDashboard.getNumber("kV Index", IndexerConstants.kVIndex);
 
         
         SmartDashboard.putNumber("kP Index", kPIndex);
+        SmartDashboard.putNumber("kD Index", kDIndex);
         SmartDashboard.putNumber("kV Index", kVIndex);
 
-        if (kPIndex != lastKP || kVIndex != lastKV) {
+        if (kPIndex != lastKP || kDIndex != lastKD || kVIndex != lastKV) {
+            lastKP = kPIndex;
+            lastKD = kDIndex;
+            lastKV = kVIndex;
             SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(55, 20); // NEO_Vortex (80 A but was 40 A)
             indexerConfig.idleMode(IdleMode.kCoast);
             indexerConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .p(kPIndex)
+                .d(kDIndex)
                 .outputRange(-1, 1)
                 .feedForward.kV(kVIndex);
 

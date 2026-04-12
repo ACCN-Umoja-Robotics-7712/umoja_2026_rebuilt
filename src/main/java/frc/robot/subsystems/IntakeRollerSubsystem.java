@@ -45,6 +45,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         intakeRollerConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .p(IntakeConstants.rollerkP)
+            .d(IntakeConstants.rollerkD)
             .outputRange(-1, 1)
             .feedForward.kV(TurretConstants.kVfly);
 
@@ -72,31 +73,36 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         intakeRollerMotor.setVoltage(voltage);
     }
 
-    public void setIntakeSpeed(double wantedSpeed) {
-        pidController.setSetpoint(wantedSpeed, ControlType.kVoltage);
-        // intakeRollerMotor.set(intakeRollerPidController.calculate(intakeRollerMotor.getEncoder().getVelocity(), wantedSpeed));
+    public void setIntakeVelocity(double wantedRPM) {
+        pidController.setSetpoint(wantedRPM, ControlType.kVelocity);
     }
     
     @Override
     public void periodic() {
         if (state == IntakeRollerStates.NONE) {
         } else {
-            setIntakeSpeed(state);
+            setIntakeVelocity(state);
         }
         
         double kPIntake = SmartDashboard.getNumber("kP Intake", IntakeConstants.rollerkP);
+        double kDIntake = SmartDashboard.getNumber("kD Intake", IntakeConstants.rollerkD);
         double kVIntake = SmartDashboard.getNumber("kV Intake", IntakeConstants.rollerkV);
-
+        double wantedRPM = SmartDashboard.getNumber("Wanted Intake RPM", 3000);
+        SmartDashboard.putNumber("Wanted Intake RPM", wantedRPM);
         
         SmartDashboard.putNumber("kP Intake", kPIntake);
+        SmartDashboard.putNumber("kD Intake", kDIntake);
         SmartDashboard.putNumber("kV Intake", kVIntake);
 
         if (kPIntake != lastKP || kVIntake != lastKV) {
+            lastKP = kPIntake;
+            lastKV = kVIntake;
             SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(40, 20); // Was 40
             intakeRollerConfig.idleMode(IdleMode.kCoast);
             intakeRollerConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .p(kPIntake)
+                .d(kDIntake)
                 .outputRange(-1, 1)
                 .feedForward.kV(kVIntake);
 

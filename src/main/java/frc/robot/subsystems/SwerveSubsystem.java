@@ -206,17 +206,17 @@ public class SwerveSubsystem extends SubsystemBase {
         rpmTable.put(5.1, 4100.5);
         rpmTable.put(5.3, 4160.75);
         rpmTable.put(5.5, 4200.0);
-        rpmTable.put(10.0, 5200.0);
-        rpmTable.put(15.0, 5200.0);
+        rpmTable.put(10.0, 5400.0);
+        rpmTable.put(15.0, 5400.0);
         
         angleTable.put(0.0, 0.0);
         angleTable.put(1.25, 0.0);
         angleTable.put(1.5, 0.0);
         angleTable.put(1.7, 0.1);
         angleTable.put(1.9, 0.45);
-        angleTable.put(2.1, 0.75);
-        angleTable.put(2.3, 1.2);
-        angleTable.put(2.5, 1.4);
+        angleTable.put(2.1, 0.9);
+        angleTable.put(2.3, 1.3);
+        angleTable.put(2.5, 1.5);
         angleTable.put(2.7, 1.8);
         angleTable.put(2.9, 2.2);
         angleTable.put(3.1, 2.6);
@@ -236,7 +236,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         tofTable.put(0.0, 1.1);
         tofTable.put(1.8, 1.1);
-        tofTable.put(2.0, 1.1);
+        tofTable.put(2.1, 1.0575);
         tofTable.put(2.2, 1.15);
         tofTable.put(5.0, 1.5);
         tofTable.put(5.5, 1.4);
@@ -339,6 +339,7 @@ public class SwerveSubsystem extends SubsystemBase {
             backLeft.getPosition(),
             backRight.getPosition()
         }, pose);
+
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds(){
