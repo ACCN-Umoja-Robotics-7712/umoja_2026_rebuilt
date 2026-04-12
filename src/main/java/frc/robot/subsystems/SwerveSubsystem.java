@@ -234,10 +234,19 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(5.5, 5.0);
         angleTable.put(20.0, 5.0);
 
-        tofTable.put(0.0, 1.1);
-        tofTable.put(1.8, 1.1);
+        tofTable.put(0.0, 1.0);
+        tofTable.put(1.8, 1.0);
         tofTable.put(2.1, 1.0575);
-        tofTable.put(2.2, 1.15);
+        tofTable.put(2.3, 1.085);
+        tofTable.put(2.5, 1.105);
+        tofTable.put(2.7, 1.14);
+        tofTable.put(2.9, 1.165);
+        tofTable.put(3.1, 1.17);
+        tofTable.put(3.3, 1.17);
+        tofTable.put(3.5, 1.18);
+        tofTable.put(3.7, 1.226);
+        tofTable.put(3.9, 1.223);
+        tofTable.put(4.3, 1.25);
         tofTable.put(5.0, 1.5);
         tofTable.put(5.5, 1.4);
     }
