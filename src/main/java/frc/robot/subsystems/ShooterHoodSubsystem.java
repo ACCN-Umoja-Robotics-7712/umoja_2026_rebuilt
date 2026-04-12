@@ -175,33 +175,33 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         }
 
         // TODO: REMOVE FOR COMP
-        double kPHood = SmartDashboard.getNumber("kP hood", TurretConstants.kPhood);
-        double kIHood = SmartDashboard.getNumber("kI hood", TurretConstants.kIhood);
-        double kSHood = SmartDashboard.getNumber("kS hood", TurretConstants.kShood);
-        double kDHood = SmartDashboard.getNumber("kD hood", TurretConstants.kDhood);
+        // double kPHood = SmartDashboard.getNumber("kP hood", TurretConstants.kPhood);
+        // double kIHood = SmartDashboard.getNumber("kI hood", TurretConstants.kIhood);
+        // double kSHood = SmartDashboard.getNumber("kS hood", TurretConstants.kShood);
+        // double kDHood = SmartDashboard.getNumber("kD hood", TurretConstants.kDhood);
 
-        SmartDashboard.putNumber("kP hood", kPHood);
-        SmartDashboard.putNumber("kI hood", kIHood);
-        SmartDashboard.putNumber("kS hood", kSHood);
-        SmartDashboard.putNumber("kD hood", kDHood);
+        // SmartDashboard.putNumber("kP hood", kPHood);
+        // SmartDashboard.putNumber("kI hood", kIHood);
+        // SmartDashboard.putNumber("kS hood", kSHood);
+        // SmartDashboard.putNumber("kD hood", kDHood);
 
-        if (SmartDashboard.getNumber("kP hood", kPHood) != lastP || SmartDashboard.getNumber("kI hood", kIHood) != lastI || SmartDashboard.getNumber("kS hood", kSHood) != lastS || SmartDashboard.getNumber("kD hood", kDHood) != lastD) {
-            lastP = kPHood;
-            lastI = kIHood;
-            lastD = kDHood;
-            lastS = kSHood;
+        // if (SmartDashboard.getNumber("kP hood", kPHood) != lastP || SmartDashboard.getNumber("kI hood", kIHood) != lastI || SmartDashboard.getNumber("kS hood", kSHood) != lastS || SmartDashboard.getNumber("kD hood", kDHood) != lastD) {
+        //     lastP = kPHood;
+        //     lastI = kIHood;
+        //     lastD = kDHood;
+        //     lastS = kSHood;
             
-            Slot0Configs pidConfigs = new Slot0Configs()
-                .withKP(kPHood)
-                .withKI(kIHood)
-                .withKD(kDHood)
-                .withKS(kSHood);
-            hoodMotor.getConfigurator().apply(pidConfigs);
-        //     hoodPidController.setP(kPHood);
-        //     hoodPidController.setI(kIHood);
-        //     hoodPidController.setD(kDHood);
-        //     feedforward.setKs(kSHood);
-        //     System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kSHood + "kI = " + kSHood);
-        }
+        //     Slot0Configs pidConfigs = new Slot0Configs()
+        //         .withKP(kPHood)
+        //         .withKI(kIHood)
+        //         .withKD(kDHood)
+        //         .withKS(kSHood);
+        //     hoodMotor.getConfigurator().apply(pidConfigs);
+        // //     hoodPidController.setP(kPHood);
+        // //     hoodPidController.setI(kIHood);
+        // //     hoodPidController.setD(kDHood);
+        // //     feedforward.setKs(kSHood);
+        // //     System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kSHood + "kI = " + kSHood);
+        // }
     }
 }

@@ -240,6 +240,7 @@ public final class Constants {
         public static final int rollerMotorID = 46;
 
         public static final double rollerkP = 0.01;
+        public static final double rollerkV = 0.0;
         public static final double armkP = 0.00;
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
@@ -261,6 +262,9 @@ public final class Constants {
         public static final double indexVolts = 10.0;
         public static final double beltVolts = 10.0;
         public static final double idleBeltVolts = 0;
+
+        public static final double kPIndex = 0.0;
+        public static final double kVIndex = 0.0;
     }
 
     public static final class ClimbConstants {
