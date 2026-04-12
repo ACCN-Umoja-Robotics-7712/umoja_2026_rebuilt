@@ -185,10 +185,11 @@ public final class Constants {
         public static final int hoodMotorID = 60;
         public static final boolean hoodMotorReversed = true;
         public static final int hoodAbsoluteEncoderID = 0;
-        public static final double kPhood = 0.85;
-        public static final double kShood = 0.1;
+        public static final double kPhood = 3.5;
+        public static final double kShood = 0.0;
         public static final double kIhood = 0.0; 
         public static final double kDhood = 0.0;
+        public static final double hoodMaxAccel = 1.0;
 
         public static final int turretMotorID = 55;
         public static final boolean turretMotorReversed = false;

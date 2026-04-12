@@ -10,8 +10,11 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
@@ -36,7 +39,7 @@ import frc.robot.Constants.ShooterStates;
 public class ShooterHoodSubsystem extends SubsystemBase {
     private final TalonFX hoodMotor;
     private final DutyCycleEncoder hoodAbsoluteDutyCycleEncoder;
-    private final PIDController hoodPidController;
+    // private final PIDController hoodPidController;
     private final SimpleMotorFeedforward feedforward;
     
     DoublePublisher absoluteEncodPublisher = NetworkTableInstance.getDefault().getDoubleTopic("hood absolute encoder network").publish();
@@ -46,20 +49,39 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     // upperlimit is actually down and lowerlimit is up
     // private double maxMovement = 0.955 - 0.61;
     // private double zeroLimit = 0.375;
+    
+    PositionVoltage positionVoltage = new PositionVoltage(0);
     private double maxMovement = 5.0;
     private double wantedHoodValue = 0;
+    private double lastP = 0.0;
+    private double lastI = 0.0;
+    private double lastD = 0.0;
+    private double lastS = 0.0;
 
     public ShooterHoodSubsystem() {
         CANBus rio = new CANBus("rio");
         hoodMotor = new TalonFX(TurretConstants.hoodMotorID, rio);
-        CurrentLimitsConfigs hoodCurrentLimits = new CurrentLimitsConfigs();
+
+        TalonFXConfiguration config = new TalonFXConfiguration();
+
+        CurrentLimitsConfigs hoodCurrentLimits = config.CurrentLimits;
         hoodCurrentLimits.StatorCurrentLimit = 20;
         hoodCurrentLimits.StatorCurrentLimitEnable = true;
-        hoodMotor.getConfigurator().apply(hoodCurrentLimits);
+
+        Slot0Configs pidConfigs = config.Slot0;
+        pidConfigs.kP = TurretConstants.kPhood;
+        pidConfigs.kI = TurretConstants.kIhood;
+        pidConfigs.kD = TurretConstants.kDhood;
+        pidConfigs.kS = TurretConstants.kShood;
+        
+        MotionMagicConfigs motionMagicConfigs = config.MotionMagic;
+        motionMagicConfigs.MotionMagicAcceleration = 1;
+
+        hoodMotor.getConfigurator().apply(config);
 
         hoodAbsoluteDutyCycleEncoder = new DutyCycleEncoder(TurretConstants.hoodAbsoluteEncoderID);
-        hoodPidController = new PIDController(TurretConstants.kPhood, TurretConstants.kIhood, TurretConstants.kDhood);
-        hoodPidController.setTolerance(0.1);
+        // hoodPidController = new PIDController(TurretConstants.kPhood, TurretConstants.kIhood, TurretConstants.kDhood);
+        // hoodPidController.setTolerance(0.1);
         feedforward = new SimpleMotorFeedforward(TurretConstants.kShood, 0, 0);
     }
 
@@ -87,10 +109,10 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     }
 
     public boolean finishedZeroing() {
-        System.out.println(hoodMotor.getSupplyCurrent().getValueAsDouble());
+        // System.out.println(hoodMotor.getSupplyCurrent().getValueAsDouble());
         
         if (hoodMotor.getSupplyCurrent().getValueAsDouble() >= 0.6) {
-            hoodMotor.setPosition(-0.2);
+            hoodMotor.setPosition(-0.3);
             hoodMotor.set(0);
             return true;
         } else {
@@ -135,7 +157,8 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     public void setHoodValue(double wantedHoodValueFromZero) {
         wantedHoodValue = wantedHoodValueFromZero;
         // value is from how much increased from our zero value
-        hoodMotor.setVoltage(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValueFromZero) + feedforward.calculate(hoodMotor.getVelocity().getValueAsDouble()));
+        hoodMotor.setControl(positionVoltage.withPosition(wantedHoodValueFromZero).withFeedForward(0));
+        // hoodMotor.setVoltage(hoodPidController.calculate(hoodMotor.getPosition().getValueAsDouble(), wantedHoodValueFromZero) + feedforward.calculate(hoodMotor.getVelocity().getValueAsDouble()));
     }
 
     @Override
@@ -162,12 +185,23 @@ public class ShooterHoodSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("kS hood", kSHood);
         SmartDashboard.putNumber("kD hood", kDHood);
 
-        if (SmartDashboard.getNumber("kP hood", kPHood) != hoodPidController.getP() || SmartDashboard.getNumber("kI hood", kIHood) != hoodPidController.getI() || SmartDashboard.getNumber("kS hood", kSHood) != feedforward.getKs() || SmartDashboard.getNumber("kD hood", kDHood) != hoodPidController.getD()) {
-            hoodPidController.setP(kPHood);
-            hoodPidController.setI(kIHood);
-            hoodPidController.setD(kDHood);
-            feedforward.setKs(kSHood);
-            System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kSHood + "kI = " + kSHood);
+        if (SmartDashboard.getNumber("kP hood", kPHood) != lastP || SmartDashboard.getNumber("kI hood", kIHood) != lastI || SmartDashboard.getNumber("kS hood", kSHood) != lastS || SmartDashboard.getNumber("kD hood", kDHood) != lastD) {
+            lastP = kPHood;
+            lastI = kIHood;
+            lastD = kDHood;
+            lastS = kSHood;
+            
+            Slot0Configs pidConfigs = new Slot0Configs()
+                .withKP(kPHood)
+                .withKI(kIHood)
+                .withKD(kDHood)
+                .withKS(kSHood);
+            hoodMotor.getConfigurator().apply(pidConfigs);
+        //     hoodPidController.setP(kPHood);
+        //     hoodPidController.setI(kIHood);
+        //     hoodPidController.setD(kDHood);
+        //     feedforward.setKs(kSHood);
+        //     System.out.println("Updated hood PID and FF values: kP = " + kPHood + "kI = " + kSHood + "kI = " + kSHood);
         }
     }
 }
