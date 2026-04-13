@@ -196,7 +196,7 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new IntakeRollerVelocityCommand(intakeRollerSubsystem,
-        () -> SmartDashboard.getNumber("Wanted Intake RPM", 3000.0)
+        () -> SmartDashboard.getNumber("Wanted Intake RPM", 1500.0)
       )
     );
 
@@ -209,7 +209,7 @@ public class RobotContainer {
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts);
     Command idleIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
 
-    operatorController.rightTrigger()
+    operatorController.rightTrigger().or(operatorController.rightStick())
     .whileTrue(
       // runIndexer
       Commands.parallel(
@@ -312,7 +312,7 @@ public class RobotContainer {
     );
 
 
-    operatorController.x().whileTrue(
+    operatorController.x().or(operatorController.leftStick()).whileTrue(
       Commands.parallel(
         new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
         new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
@@ -364,7 +364,7 @@ public class RobotContainer {
     operatorController.leftTrigger()
     .and(operatorController.y())
     .whileTrue(
-      new ManualIndexerCommand(indexerSubsystem, () -> -10.0, () -> -Constants.IndexerConstants.idleBeltVolts)
+      new ManualIndexerCommand(indexerSubsystem, () -> -Constants.IndexerConstants.indexRPM, () -> -Constants.IndexerConstants.idleBeltVolts)
     );
 
     operatorController.button(XBoxConstants.MENU).onTrue(

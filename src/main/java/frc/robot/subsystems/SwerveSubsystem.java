@@ -752,7 +752,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Translation2d toTag = movingTarget.minus(turretPose.getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        double tof = tofTable.get(distanceToTarget);
+        double tof = tofTable.get(distanceToTarget) + 0.12;
 
         double maxIterations = Constants.TOFConstants.maxIterations;
         double convergenceEpsilon = Constants.TOFConstants.convergenceEpislon;
@@ -767,10 +767,11 @@ public class SwerveSubsystem extends SubsystemBase {
             // that is vector added to object so subtract that to compensate
             rotationVectorPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(getHeading())).rotateBy(new Rotation2d(Units.degreesToRadians(TurretConstants.robotFrontToTurretAngleDegree)))).plus(new Transform2d(0.0, speeds.omegaRadiansPerSecond*TurretConstants.turretCenterFromRobotCenterTotalLength*tof, new Rotation2d(0.0)));
             movingTarget = movingTarget.minus(rotationVectorPose.getTranslation());
+
             toTag = movingTarget.minus(turretPose.getTranslation());
             turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
             distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-            tof = tofTable.get(distanceToTarget);
+            tof = tofTable.get(distanceToTarget) + 0.12;
 
             // stop when TOF delta is less than epsilon, or after max iterations to prevent infinite loop
             if (Math.abs(lastTOF - tof) < convergenceEpsilon) break;
@@ -811,8 +812,8 @@ public class SwerveSubsystem extends SubsystemBase {
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
 
-        // rpm = rpm * 0.85;
-        hood = hood + 0.75;
+        rpm = rpm * 0.95;
+        // hood = hood + 0.75;
         rpm = Math.min(5400.0, rpm);
         hood = Math.min(5.0, hood);
 
