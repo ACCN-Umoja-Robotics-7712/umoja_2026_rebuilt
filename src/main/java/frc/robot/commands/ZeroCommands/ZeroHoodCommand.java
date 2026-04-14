@@ -3,7 +3,6 @@ package frc.robot.commands.ZeroCommands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ShooterHoodSubsystem;
 
 public class ZeroHoodCommand extends Command {

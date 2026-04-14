@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import frc.robot.subsystems.IntakeRollerSubsystem;
@@ -28,7 +27,6 @@ import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.commands.SwerveJoystick;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
-import frc.robot.commands.ManualCommands.ManualClimbCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
@@ -196,13 +194,13 @@ public class RobotContainer {
     // Intake Roller
     driverController.leftTrigger().whileTrue(
       new IntakeRollerVelocityCommand(intakeRollerSubsystem,
-        () -> SmartDashboard.getNumber("Wanted Intake RPM", 1500.0)
+        () -> SmartDashboard.getNumber("Wanted Intake RPM", Constants.IntakeConstants.intakeVelocity)
       )
     );
 
     driverController.leftStick().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -Constants.IntakeConstants.intakeVoltage
+        () -> -Constants.IntakeConstants.intakeVelocity
       )
     );
 
@@ -375,16 +373,16 @@ public class RobotContainer {
       new zeroIntakeArm(intakeArmSubsystem)
     );
 
-    // operatorController.button(XBoxConstants.PAGE).whileTrue(
-    //   new EnableZeroTurretCommand(shooterTurretSubsystem)
-    //   // new TestIndexerCommand(indexerSubsystem)
-    // );
-
     operatorController.button(XBoxConstants.PAGE).whileTrue(
-      new IndexerVelocityCommand(indexerSubsystem,
-        () -> 5400.0
-      )
+      new EnableZeroTurretCommand(shooterTurretSubsystem)
+      // new TestIndexerCommand(indexerSubsystem)
     );
+
+    // operatorController.button(XBoxConstants.PAGE).whileTrue(
+    //   new IndexerVelocityCommand(indexerSubsystem,
+    //     () -> 5400.0
+    //   )
+    // );
 
     //Intake Arm Motor
     driverController.rightTrigger().whileTrue(

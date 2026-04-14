@@ -140,15 +140,15 @@ public final class Constants {
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 4.3;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 4.0;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
         public static final double shootDriveSpeed = 0.5; // 5 m/s
         public static final double shootTurnSpeed = 1.0;
         public static final double kSlowButtonDriveModifier = 0.5;
         public static final double kSlowButtonTurnModifier = 0.50;
-        public static final double teleSpeed = 0.7;
-        public static final double teleTurnSpeed = 0.55;
+        public static final double teleSpeed = 0.75;
+        public static final double teleTurnSpeed = 0.65;
         
         public static final double shootingSpeedCap = 0.3; // 0.3m/s max speed when shooting, to improve accuracy
 
@@ -239,14 +239,14 @@ public final class Constants {
         public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
-        public static final double rollerkP = 0.00;
-        public static final double rollerkV = 0.002;
-        public static final double rollerkD = 0.0;
+        public static final double rollerkP = 0.0018;
+        public static final double rollerkV = 0.0018;
+        public static final double rollerkD = 0.01;
         public static final double armkP = 0.00;
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeVoltage = 8;
+        public static final double intakeVelocity = 4000;
     }
 
     public static final class IntakeRollerStates {
@@ -267,19 +267,6 @@ public final class Constants {
         public static final double kPIndex = 0.0001;
         public static final double kVIndex = 0.00185;
         public static final double kDIndex = 0.0005;
-    }
-
-    public static final class ClimbConstants {
-        public static final int climbMotorID = 61; // Update it on the REV Hardware (Do it for all other motor IDs and Encoder IDs)
-        public static final int climbLimitSwitchID = 2;
-        public static final int kP = 0;
-        public static final int kI = 0;
-    }
-
-    public static final class ClimbStates {
-        public static final double NONE = -1;
-        public static final double RETRACTED = 0;
-        public static final double L1 = 1;
     }
 
     public static final class LEDConstants {
@@ -521,5 +508,5 @@ public final class Constants {
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
     public static final ModuleConfig moduleConfig = new ModuleConfig(ModuleConstants.kWheelDiameterMeters/2, AutoConstants.kMaxSpeedMetersPerSecond, ModuleConstants.kWheelCOF, ModuleConstants.kDriveMotor, ModuleConstants.kDriveMotorCurrentLimit, ModuleConstants.kNumMotorsPerModule);
     public static final RobotConfig robotConfig = new RobotConfig(RobotConstants.kRobotTotalWeightKG, RobotConstants.kRobotMOI, moduleConfig, DriveConstants.kDriveKinematics.getModules());
-    public static final PathConstraints pathConstraints = new PathConstraints(AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared, AutoConstants.kMaxAngularSpeedRadiansPerSecond, AutoConstants.kMaxAngularSpeedRadiansPerSecond);
+    public static final PathConstraints pathConstraints = new PathConstraints(4.0, AutoConstants.kMaxAccelerationMetersPerSecondSquared, AutoConstants.kMaxAngularSpeedRadiansPerSecond, AutoConstants.kMaxAngularSpeedRadiansPerSecond);
 }

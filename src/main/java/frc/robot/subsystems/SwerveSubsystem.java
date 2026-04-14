@@ -232,7 +232,8 @@ public class SwerveSubsystem extends SubsystemBase {
         angleTable.put(5.1, 5.0);
         angleTable.put(5.3, 5.0);
         angleTable.put(5.5, 5.0);
-        angleTable.put(20.0, 5.0);
+        angleTable.put(5.7, 6.0);
+        angleTable.put(20.0, 6.0);
 
         tofTable.put(0.0, 1.0);
         tofTable.put(1.8, 1.0);
@@ -752,7 +753,8 @@ public class SwerveSubsystem extends SubsystemBase {
         Translation2d toTag = movingTarget.minus(turretPose.getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        double tof = tofTable.get(distanceToTarget) + 0.12;
+        double tofOffset = 0.12;
+        double tof = tofTable.get(distanceToTarget) + tofOffset;
 
         double maxIterations = Constants.TOFConstants.maxIterations;
         double convergenceEpsilon = Constants.TOFConstants.convergenceEpislon;
@@ -771,7 +773,7 @@ public class SwerveSubsystem extends SubsystemBase {
             toTag = movingTarget.minus(turretPose.getTranslation());
             turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
             distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-            tof = tofTable.get(distanceToTarget) + 0.12;
+            tof = tofTable.get(distanceToTarget) + tofOffset;
 
             // stop when TOF delta is less than epsilon, or after max iterations to prevent infinite loop
             if (Math.abs(lastTOF - tof) < convergenceEpsilon) break;
@@ -812,10 +814,10 @@ public class SwerveSubsystem extends SubsystemBase {
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
 
-        rpm = rpm * 0.95;
+        rpm = rpm * 0.98;
         // hood = hood + 0.75;
         rpm = Math.min(5400.0, rpm);
-        hood = Math.min(5.0, hood);
+        hood = Math.min(6.0, hood);
 
         return new double[] {rpm, hood};
     }
