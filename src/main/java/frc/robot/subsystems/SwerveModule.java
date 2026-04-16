@@ -69,6 +69,7 @@ public class SwerveModule {
         // turnConfig.idleMode(IdleMode.kCoast);
         // turnConfig.inverted(turnMotorReversed);
         // turnConfig.smartCurrentLimit(20);
+        
 
         // turnMotor.configure(turnConfig, SparkMax.ResetMode.kNoResetSafeParameters, SparkMax.PersistMode.kPersistParameters);
 

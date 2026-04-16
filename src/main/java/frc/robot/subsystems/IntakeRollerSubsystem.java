@@ -40,7 +40,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         intakeRollerMotor = new SparkFlex(IntakeConstants.rollerMotorID, MotorType.kBrushless);
         pidController = intakeRollerMotor.getClosedLoopController();
         
-        SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(40, 20); // Was 40
+        SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(60, 20); // Was 40
         intakeRollerConfig.idleMode(IdleMode.kCoast);
         intakeRollerConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -87,7 +87,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         double kPIntake = SmartDashboard.getNumber("kP Intake", IntakeConstants.rollerkP);
         double kDIntake = SmartDashboard.getNumber("kD Intake", IntakeConstants.rollerkD);
         double kVIntake = SmartDashboard.getNumber("kV Intake", IntakeConstants.rollerkV);
-        double wantedRPM = SmartDashboard.getNumber("Wanted Intake RPM", 3000);
+        double wantedRPM = SmartDashboard.getNumber("Wanted Intake RPM", 5000);
         SmartDashboard.putNumber("Wanted Intake RPM", wantedRPM);
         
         SmartDashboard.putNumber("kP Intake", kPIntake);

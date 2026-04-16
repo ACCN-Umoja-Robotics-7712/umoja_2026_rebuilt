@@ -354,7 +354,7 @@ public class RobotContainer {
     // Turret Motor
     operatorController.leftBumper().whileTrue(
       new ManualTurretCommand(shooterTurretSubsystem,
-        () -> -operatorController.getLeftX() * 0.4
+        () -> -operatorController.getLeftX() * 0.25
       )
     );
 

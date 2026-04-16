@@ -246,7 +246,7 @@ public final class Constants {
         public static final double armkG = 0.00;
         public static final double armkV = 0.00;
 
-        public static final double intakeVelocity = 4000;
+        public static final double intakeVelocity = 5000;
     }
 
     public static final class IntakeRollerStates {

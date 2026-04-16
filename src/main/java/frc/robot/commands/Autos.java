@@ -274,8 +274,8 @@ public class Autos {
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             ).withTimeout(0.6)
                             .andThen(
@@ -284,8 +284,8 @@ public class Autos {
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                     )
                                 )
                             ).withTimeout(7)
@@ -354,8 +354,8 @@ public class Autos {
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             ).withTimeout(0.6)
                             .andThen(
@@ -364,8 +364,8 @@ public class Autos {
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                     )
                                 )
                             ).withTimeout(7)
@@ -434,8 +434,8 @@ public class Autos {
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             ).withTimeout(0.6)
                             .andThen(
@@ -444,8 +444,8 @@ public class Autos {
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                     )
                                 )
                             ).withTimeout(7)
@@ -496,8 +496,8 @@ public class Autos {
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                     Commands.repeatingSequence(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                     )
                 ).withTimeout(5),
                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
@@ -541,8 +541,8 @@ public class Autos {
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                             )
                         )
                     )
@@ -564,8 +564,8 @@ public class Autos {
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             )
                         )
@@ -609,8 +609,8 @@ public class Autos {
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                             )
                         )
                     )
@@ -632,8 +632,8 @@ public class Autos {
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             )
                         )
@@ -677,8 +677,8 @@ public class Autos {
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                             )
                         )
                     )
@@ -700,8 +700,8 @@ public class Autos {
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             )
                         )
@@ -738,15 +738,15 @@ public class Autos {
                     // stop and bring flywheel to speed
                     Commands.parallel(
                         new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
-                    ).withTimeout(0.3)
+                    ).withTimeout(0.1)
                     .andThen(
                         Commands.parallel(
                             // Force shoot 
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                             new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                             Commands.repeatingSequence(
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                             )
                         )
                     )
@@ -761,15 +761,15 @@ public class Autos {
                         // stop and bring flywheel to speed
                         Commands.parallel(
                             new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
-                        ).withTimeout(0.3)
+                        ).withTimeout(0.1)
                         .andThen(
                             Commands.parallel(
                                 // Force shoot 
                                 new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                 new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             )
                         )
@@ -811,8 +811,8 @@ public class Autos {
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                     Commands.repeatingSequence(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                     )
                 ).withTimeout(5),
                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
@@ -854,8 +854,8 @@ public class Autos {
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                     Commands.repeatingSequence(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                     )
                 ).withTimeout(5),
                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
@@ -897,8 +897,8 @@ public class Autos {
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                     Commands.repeatingSequence(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                     )
                 ).withTimeout(4.5),
                 new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
@@ -974,8 +974,8 @@ public class Autos {
                                     RobotContainer::isReadyToShoot
                                 ),
                                 Commands.repeatingSequence(
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                 )
                             ).withTimeout(0.6)
                             .andThen(
@@ -984,8 +984,8 @@ public class Autos {
                                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                                     Commands.repeatingSequence(
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                                     )
                                 )
                             ).withTimeout(7)
@@ -1107,8 +1107,8 @@ public class Autos {
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                     Commands.repeatingSequence(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                     )
                 )
             )
@@ -1144,8 +1144,8 @@ public class Autos {
                     new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
                     new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
                     Commands.repeatingSequence(
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.1),
-                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.0).withTimeout(0.3)
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
                     )
                 )
             )

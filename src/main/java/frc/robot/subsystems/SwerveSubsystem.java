@@ -237,19 +237,19 @@ public class SwerveSubsystem extends SubsystemBase {
 
         tofTable.put(0.0, 1.0);
         tofTable.put(1.8, 1.0);
-        tofTable.put(2.1, 1.0575);
-        tofTable.put(2.3, 1.085);
-        tofTable.put(2.5, 1.105);
-        tofTable.put(2.7, 1.14);
-        tofTable.put(2.9, 1.165);
-        tofTable.put(3.1, 1.17);
-        tofTable.put(3.3, 1.17);
-        tofTable.put(3.5, 1.18);
-        tofTable.put(3.7, 1.226);
-        tofTable.put(3.9, 1.223);
-        tofTable.put(4.3, 1.25);
-        tofTable.put(5.0, 1.5);
-        tofTable.put(5.5, 1.4);
+        tofTable.put(2.1, 1.1575);
+        tofTable.put(2.3, 1.185);
+        tofTable.put(2.5, 1.205);
+        tofTable.put(2.7, 1.24);
+        tofTable.put(2.9, 1.265);
+        tofTable.put(3.1, 1.245);
+        tofTable.put(3.3, 1.245);
+        tofTable.put(3.5, 1.255);
+        tofTable.put(3.7, 1.301);
+        tofTable.put(3.9, 1.298);
+        tofTable.put(4.3, 1.325);
+        tofTable.put(5.0, 1.6);
+        tofTable.put(5.5, 1.5);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -752,8 +752,11 @@ public class SwerveSubsystem extends SubsystemBase {
         Pose2d rotationVectorPose;
         Translation2d toTag = movingTarget.minus(turretPose.getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
-        double distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
-        double tofOffset = 0.12;
+        double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
+        SmartDashboard.putNumber("Distance offset", distanceOffset); 
+        double distanceToTarget = toTag.getDistance(new Translation2d(0, 0)) + distanceOffset;
+        double tofOffset = SmartDashboard.getNumber("TOF offset", 0.0);
+        SmartDashboard.putNumber("TOF offset", tofOffset);
         double tof = tofTable.get(distanceToTarget) + tofOffset;
 
         double maxIterations = Constants.TOFConstants.maxIterations;
@@ -762,7 +765,7 @@ public class SwerveSubsystem extends SubsystemBase {
             double lastTOF = tof;
             
             // recalculate with new TOF
-            movingTarget = targetPose.getTranslation().minus(new Translation2d(speeds.vxMetersPerSecond*tof, speeds.vxMetersPerSecond*tof));
+            movingTarget = targetPose.getTranslation().minus(new Translation2d(speeds.vxMetersPerSecond*tof, speeds.vyMetersPerSecond*tof));
             // Want velocity vector from turret rotation
             // vector is based on direction of turret, take heading and rotate by turret degree offset
             // then add 0 forward movement, centerToTurretTotalLength*radiansPerSecond*TOF side offset, and 0 rotation)
@@ -813,8 +816,9 @@ public class SwerveSubsystem extends SubsystemBase {
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
-
-        rpm = rpm * 0.98;
+        double rpmOffset = SmartDashboard.getNumber("RPM offset", 0);
+        SmartDashboard.putNumber("RPM offset", rpmOffset);
+        rpm = rpm + rpmOffset;
         // hood = hood + 0.75;
         rpm = Math.min(5400.0, rpm);
         hood = Math.min(6.0, hood);
