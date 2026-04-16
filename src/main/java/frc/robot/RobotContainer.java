@@ -317,18 +317,28 @@ public class RobotContainer {
       )
     );
 
+    operatorController.povUp().whileTrue(
+      Commands.runOnce( () -> 
+        {
+          double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
+          SmartDashboard.putNumber("Distance offset", distanceOffset - 0.1); 
+        }
+      )
+    );
+
     operatorController.povDown().whileTrue(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 1.0)
+      Commands.runOnce( () -> 
+        {
+          double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
+          SmartDashboard.putNumber("Distance offset", distanceOffset + 0.1); 
+        }
+      )
     );
     
 
-    operatorController.povLeft().whileTrue(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 2.5)
-    );
-
-    operatorController.povUp().whileTrue(
-        new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 4.0)
-    );
+    // operatorController.povLeft().whileTrue(
+    //     new ShooterHoodValueCommand(shooterHoodSubsystem, () -> 2.5)
+    // );
     // operatorController.x().whileTrue(
     //   new ShooterTurretAngleCommand(shooterTurretSubsystem, shooterTurretSubsystem::getCustomAngle)
     // );

@@ -3,8 +3,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -28,16 +31,18 @@ public class SwerveModule {
     public final int absoluteEncoderID;
 
     public SwerveModule(int driveMotorId, int turnMotorId, boolean driveMotorReversed, boolean turnMotorReversed, int absoluteEncoderId, double absoluteEncoderOffset, boolean isAbsoluteEncoderReversed){   
-        CANcoderConfiguration CANconfig = new CANcoderConfiguration();
-        
-        CANconfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
-        CANconfig.MagnetSensor.SensorDirection = isAbsoluteEncoderReversed ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
-        // config.MagnetSensor.AbsoluteSensorRangeValue = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-        
         CANBus CANivoreBus = new CANBus("CANivore");
         // CANBus rioCanBus = new CANBus("rio");
 
         absoluteEncoder = new CANcoder(absoluteEncoderId, CANivoreBus);
+
+        CANcoderConfiguration CANconfig = new CANcoderConfiguration();
+        
+        CANconfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
+        CANconfig.MagnetSensor.SensorDirection = isAbsoluteEncoderReversed ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
+        
+        absoluteEncoder.getConfigurator().apply(CANconfig);
+    
         this.absoluteEncoderID = absoluteEncoderId;
         this.absoluteEncoderDegreeOffset = absoluteEncoderOffset;
 
@@ -49,6 +54,11 @@ public class SwerveModule {
         driveCurrentLimits.SupplyCurrentLimit = 50; // Original 50
         driveCurrentLimits.SupplyCurrentLimitEnable = true;
         driveCurrentLimits.SupplyCurrentLowerLimit = 40; // defaults drops to lower limit after 1s
+
+        MotorOutputConfigs driveConfigs = new MotorOutputConfigs();
+        driveConfigs.Inverted = driveMotorReversed ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+        driveConfigs.NeutralMode = NeutralModeValue.Brake;
+        driveMotor.getConfigurator().apply(driveConfigs);
         driveMotor.getConfigurator().apply(driveCurrentLimits);
 
 
