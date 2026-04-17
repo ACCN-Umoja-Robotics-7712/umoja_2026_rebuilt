@@ -634,13 +634,18 @@ public class SwerveSubsystem extends SubsystemBase {
         
         Pose2d currentPose = getPose();
 
-        if (RobotContainer.gameState == GameConstants.Disabled) {
+        double tuningModeVal = SmartDashboard.getNumber("Tuning Mode ", 0);
+        SmartDashboard.putNumber("Tuning Mode ", tuningModeVal);
+        boolean isTuningMode = tuningModeVal == 1;
+        if (RobotContainer.gameState == GameConstants.Disabled && !isTuningMode) {
             LimelightHelpers.SetThrottle(limelightLeft, 100);
             LimelightHelpers.SetThrottle(limelightRight, 100);
         } else {
             LimelightHelpers.SetThrottle(limelightLeft, 0);
             LimelightHelpers.SetThrottle(limelightRight, 0);
         }
+
+        
         Pose2d turretFieldPose = getTurretPose();
         turretPublisher.set(turretFieldPose);
         limelightPublishers.set(limelightPoses.toArray(new Pose2d[0]));
@@ -775,7 +780,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
             toTag = movingTarget.minus(turretPose.getTranslation());
             turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
-            distanceToTarget = toTag.getDistance(new Translation2d(0, 0));
+            distanceToTarget = toTag.getDistance(new Translation2d(0, 0)) + distanceOffset;
             tof = tofTable.get(distanceToTarget) + tofOffset;
 
             // stop when TOF delta is less than epsilon, or after max iterations to prevent infinite loop

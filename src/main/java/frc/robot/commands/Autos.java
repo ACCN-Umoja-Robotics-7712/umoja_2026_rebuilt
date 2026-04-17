@@ -53,7 +53,7 @@ public class Autos {
         BLUE_TRENCH_LEFT_NEUTRAL, FAST_BLUE_TRENCH_LEFT_NEUTRAL, BLUE_CENTER_TOWER, BLUE_RIGHT_BUMP_OUTPOST, BLUE_RIGHT_TRENCH_OUTPOST, BLUE_TRENCH_RIGHT_NEUTRAL, FAST_BLUE_TRENCH_RIGHT_NEUTRAL,
         RED_TRENCH_LEFT_NEUTRAL, FAST_RED_TRENCH_LEFT_NEUTRAL, RED_CENTER_TOWER, RED_TRENCH_RIGHT_NEUTRAL, FAST_RED_TRENCH_RIGHT_NEUTRAL, RED_TRENCH_RIGHT_OUTPOST, RED_CENTER_TOWER_R,
         PRACTICE_FIELD, SIMPLE_AUTO, TUNE_AUTO, BLUE_LEFT_BUMP_DEPOT, BLUE_RIGHT_AUTO_FULL_2, FAST_BLUE_TRENCH_BUMP_LEFT_NEUTRAL, FAST_BLUE_TRENCH_BUMP_RIGHT_NEUTRAL, FAST_RED_TRENCH_BUMP_LEFT_NEUTRAL, FAST_RED_TRENCH_BUMP_RIGHT_NEUTRAL,
-        BLUE_LEFT_DEPOT, RED_LEFT_DEPOT
+        BLUE_LEFT_DEPOT, RED_LEFT_DEPOT, BLUE_CENTER_AUTO, RED_CENTER_AUTO
     }
     private SendableChooser<AUTO> chooser;
     private SendableChooser<Command> ppChooser;
@@ -109,8 +109,12 @@ public class Autos {
         // chooser.addOption("Blue Right Outpost from Trench", AUTO.BLUE_RIGHT_TRENCH_OUTPOST);
         // chooser.addOption("Red Right Trench to Outpost", AUTO.BLUE_TRENCH_RIGHT_OUTPOST);
         // chooser.addOption("Blue Left Bump to Neutral", AUTO.BLUE_LEFT_BUMP_DEPOT); // Go to neutral, intake, go to trench, shoot, go back to neutral, intake, go to outpost, shoot
+        chooser.addOption("Blue Center Auto", AUTO.BLUE_CENTER_AUTO);
+        chooser.addOption("Blue Center Auto", AUTO.RED_CENTER_AUTO);
+
         chooser.addOption("simple", AUTO.SIMPLE_AUTO);
         chooser.addOption("tune", AUTO.TUNE_AUTO);
+
         chooser.setDefaultOption("Default", null);
         
         // ppChooser = AutoBuilder.buildAutoChooser();
@@ -187,6 +191,9 @@ public class Autos {
             case RED_LEFT_DEPOT -> getRedDepot();
             case SIMPLE_AUTO -> getSimpleAuto();
             case TUNE_AUTO -> getTuneAuto();
+            case BLUE_CENTER_AUTO -> getBlueCenterAuto();
+            case RED_CENTER_AUTO -> getRedCenterAuto();
+
             default -> new InstantCommand();
         };
     }
@@ -224,6 +231,8 @@ public class Autos {
         // );
         // return path1;
     }
+
+    
 
     public Command getRedTrenchRightNeutral() {
         return Commands.parallel(
@@ -1263,6 +1272,65 @@ public class Autos {
                 .andThen(shoot)
         );
     }
+
+      public Command getBlueCenterAuto() {
+        Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
+        Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
+        Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
+
+        Command lowerArm = new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5);
+        Command shoot = Commands.parallel(
+            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+            new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+        ).withTimeout(0.6).andThen(Commands.parallel(
+            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+            new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts)
+            )
+        );
+        
+        Command alignTurret = 
+        Commands.parallel(
+            new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
+            new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+        );
+        return getPathToPose(Constants.SHOOTING_POSES.BLUE_CENTER_SHOT_POSE).andThen(
+            Commands.parallel(
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVelocity),
+            zeroHood.withTimeout(1).alongWith(lowerArm).andThen(alignTurret),
+            new WaitCommand(2)
+                .andThen(shoot)
+        ));
+    }
+
+    public Command getRedCenterAuto() {
+        Command runIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
+        Command stopIndexer = new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
+        Command zeroHood = new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem);
+
+        Command lowerArm = new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5);
+        Command shoot = Commands.parallel(
+            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+            new ConditionalCommand(runIndexer, stopIndexer, RobotContainer::isReadyToShoot)
+        ).withTimeout(0.6).andThen(Commands.parallel(
+            new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+            new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts)
+            )
+        );
+        
+        Command alignTurret = 
+        Commands.parallel(
+            new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
+            new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+        );
+        return getPathToPose(Constants.SHOOTING_POSES.RED_CENTER_SHOT_POSE).andThen(
+            Commands.parallel(
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVelocity),
+            zeroHood.withTimeout(1).alongWith(lowerArm).andThen(alignTurret),
+            new WaitCommand(2)
+                .andThen(shoot)
+        ));
+    }
+
 
   public Command getPathToPose(Pose2d endPose) {
     // posePublisher.set(endPose);

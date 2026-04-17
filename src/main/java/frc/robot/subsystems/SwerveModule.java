@@ -22,11 +22,12 @@ import frc.robot.Constants.ModuleConstants;
 public class SwerveModule {
     public final TalonFX driveMotor;
     public final TalonFX turnMotor;
-    // private final RelativeEncoder driveEncoder, turnEncoder;
+    // private final RelativeEncoder driveEncoder, turnEncoder; 
     private final PIDController turnPIDController;
     // private final PIDController drivePIDController;
     // public final CANcoder absoluteEncoder;
-    public double absoluteEncoderDegreeOffset;
+
+    public double absoluteEncoderDegreeOffset, lastOffset, lastP;
     public final CANcoder absoluteEncoder;
     public final int absoluteEncoderID;
 
@@ -45,6 +46,8 @@ public class SwerveModule {
     
         this.absoluteEncoderID = absoluteEncoderId;
         this.absoluteEncoderDegreeOffset = absoluteEncoderOffset;
+        this.lastOffset = absoluteEncoderOffset;
+        this.lastP = ModuleConstants.kPTurning;
 
         driveMotor = new TalonFX(driveMotorId, CANivoreBus);
 
@@ -148,6 +151,25 @@ public class SwerveModule {
 
         
         state.optimize(getState().angle);
+
+        double CANCoderOffset = SmartDashboard.getNumber("Swerve motor offset:" + absoluteEncoderID, this.absoluteEncoderDegreeOffset);
+        SmartDashboard.putNumber("Swerve motor offset:" + absoluteEncoderID, CANCoderOffset);
+        if (lastOffset != CANCoderOffset) {
+            lastOffset = CANCoderOffset;
+            CANcoderConfiguration CANconfig = new CANcoderConfiguration();
+            
+            CANconfig.MagnetSensor.MagnetOffset = CANCoderOffset;
+            CANconfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+            
+            absoluteEncoder.getConfigurator().apply(CANconfig);
+        }
+        double turnP = SmartDashboard.getNumber("turnPID " + absoluteEncoderID, ModuleConstants.kPTurning);
+        SmartDashboard.putNumber("turnPID: " + absoluteEncoderID, turnP);
+        if (lastP != turnP) {
+            lastP = turnP;
+            turnPIDController.setP(turnP);
+        }
+
         SmartDashboard.putNumber("Swerve wanted angle:" + absoluteEncoderID, state.angle.getDegrees());
         SmartDashboard.putNumber("Swerve current speed:" + absoluteEncoderID, getState().speedMetersPerSecond);
         SmartDashboard.putNumber("Swerve wanted speed:" + absoluteEncoderID, state.speedMetersPerSecond);

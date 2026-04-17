@@ -115,10 +115,10 @@ public final class Constants {
         public static final boolean kFrontRightTurningEncoderReversed = true;
         public static final boolean kBackRightTurningEncoderReversed = true;
 
-        public static final boolean kFrontLeftDriveReversed = false;
-        public static final boolean kBackLeftDriveReversed = false;
-        public static final boolean kFrontRightDriveReversed = false;
-        public static final boolean kBackRightDriveReversed = false;
+        public static final boolean kFrontLeftDriveReversed = true;
+        public static final boolean kBackLeftDriveReversed = true;
+        public static final boolean kFrontRightDriveReversed = true;
+        public static final boolean kBackRightDriveReversed = true;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 22;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 12;
@@ -455,11 +455,20 @@ public final class Constants {
     }
 
     public static final class SHOOTING_POSES {
+        
+        public static final Pose2d BLUE_CENTER_SHOT_POSE = new Pose2d(2.0, 4.0, new Rotation2d(Units.degreesToRadians(270)));
+        public static final Pose2d RED_CENTER_SHOT_POSE = new Pose2d(14.5, 4.0, new Rotation2d(Units.degreesToRadians(90)));
 
+
+        //CHANGE RADIANS TO DEGREES
         // BLUE SIDE
+
+
         public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.626, 4.035, new Rotation2d(0));
         public static final Pose2d BLUE_PASS_DEPOT_POSE = new Pose2d(1.25, 6, new Rotation2d(0));
         public static final Pose2d BLUE_PASS_OUTPOST_POSE = new Pose2d(1.25, 2, new Rotation2d(0));
+
+        
         
         public static final Pose2d BLUE_HUB_CENTER = new Pose2d(3.439, 3.987, new Rotation2d(0));
         public static final Pose2d BLUE_OUTPOST_CENTER = new Pose2d(0.975, 0.630, new Rotation2d(180));

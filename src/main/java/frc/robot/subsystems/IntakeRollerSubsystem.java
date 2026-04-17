@@ -35,6 +35,7 @@ public class IntakeRollerSubsystem extends SubsystemBase {
 
     private double lastKP = 0.0;
     private double lastKV = 0.0;
+    private double lastKD = 0.0;
     
     public IntakeRollerSubsystem() {
         intakeRollerMotor = new SparkFlex(IntakeConstants.rollerMotorID, MotorType.kBrushless);
@@ -94,10 +95,11 @@ public class IntakeRollerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("kD Intake", kDIntake);
         SmartDashboard.putNumber("kV Intake", kVIntake);
 
-        if (kPIntake != lastKP || kVIntake != lastKV) {
+        if (kPIntake != lastKP || kVIntake != lastKV || kDIntake != lastKD) {
             lastKP = kPIntake;
             lastKV = kVIntake;
-            SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(40, 20); // Was 40
+            lastKD = kDIntake;
+            SparkBaseConfig intakeRollerConfig = new SparkFlexConfig().smartCurrentLimit(60, 20); // Was 40
             intakeRollerConfig.idleMode(IdleMode.kCoast);
             intakeRollerConfig.closedLoop
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)

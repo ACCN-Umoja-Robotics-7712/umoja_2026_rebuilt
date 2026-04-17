@@ -78,7 +78,7 @@ public class AlignWithTrench extends Command{
         // } else {
           ChassisSpeeds chassisSpeeds;
           boolean isBlue = !DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
-          int flipAlliance = isBlue ? 1 : -1;
+          int flipAlliance = isBlue ? 1 : 1;
           int flipDirection = wantedAngle == 0 ? 1 : -1;
           if (!isBlue) {
             // flip wantedAngle for redside

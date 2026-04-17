@@ -200,7 +200,7 @@ public class RobotContainer {
 
     driverController.leftStick().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
-        () -> -Constants.IntakeConstants.intakeVelocity
+        () -> -SmartDashboard.getNumber("Wanted Intake RPM", Constants.IntakeConstants.intakeVelocity)
       )
     );
 
@@ -321,7 +321,7 @@ public class RobotContainer {
       Commands.runOnce( () -> 
         {
           double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
-          SmartDashboard.putNumber("Distance offset", distanceOffset - 0.1); 
+          SmartDashboard.putNumber("Distance offset", distanceOffset + 0.1); 
         }
       )
     );
@@ -330,7 +330,7 @@ public class RobotContainer {
       Commands.runOnce( () -> 
         {
           double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
-          SmartDashboard.putNumber("Distance offset", distanceOffset + 0.1); 
+          SmartDashboard.putNumber("Distance offset", distanceOffset - 0.1); 
         }
       )
     );
