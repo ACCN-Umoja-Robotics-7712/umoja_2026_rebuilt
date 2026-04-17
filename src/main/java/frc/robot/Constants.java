@@ -239,7 +239,7 @@ public final class Constants {
         public static final int rightMotorID = 44;
         public static final int rollerMotorID = 46;
 
-        public static final double rollerkP = 0.0018;
+        public static final double rollerkP = 0.0;
         public static final double rollerkV = 0.0018;
         public static final double rollerkD = 0.01;
         public static final double armkP = 0.00;

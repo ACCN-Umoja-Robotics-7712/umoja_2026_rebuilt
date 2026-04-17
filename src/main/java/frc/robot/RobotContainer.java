@@ -143,6 +143,12 @@ public class RobotContainer {
     shooterTurretSubsystem.setDefaultCommand(
       new ManualTurretCommand(shooterTurretSubsystem, () -> 0.0)
     );
+    intakeArmSubsystem.setDefaultCommand(
+      Commands.run(
+          () -> 
+          intakeArmSubsystem.driveMotorDown()
+        ,intakeArmSubsystem)
+    );
 
     // intakeRollerSubsystem.setDefaultCommand(
     //   new ManualIntakeRoller(intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVoltage)
@@ -321,7 +327,7 @@ public class RobotContainer {
       Commands.runOnce( () -> 
         {
           double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
-          SmartDashboard.putNumber("Distance offset", distanceOffset + 0.1); 
+          SmartDashboard.putNumber("Distance offset", distanceOffset + 0.05); 
         }
       )
     );
@@ -330,7 +336,7 @@ public class RobotContainer {
       Commands.runOnce( () -> 
         {
           double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
-          SmartDashboard.putNumber("Distance offset", distanceOffset - 0.1); 
+          SmartDashboard.putNumber("Distance offset", distanceOffset - 0.05); 
         }
       )
     );

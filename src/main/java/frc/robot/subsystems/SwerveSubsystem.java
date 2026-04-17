@@ -248,8 +248,8 @@ public class SwerveSubsystem extends SubsystemBase {
         tofTable.put(3.7, 1.301);
         tofTable.put(3.9, 1.298);
         tofTable.put(4.3, 1.325);
-        tofTable.put(5.0, 1.6);
-        tofTable.put(5.5, 1.5);
+        tofTable.put(5.0, 1.4);
+        tofTable.put(5.5, 1.45);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -757,7 +757,7 @@ public class SwerveSubsystem extends SubsystemBase {
         Pose2d rotationVectorPose;
         Translation2d toTag = movingTarget.minus(turretPose.getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
-        double distanceOffset = SmartDashboard.getNumber("Distance offset", 0);
+        double distanceOffset = SmartDashboard.getNumber("Distance offset", -0.1);
         SmartDashboard.putNumber("Distance offset", distanceOffset); 
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0)) + distanceOffset;
         double tofOffset = SmartDashboard.getNumber("TOF offset", 0.0);

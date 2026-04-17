@@ -59,6 +59,18 @@ public class IntakeArmSubsystem extends SubsystemBase {
         intakeArmMotorLeader.setPosition(0);
     }
 
+    public boolean isIntakeLowered() {
+        return intakeArmMotorLeader.getPosition().getValueAsDouble() >= 1.5;
+    }
+
+    public void driveMotorDown() {
+        if (isIntakeLowered() && intakeArmMotorLeader.getVelocity().getValueAsDouble() < -0.1) {
+            runIntakeArm(0.05);
+        } else {
+            runIntakeArm(0);
+        }
+    }
+
     public void setBrakeMode(NeutralModeValue mode) {
         intakeArmMotorLeader.setNeutralMode(mode);
     }
