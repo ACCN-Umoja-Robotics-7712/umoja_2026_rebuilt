@@ -133,7 +133,7 @@ public class RobotContainer {
     );
 
     indexerSubsystem.setDefaultCommand(
-      new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+      new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts)
     );
 
     shooterHoodSubsystem.setDefaultCommand(
@@ -211,7 +211,7 @@ public class RobotContainer {
     );
 
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts);
-    Command idleIndexer = new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts);
+    Command idleIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts);
 
     operatorController.rightTrigger().or(operatorController.rightStick())
     .whileTrue(
@@ -220,7 +220,7 @@ public class RobotContainer {
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
         new SelectCommand<>(
           Map.of(
-            true, new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts),
+            true, new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts),
             false, idleIndexer
           ), () -> RobotContainer.isReadyToShoot()
         )
@@ -232,7 +232,7 @@ public class RobotContainer {
         )
       )
     ).whileFalse(
-        new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+        new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts)
     );
     
     // operatorController.a()
@@ -240,7 +240,7 @@ public class RobotContainer {
     //   // runIndexer
     //   Commands.parallel(
     //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-    //     new ConditionalCommand(new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts), new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts), RobotContainer::isReadyToShoot)
+    //     new ConditionalCommand(new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts), new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts), RobotContainer::isReadyToShoot)
     //   ).withTimeout(0.6).andThen(
     //     Commands.parallel(
     //       new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
@@ -251,7 +251,7 @@ public class RobotContainer {
     //     )
     //   )
     // ).whileFalse(
-    //     new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+    //     new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts)
     // );
     
     // operatorController.a()
@@ -260,7 +260,7 @@ public class RobotContainer {
     //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -3800.0),
     //     new ConditionalCommand(
     //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts), 
-    //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0)
+    //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM)
     //       , RobotContainer::isReadyToShoot)
     //   ).withTimeout(0.6).andThen(
     //     Commands.parallel(
@@ -282,7 +282,7 @@ public class RobotContainer {
         new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, shooterFlywheelSubsystem::getDashboardVelocity),
         new ConditionalCommand(
           new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.idleBeltVolts), 
-          new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts)
           , RobotContainer::isReadyToShoot)
       ).withTimeout(0.6).andThen(
         Commands.parallel(
@@ -298,7 +298,7 @@ public class RobotContainer {
     //     new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, () -> -5200.0),
     //     new ConditionalCommand(
     //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexVolts, () -> Constants.IndexerConstants.beltVolts), 
-    //       new ManualIndexerCommand(indexerSubsystem, () -> 0.0, () -> Constants.IndexerConstants.idleBeltVolts)
+    //       new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts)
     //       , RobotContainer::isReadyToShoot)
     //   ).withTimeout(0.6).andThen(
     //     Commands.parallel(
