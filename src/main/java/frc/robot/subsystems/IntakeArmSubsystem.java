@@ -31,7 +31,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private double state = IntakeArmStates.NONE;
 
     public IntakeArmSubsystem() {
-        CANBus rio = new CANBus("rio"); // TODO: Default Coast when disabled, and Brake when enabled
+        CANBus rio = CANBus.roboRIO(); // TODO: Default Coast when disabled, and Brake when enabled
         intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, rio);
         intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, rio);
         CurrentLimitsConfigs armCurrentLimits = new CurrentLimitsConfigs();

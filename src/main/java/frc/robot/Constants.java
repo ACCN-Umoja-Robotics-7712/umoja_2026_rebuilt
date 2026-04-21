@@ -70,15 +70,29 @@ public final class Constants {
         public static final int kNumMotorsPerModule = 1; // number of drive motors per module (not including turning motors)
 
         // gear ratio from thrifty swerve https://thethriftybot.com/products/thrify-swerve gear ratio options (pinion size 12 + second stage gear 16t? (only confirmed pinion))
-        public static final double kDriveMotorGearRatio = 1/6.75; // Was 6.0 changed it to 6.75 after updating L2 gear ratio.
-        public static final double kTurningMotorGearRatio = 1 / 21.42857142857143;//(12*14)/(72*50) based on #of teeth
-        public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters; // Math.PI * kWheelDiameterMeters = Circumference
-        public static final double kTurnEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-        public static final double kTurnEncoderRPM2RadPerSec = kTurnEncoderRot2Rad / 60;
-        public static final double kPTurning = 0.2;
-        public static final double kPDriving = 0.25;
-        
+        public static final double wheelToWheelMotorGearRatio = 1/MotorConstants.L2gearRatio; // Was 6.0 changed it to 6.75 after updating L2 gear ratio.
+        public static final double turnToTurnMotorGearRatio = 7.0 / 150.0;//(12*14)/(72*50) based on #of teeth = 7/150 also lines up with docs https://www.studica.ca/en/sds-mk4i-swerve-modules-non-assembled-l2-6751-no-motor-kraken-pinion-cancoder-colson-wheel-copy
+        public static final double kDriveEncoderRot2Meter = wheelToWheelMotorGearRatio * Math.PI * kWheelDiameterMeters; // Math.PI * kWheelDiameterMeters = Circumference
+        public static final double kTurnEncoderRot2Rad = turnToTurnMotorGearRatio * 2.0 * Math.PI;
+        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60.0;
+        public static final double kTurnEncoderRPM2RadPerSec = kTurnEncoderRot2Rad / 60.0;
+        public static final double kPTurnFLWheel = 0.0;
+        public static final double kPTurnFRWheel = 0.0;
+        public static final double kPTurnBLWheel = 0.0;
+        public static final double kPTurnBRWheel = 0.0;
+        public static final double kSTurnFLWheel = 0.0;
+        public static final double kSTurnFRWheel = 0.0;
+        public static final double kSTurnBLWheel = 0.0;
+        public static final double kSTurnBRWheel = 0.0;
+        public static final double kPDriveFLWheel = 0.0;
+        public static final double kPDriveFRWheel = 0.0;
+        public static final double kPDriveBLWheel = 0.0;
+        public static final double kPDriveBRWheel = 0.0;
+        public static final double kSDriveFLWheel = 0.0;
+        public static final double kSDriveFRWheel = 0.0;
+        public static final double kSDriveBLWheel = 0.0;
+        public static final double kSDriveBRWheel = 0.0;
+
     }
 
     public static final class DriveConstants {

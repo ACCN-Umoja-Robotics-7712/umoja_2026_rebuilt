@@ -46,7 +46,7 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     private double lastS = 0.0;
 
     public ShooterHoodSubsystem() {
-        CANBus rio = new CANBus("rio");
+        CANBus rio = CANBus.roboRIO();
         hoodMotor = new TalonFX(TurretConstants.hoodMotorID, rio);
 
         TalonFXConfiguration config = new TalonFXConfiguration();

@@ -45,6 +45,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GameConstants;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
@@ -57,7 +58,10 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kFrontLeftTurningEncoderReversed,
         DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
         DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetDegree,
-        DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+        DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed,
+        ModuleConstants.kPTurnFLWheel,
+        ModuleConstants.kSTurnFLWheel
+    );
 
     private final SwerveModule frontRight = new SwerveModule(
         DriveConstants.kFrontRightDriveMotorPort, 
@@ -66,7 +70,10 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kFrontRightTurningEncoderReversed, 
         DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
         DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetDegree, 
-        DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+        DriveConstants.kFrontRightDriveAbsoluteEncoderReversed,
+        ModuleConstants.kPTurnFRWheel,
+        ModuleConstants.kSTurnFRWheel
+    );
 
     private final SwerveModule backLeft = new SwerveModule(
         DriveConstants.kBackLeftDriveMotorPort,
@@ -75,7 +82,10 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackLeftTurningEncoderReversed, 
         DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
         DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetDegree, 
-        DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+        DriveConstants.kBackLeftDriveAbsoluteEncoderReversed,
+        ModuleConstants.kPTurnBLWheel,
+        ModuleConstants.kSTurnBLWheel
+    );
 
     private final SwerveModule backRight = new SwerveModule(
         DriveConstants.kBackRightDriveMotorPort, 
@@ -84,7 +94,10 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackRightTurningEncoderReversed, 
         DriveConstants.kBackRightDriveAbsoluteEncoderPort,
         DriveConstants.kBackRightDriveAbsoluteEncoderOffsetDegree, 
-        DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+        DriveConstants.kBackRightDriveAbsoluteEncoderReversed,
+        ModuleConstants.kPTurnBRWheel,
+        ModuleConstants.kSTurnBRWheel
+    );
 
     CANBus CANivore = new CANBus("CANivore");
     private final Pigeon2 gyro = new Pigeon2(1, CANivore);

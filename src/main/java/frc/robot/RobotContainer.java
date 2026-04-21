@@ -27,6 +27,7 @@ import frc.robot.commands.ShooterHoodValueCommand;
 import frc.robot.commands.ShooterTurretAngleCommand;
 import frc.robot.commands.SwerveJoystick;
 import frc.robot.commands.ShooterFlywheelVelocityCommand;
+import frc.robot.commands.ManualCommands.ManualExactSwerveCommand;
 import frc.robot.commands.ManualCommands.ManualIndexerCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeArmCommand;
 import frc.robot.commands.ManualCommands.ManualIntakeRoller;
@@ -164,12 +165,12 @@ public class RobotContainer {
       )
     );
 
-    RobotContainer.driverController.x().whileTrue(
-      new AlignWithOutpost(swerveSubsystem, 
-        () -> -RobotContainer.driverController.getLeftY(),
-        () -> -RobotContainer.driverController.getLeftX()
-      )
-    );
+    // RobotContainer.driverController.x().whileTrue(
+    //   new AlignWithOutpost(swerveSubsystem, 
+    //     () -> -RobotContainer.driverController.getLeftY(),
+    //     () -> -RobotContainer.driverController.getLeftX()
+    //   )
+    // );
 
     // RobotContainer.driverController.x().whileTrue(
     //   new AlignRobotBackWithHubFieldCommand(swerveSubsystem,
@@ -207,6 +208,54 @@ public class RobotContainer {
     driverController.leftStick().whileTrue(
       new ManualIntakeRoller(intakeRollerSubsystem,
         () -> -SmartDashboard.getNumber("Wanted Intake RPM", Constants.IntakeConstants.intakeVelocity)
+      )
+    );
+
+    driverController.povUp().whileTrue(
+      new ManualExactSwerveCommand(swerveSubsystem,
+        () -> 1.0,
+        () -> 0.0,
+        () -> 0.0
+      )
+    );
+
+    driverController.povDown().whileTrue(
+      new ManualExactSwerveCommand(swerveSubsystem,
+        () -> -1.0,
+        () -> 0.0,
+        () -> 0.0
+      )
+    );
+
+    driverController.povLeft().whileTrue(
+      new ManualExactSwerveCommand(swerveSubsystem,
+        () -> 0.0,
+        () -> 1.0,
+        () -> 0.0
+      )
+    );
+
+    driverController.povRight().whileTrue(
+      new ManualExactSwerveCommand(swerveSubsystem,
+        () -> 0.0,
+        () -> -1.0,
+        () -> 0.0
+      )
+    );
+
+    driverController.b().whileTrue(
+      new ManualExactSwerveCommand(swerveSubsystem,
+        () -> 0.0,
+        () -> 0.0,
+        () -> 1.0
+      )
+    );
+
+    driverController.x().whileTrue(
+      new ManualExactSwerveCommand(swerveSubsystem,
+        () -> 0.0,
+        () -> 0.0,
+        () -> -1.0
       )
     );
 
