@@ -147,7 +147,7 @@ public class SwerveModule {
 
     public double getAbsoluteEncoderDegree() {
         // using CANCoder so get direct value
-        return Units.rotationsToDegrees(absoluteEncoder.getAbsolutePosition().getValueAsDouble()) + 180;
+        return (Units.rotationsToDegrees(absoluteEncoder.getAbsolutePosition().getValueAsDouble()) + 180) % 360;
     }
 
     public void resetEncoders() {
@@ -213,13 +213,14 @@ public class SwerveModule {
             System.out.println("Updated PID for module " + absoluteEncoderID + ": kP=" + turnP + ", kS=" + turnS);
         }
 
-        SmartDashboard.putNumber("Swerve wanted angle " + absoluteEncoderID, state.angle.getDegrees());
+        double wantedAngleDegrees = (state.angle.getDegrees() + 360) % 360;
+        SmartDashboard.putNumber("Swerve wanted angle " + absoluteEncoderID, wantedAngleDegrees);
         SmartDashboard.putNumber("Swerve current speed " + absoluteEncoderID, getState().speedMetersPerSecond);
         SmartDashboard.putNumber("Swerve wanted speed " + absoluteEncoderID, state.speedMetersPerSecond);
         SmartDashboard.putNumber("Swerve current " + absoluteEncoderID, driveMotor.getStatorCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Swerve velocity " + absoluteEncoderID, driveMotor.getVelocity().getValueAsDouble());
-        // driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        driveMotor.set(0);
+        driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        // driveMotor.set(0);
         // driveMotor.set(drivePIDController.calculate(getState().speedMetersPerSecond, state.speedMetersPerSecond));
         // TODO: CHANGE THIS TO PID
 
@@ -231,8 +232,13 @@ public class SwerveModule {
         // SmartDashboard.putNumber("GOAL: " + absoluteEncoderID, Math.toDegrees(state.angle.getRadians()));
         // SmartDashboard.putNumber("Set motor percent: " + absoluteEncoderID, turnPidController.calculate(getAbsoluteEncoderRad(), state.angle.getRadians()));
         
-        double wantedAngleDegrees = (state.angle.getDegrees() + 360) % 360;
         double error = getTurningPositionRadians() - Math.toRadians(wantedAngleDegrees);
+        // wrap error to shortest
+        if (error > Math.PI) {
+            error -= 2*Math.PI;
+        } else if (error < -Math.PI) {
+            error += 2*Math.PI;
+        }
         SmartDashboard.putNumber("Swerve turn error " + absoluteEncoderID, error);
         // double wantedMotorPosition = state.angle.getRotations();
         // turnMotor.setControl(turnPositionVoltage.withPosition(wantedMotorPosition));
