@@ -157,7 +157,7 @@ public class SwerveJoystick extends Command {
 
           if (xSpeed == 0 && ySpeed == 0 && turningSpeed == 0) {
             xLockTimer.start();
-            if (xLockTimer.hasElapsed(0.5)) {
+            if (xLockTimer.hasElapsed(0.3)) {
               swerveSubsystem.xLockWheels();
             }
           } else {

@@ -243,21 +243,21 @@ public class RobotContainer {
       )
     );
 
-    driverController.b().whileTrue(
-      new ManualExactSwerveCommand(swerveSubsystem,
-        () -> 0.0,
-        () -> 0.0,
-        () -> 1.0
-      )
-    );
+    // driverController.b().whileTrue(
+    //   new ManualExactSwerveCommand(swerveSubsystem,
+    //     () -> 0.0,
+    //     () -> 0.0,
+    //     () -> 1.0
+    //   )
+    // );
 
-    driverController.x().whileTrue(
-      new ManualExactSwerveCommand(swerveSubsystem,
-        () -> 0.0,
-        () -> 0.0,
-        () -> -1.0
-      )
-    );
+    // driverController.x().whileTrue(
+    //   new ManualExactSwerveCommand(swerveSubsystem,
+    //     () -> 0.0,
+    //     () -> 0.0,
+    //     () -> -1.0
+    //   )
+    // );
 
     Command runIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts);
     Command idleIndexer = new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.idleIndexerRPM, () -> Constants.IndexerConstants.idleBeltVolts);
@@ -277,7 +277,7 @@ public class RobotContainer {
       ).withTimeout(0.6).andThen(
         Commands.parallel(
           new ShooterFlywheelVelocityCommand(shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
-          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts)
+          new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> indexerSubsystem.getDashboardBeltVoltage())
         )
       )
     ).whileFalse(

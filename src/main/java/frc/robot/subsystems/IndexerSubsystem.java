@@ -109,4 +109,11 @@ public class IndexerSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("TEST Indexer belt with applied voltage", indexBeltVoltage);
     }
 
+    public double getDashboardBeltVoltage() {
+        return SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10);
+    }
+
+    public double getDashboardIndexVoltage() {
+        return SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
+    }
 }

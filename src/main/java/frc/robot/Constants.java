@@ -129,10 +129,10 @@ public final class Constants {
         public static final boolean kFrontRightTurningEncoderReversed = true;
         public static final boolean kBackRightTurningEncoderReversed = true;
 
-        public static final boolean kFrontLeftDriveReversed = true;
-        public static final boolean kBackLeftDriveReversed = true;
-        public static final boolean kFrontRightDriveReversed = true;
-        public static final boolean kBackRightDriveReversed = true;
+        public static final boolean kFrontLeftDriveReversed = false;
+        public static final boolean kBackLeftDriveReversed = false;
+        public static final boolean kFrontRightDriveReversed = false;
+        public static final boolean kBackRightDriveReversed = false;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 22;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 12;
@@ -147,7 +147,7 @@ public final class Constants {
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetDegree = -0.091182421875;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetDegree = -0.345787109375;
         public static final double kBackLeftDriveAbsoluteEncoderOffsetDegree = 0.43548046875;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetDegree = 0.187880859375;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetDegree = 0.185880859375;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 4.3;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
@@ -157,7 +157,7 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 4.0;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
-        public static final double shootDriveSpeed = 0.5; // 5 m/s
+        public static final double shootDriveSpeed = 1.0; // 5 m/s
         public static final double shootTurnSpeed = 1.0;
         public static final double kSlowButtonDriveModifier = 0.5;
         public static final double kSlowButtonTurnModifier = 0.50;
@@ -275,7 +275,7 @@ public final class Constants {
         public static final int beltMotorID = 34;
 
         public static final double indexRPM = 5400.0;
-        public static final double idleIndexerRPM = 0.0;
+        public static final double idleIndexerRPM = -250.0;
         public static final double beltVolts = 7.5;
         public static final double idleBeltVolts = 0;
 
