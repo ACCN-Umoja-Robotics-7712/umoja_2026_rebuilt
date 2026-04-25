@@ -52,7 +52,7 @@ public class Autos {
     public enum AUTO {
         BLUE_TRENCH_LEFT_NEUTRAL, FAST_BLUE_TRENCH_LEFT_NEUTRAL, BLUE_CENTER_TOWER, BLUE_RIGHT_BUMP_OUTPOST, BLUE_RIGHT_TRENCH_OUTPOST, BLUE_TRENCH_RIGHT_NEUTRAL, FAST_BLUE_TRENCH_RIGHT_NEUTRAL,
         RED_TRENCH_LEFT_NEUTRAL, FAST_RED_TRENCH_LEFT_NEUTRAL, RED_CENTER_TOWER, RED_TRENCH_RIGHT_NEUTRAL, FAST_RED_TRENCH_RIGHT_NEUTRAL, RED_TRENCH_RIGHT_OUTPOST, RED_CENTER_TOWER_R,
-        PRACTICE_FIELD, SIMPLE_AUTO, TUNE_AUTO, BLUE_LEFT_BUMP_DEPOT, BLUE_RIGHT_AUTO_FULL_2, FAST_BLUE_TRENCH_BUMP_LEFT_NEUTRAL, FAST_BLUE_TRENCH_BUMP_RIGHT_NEUTRAL, FAST_RED_TRENCH_BUMP_LEFT_NEUTRAL, FAST_RED_TRENCH_BUMP_RIGHT_NEUTRAL,
+        PRACTICE_FIELD, SIMPLE_AUTO, TUNE_AUTO, BLUE_LEFT_NEUTRAL_TO_DEPOT, RED_LEFT_NEUTRAL_TO_DEPOT, BLUE_RIGHT_NEUTRAL_TO_DEPOT, RED_RIGHT_NEUTRAL_TO_DEPOT, FAST_BLUE_TRENCH_BUMP_LEFT_NEUTRAL, FAST_BLUE_TRENCH_BUMP_RIGHT_NEUTRAL, FAST_RED_TRENCH_BUMP_LEFT_NEUTRAL, FAST_RED_TRENCH_BUMP_RIGHT_NEUTRAL,
         BLUE_LEFT_DEPOT, RED_LEFT_DEPOT, BLUE_CENTER_AUTO, RED_CENTER_AUTO, BLUE_LEFT_PASS, BLUE_RIGHT_PASS, RED_LEFT_PASS, RED_RIGHT_PASS, RED_RIGHT_DEEP_PASS, BLUE_RIGHT_DEEP_PASS
     }
     private SendableChooser<AUTO> chooser;
@@ -83,6 +83,10 @@ public class Autos {
                             blueRightPass,
                             redLeftPass,
                             redRightPass,
+                            blueLeftNeutraltoDepot,
+                            blueRightNeutraltoDepot, // Goes to neutral and goes back to trench via the left side
+                            redLeftNeutraltoDepot,
+                            redRightNeutraltoDepot,
                             redRightDeepPass,
                             blueRightDeepPass;
     
@@ -114,7 +118,10 @@ public class Autos {
         // chooser.addOption("Blue Right Outpost from Bump", AUTO.BLUE_RIGHT_BUMP_OUTPOST);
         // chooser.addOption("Blue Right Outpost from Trench", AUTO.BLUE_RIGHT_TRENCH_OUTPOST);
         // chooser.addOption("Red Right Trench to Outpost", AUTO.BLUE_TRENCH_RIGHT_OUTPOST);
-        // chooser.addOption("Blue Left Bump to Neutral", AUTO.BLUE_LEFT_BUMP_DEPOT); // Go to neutral, intake, go to trench, shoot, go back to neutral, intake, go to outpost, shoot
+        chooser.addOption("Blue Left Neutral to Depot", AUTO.BLUE_LEFT_NEUTRAL_TO_DEPOT); // Go to neutral, intake, go to depot, shoot
+        chooser.addOption("Red Left Neutral to Depot", AUTO.RED_LEFT_NEUTRAL_TO_DEPOT); // Go to neutral, intake, go to depot, shoot
+        chooser.addOption("Blue Right Neutral to Depot", AUTO.BLUE_RIGHT_NEUTRAL_TO_DEPOT); // Go to neutral, intake, go to depot, shoot
+        chooser.addOption("Red Right Neutral to Depot", AUTO.RED_RIGHT_NEUTRAL_TO_DEPOT); // Go to neutral, intake, go to depot, shoot
         chooser.addOption("Blue Center Auto", AUTO.BLUE_CENTER_AUTO);
         chooser.addOption("Red Center Auto", AUTO.RED_CENTER_AUTO);
 
@@ -163,7 +170,11 @@ public class Autos {
             redLeftPass = blueLeftPass.flipPath();
             redRightPass = redLeftPass.mirrorPath();
             redRightDeepPass = PathPlannerPath.fromPathFile("Deep Center Pass").flipPath().mirrorPath();
+
             blueRightDeepPass = redRightDeepPass.flipPath();
+            redLeftNeutraltoDepot = redRightNeutraltoDepot.flipPath();
+            blueLeftNeutraltoDepot = redLeftNeutraltoDepot.mirrorPath();
+            blueRightNeutraltoDepot = blueLeftNeutraltoDepot.flipPath();
         } catch (Exception e) {
             System.err.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ UNABLE TO FIND PATH");
         }
@@ -218,6 +229,11 @@ public class Autos {
             case RED_RIGHT_PASS -> getRedRightPass();
             case RED_RIGHT_DEEP_PASS -> getRedRightDeepPass();
             case BLUE_RIGHT_DEEP_PASS -> getBlueRightDeepPass();
+
+            case BLUE_LEFT_NEUTRAL_TO_DEPOT -> getBlueLeftDepot();
+            case BLUE_RIGHT_NEUTRAL_TO_DEPOT -> getBlueRightDepot();
+            case RED_LEFT_NEUTRAL_TO_DEPOT -> getRedLeftDepot();
+            case RED_RIGHT_NEUTRAL_TO_DEPOT -> getRedRightDepot();
 
             default -> new InstantCommand();
         };
@@ -857,6 +873,178 @@ public class Autos {
         );
     }
     
+    public Command getBlueLeftDepot() {
+        PathPlannerPath path = blueLeftNeutraltoDepot;
+        return Commands.parallel(
+            // always intake, aim shooter and hood too but after 1s to allow for zeroing while moving
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVelocity),
+            new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1).andThen(
+                new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+            ),  
+            new WaitCommand(1).andThen(
+                new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
+            ),
+            // Zero hood and lower arm then aim turret
+            Commands.sequence(
+                // Pick Up from CENTER and return, zero hood and lower arm while moving
+                AutoBuilder.followPath(blueRightTrenchPathForward).deadlineFor(
+                    // Lower arm
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5).andThen(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.05)
+                    ),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ),
+                // stop and bring flywheel to speed
+                Commands.parallel(
+                    new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ).withTimeout(0.3),
+                Commands.parallel(
+                    // Force shoot 
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
+                    Commands.repeatingSequence(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
+                    )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                )
+            )
+        );
+    }
+
+    public Command getBlueRightDepot() {
+        PathPlannerPath path = blueLeftNeutraltoDepot;
+        return Commands.parallel(
+            // always intake, aim shooter and hood too but after 1s to allow for zeroing while moving
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVelocity),
+            new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1).andThen(
+                new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+            ),  
+            new WaitCommand(1).andThen(
+                new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
+            ),
+            // Zero hood and lower arm then aim turret
+            Commands.sequence(
+                // Pick Up from CENTER and return, zero hood and lower arm while moving
+                AutoBuilder.followPath(blueRightTrenchPathForward).deadlineFor(
+                    // Lower arm
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5).andThen(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.05)
+                    ),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ),
+                // stop and bring flywheel to speed
+                Commands.parallel(
+                    new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ).withTimeout(0.3),
+                Commands.parallel(
+                    // Force shoot 
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
+                    Commands.repeatingSequence(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
+                    )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                )
+            )
+        );
+    }
+
+    public Command getRedLeftDepot() {
+        PathPlannerPath path = blueLeftNeutraltoDepot;
+        return Commands.parallel(
+            // always intake, aim shooter and hood too but after 1s to allow for zeroing while moving
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVelocity),
+            new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1).andThen(
+                new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+            ),  
+            new WaitCommand(1).andThen(
+                new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
+            ),
+            // Zero hood and lower arm then aim turret
+            Commands.sequence(
+                // Pick Up from CENTER and return, zero hood and lower arm while moving
+                AutoBuilder.followPath(blueRightTrenchPathForward).deadlineFor(
+                    // Lower arm
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5).andThen(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.05)
+                    ),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ),
+                // stop and bring flywheel to speed
+                Commands.parallel(
+                    new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ).withTimeout(0.3),
+                Commands.parallel(
+                    // Force shoot 
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
+                    Commands.repeatingSequence(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
+                    )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                )
+            )
+        );
+    }
+
+    public Command getRedRightDepot() {
+        PathPlannerPath path = blueLeftNeutraltoDepot;
+        return Commands.parallel(
+            // always intake, aim shooter and hood too but after 1s to allow for zeroing while moving
+            new ManualIntakeRoller(RobotContainer.intakeRollerSubsystem, () -> Constants.IntakeConstants.intakeVelocity),
+            new ZeroHoodCommand(RobotContainer.shooterHoodSubsystem).withTimeout(1).andThen(
+                new ShooterHoodValueCommand(RobotContainer.shooterHoodSubsystem, swerveSubsystem::getTurretToTargetHoodValue)
+            ),  
+            new WaitCommand(1).andThen(
+                new ShooterTurretAngleCommand(RobotContainer.shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle)
+            ),
+            // Zero hood and lower arm then aim turret
+            Commands.sequence(
+                // Pick Up from CENTER and return, zero hood and lower arm while moving
+                AutoBuilder.followPath(blueRightTrenchPathForward).deadlineFor(
+                    // Lower arm
+                    new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.19).withTimeout(0.5).andThen(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> 0.05)
+                    ),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ),
+                // stop and bring flywheel to speed
+                Commands.parallel(
+                    new InstantCommand(() -> RobotContainer.swerveSubsystem.stopModules(), RobotContainer.swerveSubsystem),
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                ).withTimeout(0.3),
+                Commands.parallel(
+                    // Force shoot 
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue),
+                    new ManualIndexerCommand(RobotContainer.indexerSubsystem, () -> Constants.IndexerConstants.indexRPM, () -> Constants.IndexerConstants.beltVolts),
+                    Commands.repeatingSequence(
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem, () -> -0.15).withTimeout(0.05),
+                        new ManualIntakeArmCommand(RobotContainer.intakeArmSubsystem,  () -> 0.05).withTimeout(0.3)
+                    )
+                ).withTimeout(5),
+                new InstantCommand(() -> RobotContainer.indexerSubsystem.stopIndexer(), RobotContainer.indexerSubsystem),
+                AutoBuilder.followPath(path).alongWith(   
+                    new ShooterFlywheelVelocityCommand(RobotContainer.shooterFlywheelSubsystem, swerveSubsystem::getTurretToTargetRPMValue)
+                )
+            )
+        );
+    }
+
      public Command getFastRedTrenchLeftNeutral() {
         PathPlannerPath path = redLeftTrenchPathBackward;
         return Commands.parallel(

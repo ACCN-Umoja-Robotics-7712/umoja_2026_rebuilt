@@ -424,10 +424,12 @@ public class RobotContainer {
     );
 
     // Indexer Motor (Reverse)
-    operatorController.leftTrigger()
-    .and(operatorController.y())
-    .whileTrue(
+    operatorController.leftTrigger().whileTrue(
       new ManualIndexerCommand(indexerSubsystem, () -> -Constants.IndexerConstants.indexRPM, () -> -Constants.IndexerConstants.idleBeltVolts)
+    );
+
+    operatorController.y().whileTrue(
+      new ManualIndexerCommand(indexerSubsystem, () -> Constants.IndexerConstants.slowReverseIndex, () -> -Constants.IndexerConstants.idleBeltVolts)
     );
 
     operatorController.button(XBoxConstants.MENU).onTrue(

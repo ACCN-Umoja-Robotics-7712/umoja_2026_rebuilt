@@ -789,7 +789,7 @@ public class SwerveSubsystem extends SubsystemBase {
             // vector is based on direction of turret, take heading and rotate by turret degree offset
             // then add 0 forward movement, centerToTurretTotalLength*radiansPerSecond*TOF side offset, and 0 rotation)
             // that is vector added to object so subtract that to compensate
-            rotationVectorPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(getHeading())).rotateBy(new Rotation2d(Units.degreesToRadians(TurretConstants.robotFrontToTurretAngleDegree)))).plus(new Transform2d(0.0, speeds.omegaRadiansPerSecond*TurretConstants.turretCenterFromRobotCenterTotalLength*tof, new Rotation2d(0.0)));
+            rotationVectorPose = new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(getHeading())).rotateBy(new Rotation2d(Units.degreesToRadians(TurretConstants.robotFrontToTurretAngleDegree)))).plus(new Transform2d(-speeds.omegaRadiansPerSecond*TurretConstants.turretCenterFromRobotCenterTotalLength*tof, 0.0, new Rotation2d(0.0)));
             movingTarget = movingTarget.minus(rotationVectorPose.getTranslation());
 
             toTag = movingTarget.minus(turretPose.getTranslation());
