@@ -277,7 +277,7 @@ public final class Constants {
         public static final double indexRPM = 5400.0;
         public static final double idleIndexerRPM = 0.0;
         public static final double slowReverseIndex = -250.0;
-        public static final double beltVolts = 5.0;
+        public static final double beltVolts = 10.0;
         public static final double idleBeltVolts = 0;
 
         public static final double kPIndex = 0.0001;
