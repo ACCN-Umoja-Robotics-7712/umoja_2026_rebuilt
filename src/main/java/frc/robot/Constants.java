@@ -154,7 +154,7 @@ public final class Constants {
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3.0;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 4.0;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.0;
 
         public static final double shootDriveSpeed = 1.0; // 5 m/s
@@ -300,7 +300,7 @@ public final class Constants {
     public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
         public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond;
-        public static final double kMaxAccelerationMetersPerSecondSquared = DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond;
+        public static final double kMaxAutoAccelerationMetersPerSecondSquared = 3.0;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI;
 
         public static final double wantedOutpostArea = 0.19;
@@ -533,5 +533,5 @@ public final class Constants {
     // wheel radius, max speed, wheel COF, DCMotor drive, drive current limit, # motors
     public static final ModuleConfig moduleConfig = new ModuleConfig(ModuleConstants.kWheelDiameterMeters/2, AutoConstants.kMaxSpeedMetersPerSecond, ModuleConstants.kWheelCOF, ModuleConstants.kDriveMotor, ModuleConstants.kDriveMotorCurrentLimit, ModuleConstants.kNumMotorsPerModule);
     public static final RobotConfig robotConfig = new RobotConfig(RobotConstants.kRobotTotalWeightKG, RobotConstants.kRobotMOI, moduleConfig, DriveConstants.kDriveKinematics.getModules());
-    public static final PathConstraints pathConstraints = new PathConstraints(4.0, AutoConstants.kMaxAccelerationMetersPerSecondSquared, AutoConstants.kMaxAngularSpeedRadiansPerSecond, AutoConstants.kMaxAngularSpeedRadiansPerSecond);
+    public static final PathConstraints pathConstraints = new PathConstraints(4.0, AutoConstants.kMaxAutoAccelerationMetersPerSecondSquared, AutoConstants.kMaxAngularSpeedRadiansPerSecond, AutoConstants.kMaxAngularSpeedRadiansPerSecond);
 }
