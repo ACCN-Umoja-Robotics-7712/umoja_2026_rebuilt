@@ -162,7 +162,7 @@ public final class Constants {
         public static final double kSlowButtonDriveModifier = 0.5;
         public static final double kSlowButtonTurnModifier = 0.50;
         public static final double teleSpeed = 1.0;
-        public static final double teleTurnSpeed = 0.85;
+        public static final double teleTurnSpeed = 1.0;
         
         public static final double shootingSpeedCap = 0.3; // 0.3m/s max speed when shooting, to improve accuracy
 
