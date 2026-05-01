@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.266975088967973,
-        "y": 6.547271648873073
+        "x": 2.2869111111111113,
+        "y": 6.6659999999999995
       },
       "isLocked": false,
       "linkedName": "Bump Return"
     },
     {
       "anchor": {
-        "x": 3.567,
+        "x": 3.067,
         "y": 7.372
       },
       "prevControl": {
-        "x": 3.3202378348877546,
-        "y": 7.33189471519716
+        "x": 2.7546444444444442,
+        "y": 7.328622222222221
       },
       "nextControl": {
-        "x": 4.0481659056645345,
-        "y": 7.450202003436445
+        "x": 3.5498456361003905,
+        "y": 7.439054260221114
       },
       "isLocked": false,
       "linkedName": null
@@ -71,7 +71,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": 0.0
   },
   "reversed": false,
