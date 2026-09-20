@@ -12,6 +12,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,18 +36,15 @@ public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
 
-  Timer garbageCollectionTimer = new Timer();
-
   private RobotContainer robotContainer;
+  private boolean limelightsConfigured = false;
   
   // private AutoChooser autoChooser;
 
   // private double autoStartTimer = 0;
 
 
-  public Robot() {
-    garbageCollectionTimer.start();
-  }
+  public Robot() {}
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -57,6 +55,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    RobotContainer.swerveSubsystem.configureLimelights();
+    limelightsConfigured = true;
     
     // 2. Generate trajectory
     // Pose2d blueRobotLeft = RobotContainer.swerveSubsystem.offsetPoint(Constants.RobotPositions.blueReefBackRight22, Constants.Measurements.branchOffset);
@@ -77,11 +77,11 @@ public class Robot extends TimedRobot {
     // RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
 
 
-    for (int port = 5800; port <= 5809; port++) {
-      PortForwarder.add(port, Constants.LimelightConstants.LIMELIGHT_FORWARD + ".local", port);
-      PortForwarder.add(port+10, Constants.LimelightConstants.LIMELIGHT_RIGHT + ".local", port);
-      PortForwarder.add(port+20, Constants.LimelightConstants.LIMELIGHT_LEFT + ".local", port);
-    }
+    // Only forward the Limelight web UI. Ports 5801-5809 include MJPEG video
+    // streams that saturate the FMS radio and stall NetworkTables flushes.
+    PortForwarder.add(5800, Constants.LimelightConstants.LIMELIGHT_FORWARD + ".local", 5800);
+    PortForwarder.add(5810, Constants.LimelightConstants.LIMELIGHT_RIGHT + ".local", 5800);
+    PortForwarder.add(5820, Constants.LimelightConstants.LIMELIGHT_LEFT + ".local", 5800);
   }
 
   /**
@@ -97,16 +97,15 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    double loopStart = Timer.getFPGATimestamp();
     CommandScheduler.getInstance().run();
-    if (garbageCollectionTimer.advanceIfElapsed(5)) {
-      System.gc();
-    }
-    
+    SmartDashboard.putNumber("CommandScheduler loop ms", (Timer.getFPGATimestamp() - loopStart) * 1000.0);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    limelightsConfigured = false;
     RobotContainer.gameState = GameConstants.Disabled;
     RobotContainer.intakeArmSubsystem.setBrakeMode(NeutralModeValue.Coast);
     RobotContainer.shooterFlywheelSubsystem.runShooter(0);
@@ -117,11 +116,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // In disabledPeriodic or before match starts
-    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_RIGHT, RobotContainer.swerveSubsystem.getHeading(), 0, 0, 0, 0, 0);
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_RIGHT, 1); // Seed internal IMU
-    LimelightHelpers.SetRobotOrientation(Constants.LimelightConstants.LIMELIGHT_LEFT, RobotContainer.swerveSubsystem.getHeading(), 0, 0, 0, 0, 0);
-    LimelightHelpers.SetIMUMode(Constants.LimelightConstants.LIMELIGHT_LEFT, 1); // Seed internal IMU
+    if (!limelightsConfigured) {
+      RobotContainer.swerveSubsystem.configureLimelights();
+      limelightsConfigured = true;
+    }
+    double heading = RobotContainer.swerveSubsystem.getHeading();
+    LimelightHelpers.SetRobotOrientation_NoFlush(Constants.LimelightConstants.LIMELIGHT_RIGHT, heading, 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation_NoFlush(Constants.LimelightConstants.LIMELIGHT_LEFT, heading, 0, 0, 0, 0, 0);
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

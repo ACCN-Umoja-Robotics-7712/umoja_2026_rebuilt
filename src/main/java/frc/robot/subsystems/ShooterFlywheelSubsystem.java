@@ -136,8 +136,6 @@ public class ShooterFlywheelSubsystem extends SubsystemBase {
         // boolean kickerAtRPM = kickerController.isAtSetpoint();
         // boolean kickerRPMChange = ;
         // boolean shooterRPMChange = flywheelController.isAtSetpoint();
-        System.out.println("Kicker" + kickerAtRPM + "shooter" + shooterAtRPM);
-        System.out.println(kickerMotor.getEncoder().getVelocity() - wantedKickerRPM);
         return kickerAtRPM && shooterAtRPM;
     }
 

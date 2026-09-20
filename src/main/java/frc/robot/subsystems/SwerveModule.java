@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -184,41 +185,37 @@ public class SwerveModule {
         
         state.optimize(getState().angle);
 
-        double CANCoderOffset = SmartDashboard.getNumber("Swerve motor offset " + absoluteEncoderID, this.absoluteEncoderDegreeOffset);
-        SmartDashboard.putNumber("Swerve motor offset " + absoluteEncoderID, CANCoderOffset);
-        if (lastOffset != CANCoderOffset) {
-            lastOffset = CANCoderOffset;
-            CANcoderConfiguration CANconfig = new CANcoderConfiguration();
-            
-            CANconfig.MagnetSensor.MagnetOffset = CANCoderOffset;
-            CANconfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-            
-            absoluteEncoder.getConfigurator().apply(CANconfig);
-        }
-        double turnP = SmartDashboard.getNumber("turn kP " + absoluteEncoderID, lastPTurn);
-        double turnS = SmartDashboard.getNumber("turn KS " + absoluteEncoderID, lastkSTurn);
-        SmartDashboard.putNumber("turn kP " + absoluteEncoderID, turnP);
-        SmartDashboard.putNumber("turn KS " + absoluteEncoderID, turnS);
-        if (lastPTurn != turnP || lastkSTurn != turnS) {
-            lastPTurn = turnP;
-            lastkSTurn = turnS;
+        if (!DriverStation.isFMSAttached()) {
+            double CANCoderOffset = SmartDashboard.getNumber("Swerve motor offset " + absoluteEncoderID, this.absoluteEncoderDegreeOffset);
+            SmartDashboard.putNumber("Swerve motor offset " + absoluteEncoderID, CANCoderOffset);
+            if (lastOffset != CANCoderOffset) {
+                lastOffset = CANCoderOffset;
+                CANcoderConfiguration CANconfig = new CANcoderConfiguration();
+                
+                CANconfig.MagnetSensor.MagnetOffset = CANCoderOffset;
+                CANconfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+                
+                absoluteEncoder.getConfigurator().apply(CANconfig);
+            }
+            double turnP = SmartDashboard.getNumber("turn kP " + absoluteEncoderID, lastPTurn);
+            double turnS = SmartDashboard.getNumber("turn KS " + absoluteEncoderID, lastkSTurn);
+            SmartDashboard.putNumber("turn kP " + absoluteEncoderID, turnP);
+            SmartDashboard.putNumber("turn KS " + absoluteEncoderID, turnS);
+            if (lastPTurn != turnP || lastkSTurn != turnS) {
+                lastPTurn = turnP;
+                lastkSTurn = turnS;
 
-            Slot0Configs pidConfigs = new Slot0Configs()
-                .withKP(turnP)
-                .withKS(turnS);
-            turnMotor.getConfigurator().apply(pidConfigs);
+                Slot0Configs pidConfigs = new Slot0Configs()
+                    .withKP(turnP)
+                    .withKS(turnS);
+                turnMotor.getConfigurator().apply(pidConfigs);
 
-            turnPIDController.setP(turnP);
-            turnFeedforward.setKs(turnS);
-            System.out.println("Updated PID for module " + absoluteEncoderID + ": kP=" + turnP + ", kS=" + turnS);
+                turnPIDController.setP(turnP);
+                turnFeedforward.setKs(turnS);
+            }
         }
 
         double wantedAngleDegrees = (state.angle.getDegrees() + 360) % 360;
-        SmartDashboard.putNumber("Swerve wanted angle " + absoluteEncoderID, wantedAngleDegrees);
-        SmartDashboard.putNumber("Swerve current speed " + absoluteEncoderID, getState().speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve wanted speed " + absoluteEncoderID, state.speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve current " + absoluteEncoderID, driveMotor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Swerve velocity " + absoluteEncoderID, driveMotor.getVelocity().getValueAsDouble());
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         // driveMotor.set(0);
         // driveMotor.set(drivePIDController.calculate(getState().speedMetersPerSecond, state.speedMetersPerSecond));
@@ -239,7 +236,6 @@ public class SwerveModule {
         } else if (error < -Math.PI) {
             error += 2*Math.PI;
         }
-        SmartDashboard.putNumber("Swerve turn error " + absoluteEncoderID, error);
         // double wantedMotorPosition = state.angle.getRotations();
         // turnMotor.setControl(turnPositionVoltage.withPosition(wantedMotorPosition));
         turnMotor.setVoltage(turnPIDController.calculate(0, error) + turnFeedforward.calculate(error));

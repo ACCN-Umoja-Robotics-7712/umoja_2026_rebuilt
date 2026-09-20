@@ -53,6 +53,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double maxAngle = 280;
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
+    private Boolean lastZeroedLedOn = null;
 
     public ShooterTurretSubsystem() {
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
@@ -200,11 +201,14 @@ public class ShooterTurretSubsystem extends SubsystemBase {
             resetTurret();
             isZeroed = true;
         }
-        // blink limelight if turret not zeroed to indicate to setup
-        if (!isZeroed) {
-            LimelightHelpers.setLEDMode_ForceOn(LimelightConstants.LIMELIGHT_FORWARD);
-        } else {
-            LimelightHelpers.setLEDMode_ForceOff(LimelightConstants.LIMELIGHT_FORWARD);
+        boolean ledOn = !isZeroed;
+        if (lastZeroedLedOn == null || ledOn != lastZeroedLedOn) {
+            lastZeroedLedOn = ledOn;
+            if (ledOn) {
+                LimelightHelpers.setLEDMode_ForceOn(LimelightConstants.LIMELIGHT_FORWARD);
+            } else {
+                LimelightHelpers.setLEDMode_ForceOff(LimelightConstants.LIMELIGHT_FORWARD);
+            }
         }
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getRobotToTargetAngle());

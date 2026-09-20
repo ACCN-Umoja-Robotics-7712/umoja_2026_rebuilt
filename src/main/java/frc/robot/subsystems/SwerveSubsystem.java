@@ -265,6 +265,42 @@ public class SwerveSubsystem extends SubsystemBase {
         tofTable.put(5.0, 1.4);
         tofTable.put(5.5, 1.45);
     }
+
+    /**
+     * One-shot Limelight config. Camera pose, IMU mode, and throttle must not be
+     * rewritten every scheduler cycle — those NT writes plus SetRobotOrientation's
+     * Flush() are the main source of CommandScheduler loop overruns on FMS.
+     */
+    public void configureLimelights() {
+        LimelightHelpers.setCameraPose_RobotSpace(
+            LimelightConstants.LIMELIGHT_RIGHT,
+            LimelightConstants.limelight4Forward,
+            LimelightConstants.limelight4Side,
+            LimelightConstants.limelight4Height,
+            0,
+            LimelightConstants.limelight4Angle,
+            270);
+        LimelightHelpers.SetIMUMode(LimelightConstants.LIMELIGHT_RIGHT, 0);
+
+        LimelightHelpers.setCameraPose_RobotSpace(
+            LimelightConstants.LIMELIGHT_FORWARD,
+            LimelightConstants.limelight2Forward,
+            LimelightConstants.limelight2Side,
+            LimelightConstants.limelight2Height,
+            0,
+            LimelightConstants.limelight2Angle,
+            0);
+
+        LimelightHelpers.setCameraPose_RobotSpace(
+            LimelightConstants.LIMELIGHT_LEFT,
+            LimelightConstants.limelight3Forward,
+            LimelightConstants.limelight3Side,
+            LimelightConstants.limelight3Height,
+            0,
+            LimelightConstants.limelight3Angle,
+            90);
+        LimelightHelpers.SetIMUMode(LimelightConstants.LIMELIGHT_LEFT, 0);
+    }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
         // Get the current pose of the robot
@@ -378,6 +414,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     StructArrayPublisher<SwerveModuleState> swerveStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
+    private int lastThrottle = Integer.MIN_VALUE;
+    private final ArrayList<Pose2d> limelightPoses = new ArrayList<>(3);
+
 
     public void publishRobotPositions() {
         ArrayList<Pose2d> allPoints = new ArrayList<>();
@@ -439,7 +478,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("GAME STATE", RobotContainer.gameState);
 
-        poseEstimator.update(Rotation2d.fromDegrees(getHeading()),
+        double heading = getHeading();
+        poseEstimator.update(Rotation2d.fromDegrees(heading),
             new SwerveModulePosition[] {
                 frontLeft.getPosition(),
                 frontRight.getPosition(),
@@ -489,12 +529,10 @@ public class SwerveSubsystem extends SubsystemBase {
         //     }
         // }
         
-        ArrayList<Pose2d> limelightPoses = new ArrayList<>();
-        
+        limelightPoses.clear();
+
         String limelightRight = LimelightConstants.LIMELIGHT_RIGHT;
-        LimelightHelpers.SetRobotOrientation(limelightRight, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetIMUMode(limelightRight, 0);
-        LimelightHelpers.setCameraPose_RobotSpace(limelightRight, LimelightConstants.limelight4Forward, LimelightConstants.limelight4Side, LimelightConstants.limelight4Height, 0, LimelightConstants.limelight4Angle, 270);
+        LimelightHelpers.SetRobotOrientation_NoFlush(limelightRight, heading, 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate rightMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightRight);
 
         boolean rejectRightUpdate = false;
@@ -543,8 +581,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         String limelightForward = LimelightConstants.LIMELIGHT_FORWARD;
-        LimelightHelpers.SetRobotOrientation(limelightForward, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.setCameraPose_RobotSpace(limelightForward, LimelightConstants.limelight2Forward, LimelightConstants.limelight2Side, LimelightConstants.limelight2Height, 0, LimelightConstants.limelight2Angle, 0);
+        LimelightHelpers.SetRobotOrientation_NoFlush(limelightForward, heading, 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate forwardMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightForward);
 
         boolean rejectForwardUpdate = false;
@@ -596,9 +633,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         
         String limelightLeft = LimelightConstants.LIMELIGHT_LEFT;
-        LimelightHelpers.SetRobotOrientation(limelightLeft, getHeading(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetIMUMode(limelightLeft, 0);
-        LimelightHelpers.setCameraPose_RobotSpace(limelightLeft, LimelightConstants.limelight3Forward, LimelightConstants.limelight3Side, LimelightConstants.limelight3Height, 0, LimelightConstants.limelight3Angle, 90);
+        LimelightHelpers.SetRobotOrientation_NoFlush(limelightLeft, heading, 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate leftMT2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightLeft);
 
         boolean rejectLeftUpdate = false;
@@ -651,12 +686,11 @@ public class SwerveSubsystem extends SubsystemBase {
         double tuningModeVal = SmartDashboard.getNumber("Tuning Mode ", 0);
         SmartDashboard.putNumber("Tuning Mode ", tuningModeVal);
         boolean isTuningMode = tuningModeVal == 1;
-        if (RobotContainer.gameState == GameConstants.Disabled && !isTuningMode) {
-            LimelightHelpers.SetThrottle(limelightLeft, 100);
-            LimelightHelpers.SetThrottle(limelightRight, 100);
-        } else {
-            LimelightHelpers.SetThrottle(limelightLeft, 0);
-            LimelightHelpers.SetThrottle(limelightRight, 0);
+        int wantedThrottle = (RobotContainer.gameState == GameConstants.Disabled && !isTuningMode) ? 100 : 0;
+        if (wantedThrottle != lastThrottle) {
+            lastThrottle = wantedThrottle;
+            LimelightHelpers.SetThrottle(limelightLeft, wantedThrottle);
+            LimelightHelpers.SetThrottle(limelightRight, wantedThrottle);
         }
 
         
