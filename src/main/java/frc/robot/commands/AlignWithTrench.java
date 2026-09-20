@@ -61,7 +61,7 @@ public class AlignWithTrench extends Command{
           }
 
           // 3. Make the driving smoother
-          if (!(RobotContainer.driverController.rightBumper().getAsBoolean())){
+          if ((RobotContainer.driverController.rightBumper().getAsBoolean())){
             xSpeed = xLimiter.calculate(xSpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
             ySpeed = yLimiter.calculate(ySpeed) * (DriveConstants.kTeleDriveMaxSpeedMetersPerSecond * DriveConstants.kSlowButtonDriveModifier);
           } else if (RobotContainer.driverController.leftBumper().getAsBoolean()){

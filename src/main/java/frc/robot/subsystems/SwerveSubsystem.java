@@ -527,11 +527,12 @@ public class SwerveSubsystem extends SubsystemBase {
                 }
             }
             double avgDistance = rightMT2.avgTagDist;
+            double dps = Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble());
             double xyStdDev =
-                xyStdDevCoefficient
+                (xyStdDevCoefficient
                     * Math.pow(avgDistance, 1.2)
                     / Math.pow(rightMT2.tagCount, 2.0)
-                    * visionTrustValue;
+                    * visionTrustValue) + dps;
             if (!rejectRightUpdate)
             {
                 limelightPoses.add(rightMT2.pose);
@@ -631,11 +632,12 @@ public class SwerveSubsystem extends SubsystemBase {
             }
             
             double avgDistance = leftMT2.avgTagDist;
+            double dps = Math.abs(gyro.getAngularVelocityZDevice().getValueAsDouble());
             double xyStdDev =
-                xyStdDevCoefficient
+                (xyStdDevCoefficient
                     * Math.pow(avgDistance, 1.2)
                     / Math.pow(leftMT2.tagCount, 2.0)
-                    * visionTrustValue;
+                    * visionTrustValue) + dps;
             if (!rejectLeftUpdate)
             {
                 limelightPoses.add(leftMT2.pose);

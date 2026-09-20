@@ -360,7 +360,7 @@ public class RobotContainer {
     operatorController.b().whileTrue(
       Commands.parallel(
         // new ShooterTurretAngleCommand(shooterTurretSubsystem, swerveSubsystem::getTurretToTargetAngle),
-        new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getDashboardHoodValue)
+        // new ShooterHoodValueCommand(shooterHoodSubsystem, swerveSubsystem::getDashboardHoodValue)
       )
     );
 
