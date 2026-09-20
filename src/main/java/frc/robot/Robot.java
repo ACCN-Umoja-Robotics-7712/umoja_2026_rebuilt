@@ -77,11 +77,11 @@ public class Robot extends TimedRobot {
     // RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
 
 
-    // Only forward the Limelight web UI. Ports 5801-5809 include MJPEG video
-    // streams that saturate the FMS radio and stall NetworkTables flushes.
-    PortForwarder.add(5800, Constants.LimelightConstants.LIMELIGHT_FORWARD + ".local", 5800);
-    PortForwarder.add(5810, Constants.LimelightConstants.LIMELIGHT_RIGHT + ".local", 5800);
-    PortForwarder.add(5820, Constants.LimelightConstants.LIMELIGHT_LEFT + ".local", 5800);
+    for (int port = 5800; port <= 5809; port++) {
+      PortForwarder.add(port, Constants.LimelightConstants.LIMELIGHT_FORWARD + ".local", port);
+      PortForwarder.add(port+10, Constants.LimelightConstants.LIMELIGHT_RIGHT + ".local", port);
+      PortForwarder.add(port+20, Constants.LimelightConstants.LIMELIGHT_LEFT + ".local", port);
+    }
   }
 
   /**
