@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterHoodSubsystem;
 import frc.robot.subsystems.ShooterTurretSubsystem;
 
 public class SetShooterTurretStateCommand extends Command{
