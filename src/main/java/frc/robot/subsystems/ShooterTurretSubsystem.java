@@ -29,7 +29,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
@@ -37,6 +37,12 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.ShooterStates;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.BooleanPublisher;
 
 public class ShooterTurretSubsystem extends SubsystemBase {
     private final SparkClosedLoopController turretController;
@@ -54,7 +60,46 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     private double wantedTurretAngle = 180;
     private double lastDirection = 0;
 
+    // NetworkTables
+    private NetworkTable turretTable;
+    private NetworkTable telemetryTable;
+    private NetworkTable controlTable;
+    private NetworkTable pidTable;
+    
+    // PID entries
+    private DoubleEntry turretKPEntry;
+    private DoubleEntry turretKIEntry;
+    private DoubleEntry turretKSEntry;
+
+    // Telemetry publishers
+    private DoublePublisher turretEncoderPub;
+    private DoublePublisher wantedAnglePub;
+    private BooleanPublisher limitSwitchPub;
+
+    // Control entries
+    private DoubleEntry customAngleEntry;
+
     public ShooterTurretSubsystem() {
+        NetworkTableInstance nt = NetworkTableInstance.getDefault();
+
+        turretTable = nt.getTable("ShooterTurret");
+
+        telemetryTable = turretTable.getSubTable("Telemetry");
+        controlTable = turretTable.getSubTable("Control");
+        pidTable = turretTable.getSubTable("PID");
+
+        turretKPEntry = pidTable.getDoubleTopic("kP").getEntry(TurretConstants.kPturret);
+        turretKIEntry = pidTable.getDoubleTopic("kI").getEntry(TurretConstants.kIturret);
+        turretKSEntry = pidTable.getDoubleTopic("kS").getEntry(TurretConstants.turretFakeFeedForward);
+
+        // Telemetry
+        turretEncoderPub = telemetryTable.getDoubleTopic("Turret encoder").publish();
+        wantedAnglePub = telemetryTable.getDoubleTopic("New angle that we want").publish();
+        limitSwitchPub = telemetryTable.getBooleanTopic("Turret limit switch hit").publish();
+
+        // Control
+        customAngleEntry = controlTable.getDoubleTopic("Custom turret angle").getEntry(180);
+
         turretMotor = new SparkMax(TurretConstants.turretMotorID, MotorType.kBrushless);
         turretController = turretMotor.getClosedLoopController();
         SparkBaseConfig turretConfig = new SparkMaxConfig().smartCurrentLimit(15, 15);
@@ -124,7 +169,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         double maxSlack = 215;
         double minSlack = 110;
         boolean withinSlackRange = currentAngle <= maxSlack && currentAngle >= minSlack; 
-        SmartDashboard.putNumber("new angle that we want", limitToRange);
+        wantedAnglePub.set(limitToRange);
         wantedTurretAngle = limitToRange;
         // double pidVal = turretPidController.calculate(getAngleDegrees(), limitToRange);
         // double feedforward = turretFeedforward.calculate(turretMotor.getEncoder().getVelocity());
@@ -187,11 +232,8 @@ public class ShooterTurretSubsystem extends SubsystemBase {
     public boolean isLimitSwitchHit() {
         return !turretZeroLimitSwitch.get();
     }
-    
     public double getCustomAngle() {
-        double angle = SmartDashboard.getNumber("Custom turret angle", 180);
-        SmartDashboard.putNumber("Custom turret angle", angle);
-        return angle;
+        return customAngleEntry.get();
     }
 
     @Override
@@ -209,31 +251,7 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         if (state != ShooterStates.NONE) {
             setTurretAngle(RobotContainer.swerveSubsystem.getRobotToTargetAngle());
         }
-        SmartDashboard.putNumber("turret encoder", getAngleDegrees());
-        SmartDashboard.putBoolean("turret limit switch hit", isLimitSwitchHit());
-        
-        // TODO: REMOVE FOR COMP
-        // double kPturretSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack);
-        // double kIturretSlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack);
-
-        // SmartDashboard.putNumber("kP Turret slack", kPturretSlack);
-
-        // SmartDashboard.putNumber("kI Turret slack", kIturretSlack);
-
-        // boolean kPSlack = SmartDashboard.getNumber("kP Turret slack", TurretConstants.kPturretSlack) != turretPidController.getP();
-        // boolean kISlack = SmartDashboard.getNumber("kI Turret slack", TurretConstants.kIturretSlack) != turretPidController.getI();
-
-
-        // double kTurretFF = SmartDashboard.getNumber("kS Turret FF", TurretConstants.turretFakeFeedForward);
-        // boolean kFF = SmartDashboard.getNumber("kS Turret FF", TurretConstants.turretFakeFeedForward) != turretFeedforward.getKs();
-
-        // SmartDashboard.putNumber("kS Turret FF", kTurretFF);
-        
-        // if (kPSlack || kISlack || kFF) {
-        //     turretPidController.setP(kPturretSlack);
-        //     turretPidController.setI(kIturretSlack);
-        //     turretFeedforward.setKs(kTurretFF);
-        //     System.out.println("Updated turret PID and FF values: kP slack = " + kPturretSlack + "kI slack " + kIturretSlack + kPSlack + kISlack + turretPidController.getP());
-        // }
+        turretEncoderPub.set(getAngleDegrees());
+        limitSwitchPub.set(isLimitSwitchHit());
     }
 }

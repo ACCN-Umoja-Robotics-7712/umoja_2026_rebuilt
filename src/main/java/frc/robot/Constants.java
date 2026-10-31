@@ -209,6 +209,7 @@ public final class Constants {
         public static final boolean turretMotorReversed = false;
         public static final int turretLimitSwitchID = 1;
         public static final double kPturret = 0.045;
+        public static final double kIturret = 0.000;
         public static final double turretAllowedClosedLoopError = 0.1;
         public static final double kSturret = 0.325;
 
