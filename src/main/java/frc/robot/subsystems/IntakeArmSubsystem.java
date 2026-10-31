@@ -4,6 +4,12 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -16,7 +22,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeArmStates;
@@ -28,9 +33,25 @@ public class IntakeArmSubsystem extends SubsystemBase {
     private final ArmFeedforward intakeArmFeedforward;
     private final PIDController intakeArmPidController;
 
+    private NetworkTable intakeArmTable;
+    private NetworkTable telemetryTable;
+
+    private DoublePublisher armSpeedPub;
+    private DoublePublisher armPositionPub;
+    private DoublePublisher armCurrentPub;
+
     private double state = IntakeArmStates.NONE;
 
     public IntakeArmSubsystem() {
+        NetworkTableInstance nt = NetworkTableInstance.getDefault();
+
+        intakeArmTable = nt.getTable("IntakeArm");
+        telemetryTable = intakeArmTable.getSubTable("Telemetry");
+
+        armSpeedPub = telemetryTable.getDoubleTopic("Arm speed").publish();
+        armPositionPub = telemetryTable.getDoubleTopic("Arm position").publish();
+        armCurrentPub = telemetryTable.getDoubleTopic("Arm current stall").publish();
+    
         CANBus rio = CANBus.roboRIO(); // TODO: Default Coast when disabled, and Brake when enabled
         intakeArmMotorLeader = new TalonFX(IntakeConstants.leftMotorID, rio);
         intakeArmMotorFollower = new TalonFX(IntakeConstants.rightMotorID, rio);
@@ -81,7 +102,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
         // if (intakeArmZeroLimitSwitch.get() && speed < 0) {
         //     speed = 0;
         // }
-        SmartDashboard.putNumber("Arm speed", speed);
+        armSpeedPub.set(speed);
         intakeArmMotorLeader.set(speed);
     }
     
@@ -90,7 +111,7 @@ public class IntakeArmSubsystem extends SubsystemBase {
     }
 
     public void setState(double armState) {
-        if (this.state != state) {
+        if (this.state != armState) {
             intakeArmPidController.reset();
             this.state = armState;
         }
@@ -102,10 +123,9 @@ public class IntakeArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Pulish values on Elastic, this goes to SmartDashboard - Lewi
-        SmartDashboard.putNumber("Intake Arm position", intakeArmMotorLeader.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Intake arm current stall", intakeArmMotorLeader.getStatorCurrent().getValueAsDouble());
-        
+        armPositionPub.set(intakeArmMotorLeader.getPosition().getValueAsDouble());
+        armCurrentPub.set(intakeArmMotorLeader.getStatorCurrent().getValueAsDouble());
+
         if (state == IntakeArmStates.NONE) {
         } else {
             setIntakeArmAngle(state);
