@@ -24,11 +24,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.TurretConstants;
-
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
     public final TalonFX driveMotor;
@@ -39,12 +43,59 @@ public class SwerveModule {
     // private final PIDController drivePIDController;
     // public final CANcoder absoluteEncoder;
 
+    // NetworkTables
+    private NetworkTable moduleTable;
+    private NetworkTable telemetryTable;
+    private NetworkTable pidTable;
+    private NetworkTable controlTable;
+
+    // Telemetry publishers
+    private DoublePublisher wantedAnglePub;
+    private DoublePublisher currentSpeedPub;
+    private DoublePublisher wantedSpeedPub;
+    private DoublePublisher driveCurrentPub;
+    private DoublePublisher driveVelocityPub;
+    private DoublePublisher turnErrorPub;
+
+    // PID entries
+    private DoubleEntry turnKPEntry;
+    private DoubleEntry turnKSEntry;
+
+    // Control entries
+    private DoubleEntry encoderOffsetEntry;
+
     PositionVoltage turnPositionVoltage = new PositionVoltage(0);
     public double absoluteEncoderDegreeOffset, lastOffset, lastPTurn, lastkSTurn;
     public final CANcoder absoluteEncoder;
     public final int absoluteEncoderID;
 
     public SwerveModule(int driveMotorId, int turnMotorId, boolean driveMotorReversed, boolean turnMotorReversed, int absoluteEncoderId, double absoluteEncoderOffset, boolean isAbsoluteEncoderReversed, double kP, double kS){   
+        NetworkTableInstance nt = NetworkTableInstance.getDefault();
+
+        // Each module gets its own table based on encoder CAN ID
+        NetworkTable modulesTable = nt.getTable("Swerve").getSubTable("Modules");
+
+        moduleTable = modulesTable.getSubTable("Module_" + absoluteEncoderId);
+
+        telemetryTable = moduleTable.getSubTable("Telemetry");
+        pidTable = moduleTable.getSubTable("PID");
+        controlTable = moduleTable.getSubTable("Control");
+
+        // Telemetry
+        wantedAnglePub = telemetryTable.getDoubleTopic("Wanted angle").publish();
+        currentSpeedPub = telemetryTable.getDoubleTopic("Current speed").publish();
+        wantedSpeedPub = telemetryTable.getDoubleTopic("Wanted speed").publish();
+        driveCurrentPub = telemetryTable.getDoubleTopic("Drive current").publish();
+        driveVelocityPub = telemetryTable.getDoubleTopic("Drive velocity").publish();
+        turnErrorPub = telemetryTable.getDoubleTopic("Turn error").publish();
+
+        // PID
+        turnKPEntry = pidTable.getDoubleTopic("kP").getEntry(kP);
+        turnKSEntry = pidTable.getDoubleTopic("kS").getEntry(kS);
+
+        // Encoder offset
+        encoderOffsetEntry = controlTable.getDoubleTopic("Encoder offset").getEntry(absoluteEncoderOffset);
+
         CANBus CANivoreBus = new CANBus("CANivore");
 
         absoluteEncoder = new CANcoder(absoluteEncoderId, CANivoreBus);
@@ -184,41 +235,55 @@ public class SwerveModule {
         
         state.optimize(getState().angle);
 
-        double CANCoderOffset = SmartDashboard.getNumber("Swerve motor offset " + absoluteEncoderID, this.absoluteEncoderDegreeOffset);
-        SmartDashboard.putNumber("Swerve motor offset " + absoluteEncoderID, CANCoderOffset);
-        if (lastOffset != CANCoderOffset) {
-            lastOffset = CANCoderOffset;
-            CANcoderConfiguration CANconfig = new CANcoderConfiguration();
-            
-            CANconfig.MagnetSensor.MagnetOffset = CANCoderOffset;
-            CANconfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-            
-            absoluteEncoder.getConfigurator().apply(CANconfig);
-        }
-        double turnP = SmartDashboard.getNumber("turn kP " + absoluteEncoderID, lastPTurn);
-        double turnS = SmartDashboard.getNumber("turn KS " + absoluteEncoderID, lastkSTurn);
-        SmartDashboard.putNumber("turn kP " + absoluteEncoderID, turnP);
-        SmartDashboard.putNumber("turn KS " + absoluteEncoderID, turnS);
-        if (lastPTurn != turnP || lastkSTurn != turnS) {
-            lastPTurn = turnP;
-            lastkSTurn = turnS;
+        // Only allow tuning and offset changes when NOT connected to FMS
+        if (!DriverStation.isFMSAttached()) {
 
-            Slot0Configs pidConfigs = new Slot0Configs()
-                .withKP(turnP)
-                .withKS(turnS);
-            turnMotor.getConfigurator().apply(pidConfigs);
+            // Encoder offset
+            double CANCoderOffset = encoderOffsetEntry.get();
 
-            turnPIDController.setP(turnP);
-            turnFeedforward.setKs(turnS);
-            System.out.println("Updated PID for module " + absoluteEncoderID + ": kP=" + turnP + ", kS=" + turnS);
+            if (lastOffset != CANCoderOffset) {
+                lastOffset = CANCoderOffset;
+
+                CANcoderConfiguration CANconfig = new CANcoderConfiguration();
+
+                CANconfig.MagnetSensor.MagnetOffset = CANCoderOffset;
+                CANconfig.MagnetSensor.SensorDirection =
+                    SensorDirectionValue.CounterClockwise_Positive;
+
+                absoluteEncoder.getConfigurator().apply(CANconfig);
+            }
+
+            // Turn PID tuning
+            double turnP = turnKPEntry.get();
+            double turnS = turnKSEntry.get();
+
+            if (lastPTurn != turnP || lastkSTurn != turnS) {
+
+                Slot0Configs pidConfigs = new Slot0Configs()
+                    .withKP(turnP)
+                    .withKS(turnS);
+
+                turnMotor.getConfigurator().apply(pidConfigs);
+
+                turnPIDController.setP(turnP);
+                turnFeedforward.setKs(turnS);
+
+                lastPTurn = turnP;
+                lastkSTurn = turnS;
+
+                System.out.println(
+                    "Updated PID for module " + absoluteEncoderID
+                    + ": kP=" + turnP + ", kS=" + turnS
+                );
+            }
         }
 
         double wantedAngleDegrees = (state.angle.getDegrees() + 360) % 360;
-        SmartDashboard.putNumber("Swerve wanted angle " + absoluteEncoderID, wantedAngleDegrees);
-        SmartDashboard.putNumber("Swerve current speed " + absoluteEncoderID, getState().speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve wanted speed " + absoluteEncoderID, state.speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve current " + absoluteEncoderID, driveMotor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Swerve velocity " + absoluteEncoderID, driveMotor.getVelocity().getValueAsDouble());
+        wantedAnglePub.set(wantedAngleDegrees);
+        currentSpeedPub.set(getState().speedMetersPerSecond);
+        wantedSpeedPub.set(state.speedMetersPerSecond);
+        driveCurrentPub.set(driveMotor.getStatorCurrent().getValueAsDouble());
+        driveVelocityPub.set(driveMotor.getVelocity().getValueAsDouble());
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         // driveMotor.set(0);
         // driveMotor.set(drivePIDController.calculate(getState().speedMetersPerSecond, state.speedMetersPerSecond));
@@ -239,7 +304,7 @@ public class SwerveModule {
         } else if (error < -Math.PI) {
             error += 2*Math.PI;
         }
-        SmartDashboard.putNumber("Swerve turn error " + absoluteEncoderID, error);
+        turnErrorPub.set(error);
         // double wantedMotorPosition = state.angle.getRotations();
         // turnMotor.setControl(turnPositionVoltage.withPosition(wantedMotorPosition));
         turnMotor.setVoltage(turnPIDController.calculate(0, error) + turnFeedforward.calculate(error));
