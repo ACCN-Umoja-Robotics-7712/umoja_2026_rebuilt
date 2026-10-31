@@ -159,11 +159,6 @@ public class ShooterTurretSubsystem extends SubsystemBase {
         if (wantedTurretAngleInDegrees >= maxAngle) { // 280
             limitToRange = maxAngle;
         }
-        // double fakeFeedForward = SmartDashboard.getNumber("Turret static friction", TurretConstants.turretFakeFeedForward);
-        // double springResistance = SmartDashboard.getNumber("Turret spring resistance", TurretConstants.turretSpringResistance);
-        // SmartDashboard.putNumber("Turret static friction", fakeFeedForward);
-        // SmartDashboard.putNumber("Turret spring resistance", springResistance);
-
         double currentAngle = getAngleDegrees();
         // within slack range
         double maxSlack = 215;
