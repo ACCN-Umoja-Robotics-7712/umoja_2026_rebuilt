@@ -35,11 +35,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -49,6 +49,9 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -98,6 +101,48 @@ public class SwerveSubsystem extends SubsystemBase {
         ModuleConstants.kPTurnBRWheel,
         ModuleConstants.kSTurnBRWheel
     );
+    private final NetworkTable swerveTable =
+    NetworkTableInstance.getDefault().getTable("SwerveSubsystem");
+    
+    // Telemetry
+    private final DoublePublisher headingPub =
+        swerveTable.getDoubleTopic("HEADING").publish();
+    private final DoublePublisher flPub =
+        swerveTable.getDoubleTopic("FL").publish();
+    private final DoublePublisher frPub =
+        swerveTable.getDoubleTopic("FR").publish();
+    private final DoublePublisher blPub =
+        swerveTable.getDoubleTopic("BL").publish();
+    private final DoublePublisher brPub =
+        swerveTable.getDoubleTopic("BR").publish();
+        // Wanted value publishers
+    private final DoublePublisher wantedTargetAnglePublisher =
+        swerveTable.getDoubleTopic("WANTED TARGET ANGLE").publish();
+
+    private final DoublePublisher wantedTurretAnglePublisher =
+        swerveTable.getDoubleTopic("WANTED TURRET ANGLE").publish();
+
+    private final DoublePublisher wantedTargetDistancePublisher =
+        swerveTable.getDoubleTopic("WANTED TARGET DISTANCE").publish();
+
+    private final DoublePublisher wantedRPMPublisher =
+        swerveTable.getDoubleTopic("WANTED RPM FROM DISTANCE").publish();
+
+    private final DoublePublisher wantedHoodPublisher =
+        swerveTable.getDoubleTopic("WANTED HOOD FROM DISTANCE").publish();
+
+    // Tuning inputs
+    private final NetworkTableEntry distanceOffsetEntry =
+        swerveTable.getEntry("Distance offset");
+
+    private final NetworkTableEntry tofOffsetEntry =
+        swerveTable.getEntry("TOF offset");
+
+    private final NetworkTableEntry rpmOffsetEntry =
+        swerveTable.getEntry("RPM offset");
+
+    private final NetworkTableEntry tuningModeEntry =
+        swerveTable.getEntry("Tuning Mode");
 
     CANBus CANivore = new CANBus("CANivore");
     private final Pigeon2 gyro = new Pigeon2(1, CANivore);
@@ -264,6 +309,11 @@ public class SwerveSubsystem extends SubsystemBase {
         tofTable.put(4.3, 1.325);
         tofTable.put(5.0, 1.4);
         tofTable.put(5.5, 1.45);
+        
+        distanceOffsetEntry.setDefaultDouble(0.2);
+        tofOffsetEntry.setDefaultDouble(0.0);
+        rpmOffsetEntry.setDefaultDouble(0.0);
+        tuningModeEntry.setDefaultDouble(0.0);
     }
     // Assuming this is a method in your drive subsystem
    public void followTrajectory(SwerveSample sample) {
@@ -319,7 +369,7 @@ public class SwerveSubsystem extends SubsystemBase {
         if(heading < 0){
             heading = 180 + (180+heading);
         }
-        SmartDashboard.putNumber("HEADING", heading);
+        headingPub.set(heading);
         return heading;
     }
 
@@ -333,7 +383,7 @@ public class SwerveSubsystem extends SubsystemBase {
         if(heading < 0){
             heading = 180 + (180+heading);
         }
-        SmartDashboard.putNumber("HEADING", heading);
+        headingPub.set(heading);
         return heading;
     }
 
@@ -431,13 +481,12 @@ public class SwerveSubsystem extends SubsystemBase {
         };
         
         swerveStatePublisher.set(moduleStates);
-        SmartDashboard.putNumber("FL", frontLeft.getAbsoluteEncoderDegree());
-        SmartDashboard.putNumber("FR", frontRight.getAbsoluteEncoderDegree());
-        SmartDashboard.putNumber("BL", backLeft.getAbsoluteEncoderDegree());
-        SmartDashboard.putNumber("BR", backRight.getAbsoluteEncoderDegree());
-        
+        flPub.set(frontLeft.getAbsoluteEncoderDegree());
+        frPub.set(frontRight.getAbsoluteEncoderDegree());
+        blPub.set(backLeft.getAbsoluteEncoderDegree());
+        brPub.set(backRight.getAbsoluteEncoderDegree());
 
-        SmartDashboard.putNumber("GAME STATE", RobotContainer.gameState);
+        headingPub.set(getHeading());
 
         poseEstimator.update(Rotation2d.fromDegrees(getHeading()),
             new SwerveModulePosition[] {
@@ -650,9 +699,7 @@ public class SwerveSubsystem extends SubsystemBase {
         
         Pose2d currentPose = getPose();
 
-        double tuningModeVal = SmartDashboard.getNumber("Tuning Mode ", 0);
-        SmartDashboard.putNumber("Tuning Mode ", tuningModeVal);
-        boolean isTuningMode = tuningModeVal == 1;
+        boolean isTuningMode = tuningModeEntry.getDouble(0.0) == 1.0;
         if (RobotContainer.gameState == GameConstants.Disabled && !isTuningMode) {
             LimelightHelpers.SetThrottle(limelightLeft, 100);
             LimelightHelpers.SetThrottle(limelightRight, 100);
@@ -661,7 +708,6 @@ public class SwerveSubsystem extends SubsystemBase {
             LimelightHelpers.SetThrottle(limelightRight, 0);
         }
 
-        
         Pose2d turretFieldPose = getTurretPose();
         turretPublisher.set(turretFieldPose);
         limelightPublishers.set(limelightPoses.toArray(new Pose2d[0]));
@@ -701,15 +747,15 @@ public class SwerveSubsystem extends SubsystemBase {
         
         double[] angleDistance = updateTurretAngleDistanceToTarget(target);
         this.turretToTargetAngle = angleDistance[0];
-        SmartDashboard.putNumber("WANTED TARGET ANGLE", turretToTargetAngle);
-        SmartDashboard.putNumber("WANTED TURRET ANGLE", getTurretToTargetAngle());
+        wantedTargetAnglePublisher.set(turretToTargetAngle);
+        wantedTurretAnglePublisher.set(getTurretToTargetAngle());
         double distanceToTarget = angleDistance[1];
-        SmartDashboard.putNumber("WANTED TARGET DISTANCE", distanceToTarget);
+        wantedTargetDistancePublisher.set(distanceToTarget);
         double[] rpmHoodValues = updateRPMHoodValues(distanceToTarget);
         this.turretToTargetRPMValue = rpmHoodValues[0];
         this.turretToTargetHoodValue = rpmHoodValues[1];
-        SmartDashboard.putNumber("WANTED RPM FROM DISTANCE", turretToTargetRPMValue);
-        SmartDashboard.putNumber("WANTED HOOD FROM DISTANCE", turretToTargetHoodValue);
+        wantedRPMPublisher.set(turretToTargetRPMValue);
+        wantedHoodPublisher.set(turretToTargetHoodValue);
         // corner ~5.5 to 5.7m, tower ~2.9 to 3.1m, trench ~3.8m
     }
 
@@ -773,11 +819,9 @@ public class SwerveSubsystem extends SubsystemBase {
         Pose2d rotationVectorPose;
         Translation2d toTag = movingTarget.minus(turretPose.getTranslation());
         double turretAngleToTarget = Units.radiansToDegrees(Math.atan2(toTag.getY(), toTag.getX()));
-        double distanceOffset = SmartDashboard.getNumber("Distance offset", 0.2);
-        SmartDashboard.putNumber("Distance offset", distanceOffset); 
+        double distanceOffset = distanceOffsetEntry.getDouble(0.2);        SmartDashboard.putNumber("Distance offset", distanceOffset); 
         double distanceToTarget = toTag.getDistance(new Translation2d(0, 0)) + distanceOffset;
-        double tofOffset = SmartDashboard.getNumber("TOF offset", 0.0);
-        SmartDashboard.putNumber("TOF offset", tofOffset);
+        double tofOffset = tofOffsetEntry.getDouble(0.0);
         double tof = tofTable.get(distanceToTarget) + tofOffset;
 
         double maxIterations = Constants.TOFConstants.maxIterations;
@@ -837,8 +881,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double rpm = rpmTable.get(distanceToTarget);
         double hood = angleTable.get(distanceToTarget);
         // if (distanceToTarget >= 2.5 && distanceToTarget <= 5.0) {
-        double rpmOffset = SmartDashboard.getNumber("RPM offset", 0);
-        SmartDashboard.putNumber("RPM offset", rpmOffset);
+        double rpmOffset = rpmOffsetEntry.getDouble(0.0);
         rpm = rpm + rpmOffset;
         // hood = hood + 0.75;
         rpm = Math.min(5400.0, rpm);
