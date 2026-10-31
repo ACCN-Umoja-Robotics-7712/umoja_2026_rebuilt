@@ -2,7 +2,10 @@
 
 package frc.robot.subsystems;
 
-import java.util.ResourceBundle.Control;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleEntry;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -15,7 +18,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -28,9 +31,58 @@ public class IndexerSubsystem extends SubsystemBase {
     private double lastKP = 0.0;
     private double lastKD = 0.0;
     private double lastKV = 0.0;
-    
+
+    // NetworkTables
+    private NetworkTable indexerTable;
+    private NetworkTable telemetryTable;
+    private NetworkTable pidTable;
+    private NetworkTable testTable;
+
+    // Telemetry publishers
+    private DoublePublisher indexerVelocityPub;
+    private DoublePublisher beltVelocityPub;
+    private DoublePublisher beltCurrentPub;
+
+    // PID entries (read/write)
+    private DoubleEntry kPEntry;
+    private DoubleEntry kDEntry;
+    private DoubleEntry kVEntry;
+
+    // Test voltage entries
+    private DoubleEntry indexerVoltageEntry;
+    private DoubleEntry beltVoltageEntry;
     
     public IndexerSubsystem() {
+        NetworkTableInstance nt = NetworkTableInstance.getDefault();
+
+        indexerTable = nt.getTable("Indexer");
+
+        telemetryTable = indexerTable.getSubTable("Telemetry");
+        pidTable = indexerTable.getSubTable("PID");
+        testTable = indexerTable.getSubTable("Test");
+
+        // Telemetry
+        indexerVelocityPub =
+            telemetryTable.getDoubleTopic("Indexer velocity").publish();
+
+        beltVelocityPub =
+            telemetryTable.getDoubleTopic("Belt velocity").publish();
+
+        beltCurrentPub =
+            telemetryTable.getDoubleTopic("Belt current").publish();
+
+        // PID tuning
+        kPEntry = pidTable.getDoubleTopic("kP").getEntry(IndexerConstants.kPIndex);
+        kDEntry = pidTable.getDoubleTopic("kD").getEntry(IndexerConstants.kDIndex);
+        kVEntry = pidTable.getDoubleTopic("kV").getEntry(IndexerConstants.kVIndex);
+
+        // Test voltages
+        indexerVoltageEntry =
+            testTable.getDoubleTopic("Indexer voltage").getEntry(10.0);
+
+        beltVoltageEntry =
+            testTable.getDoubleTopic("Belt voltage").getEntry(10.0);
+
         indexerMotor = new SparkFlex(IndexerConstants.indexerMotorLeaderID, MotorType.kBrushless);
         indexerPIDController = indexerMotor.getClosedLoopController();
         SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(55, 20); // NEO_Vortex (80 A but was 40 A)
@@ -55,11 +107,11 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public void runIndexerUsingTestvoltage() {
-        double indexVoltage = SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
-        double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10);
+        double indexVoltage = indexerVoltageEntry.get();
+        double indexBeltVoltage = beltVoltageEntry.get();
+
         indexerMotor.setVoltage(indexVoltage);
         beltMotor.setVoltage(indexBeltVoltage);
-
     }
 
     public void setIndexerVelocity(double indexerRPM) {
@@ -73,47 +125,51 @@ public class IndexerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Indexer velocity", indexerMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Indexer Belt velocity", beltMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Indexer Belt current", beltMotor.getOutputCurrent());
-        
-        
-        double kPIndex = SmartDashboard.getNumber("kP Index", IndexerConstants.kPIndex);
-        double kDIndex = SmartDashboard.getNumber("kD Index", IndexerConstants.kDIndex);
-        double kVIndex = SmartDashboard.getNumber("kV Index", IndexerConstants.kVIndex);
 
+        // Publish telemetry
+        indexerVelocityPub.set(indexerMotor.getEncoder().getVelocity());
+        beltVelocityPub.set(beltMotor.getEncoder().getVelocity());
+        beltCurrentPub.set(beltMotor.getOutputCurrent());
         
-        SmartDashboard.putNumber("kP Index", kPIndex);
-        SmartDashboard.putNumber("kD Index", kDIndex);
-        SmartDashboard.putNumber("kV Index", kVIndex);
+        // Only allow PID tuning when NOT connected to FMS
+        if (!DriverStation.isFMSAttached()) {
 
-        if (kPIndex != lastKP || kDIndex != lastKD || kVIndex != lastKV) {
-            lastKP = kPIndex;
-            lastKD = kDIndex;
-            lastKV = kVIndex;
-            SparkBaseConfig indexerConfig = new SparkFlexConfig().smartCurrentLimit(55, 20); // NEO_Vortex (80 A but was 40 A)
-            indexerConfig.idleMode(IdleMode.kCoast);
-            indexerConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .p(kPIndex)
-                .d(kDIndex)
-                .outputRange(-1, 1)
-                .feedForward.kV(kVIndex);
+            double kPIndex = kPEntry.get();
+            double kDIndex = kDEntry.get();
+            double kVIndex = kVEntry.get();
 
-            indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+            if (kPIndex != lastKP || kDIndex != lastKD || kVIndex != lastKV) {
+
+                lastKP = kPIndex;
+                lastKD = kDIndex;
+                lastKV = kVIndex;
+
+                SparkBaseConfig indexerConfig =
+                    new SparkFlexConfig().smartCurrentLimit(55, 20);
+
+                indexerConfig.idleMode(IdleMode.kCoast);
+
+                indexerConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    .p(kPIndex)
+                    .d(kDIndex)
+                    .outputRange(-1, 1)
+                    .feedForward.kV(kVIndex);
+
+                indexerMotor.configure(
+                    indexerConfig,
+                    ResetMode.kResetSafeParameters,
+                    PersistMode.kPersistParameters
+                );
+            }
         }
-
-        double indexVoltage = SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
-        double indexBeltVoltage = SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10);
-        SmartDashboard.putNumber("TEST Indexer with applied voltage", indexVoltage);
-        SmartDashboard.putNumber("TEST Indexer belt with applied voltage", indexBeltVoltage);
     }
 
     public double getDashboardBeltVoltage() {
-        return SmartDashboard.getNumber("TEST Indexer belt with applied voltage", 10);
+        return beltVoltageEntry.get();
     }
 
     public double getDashboardIndexVoltage() {
-        return SmartDashboard.getNumber("TEST Indexer with applied voltage", 10);
+        return indexerVoltageEntry.get();
     }
 }
